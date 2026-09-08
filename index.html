@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maths Fundamentals for Data Science &amp; CS — คอร์สปรับพื้นฐาน 5 สัปดาห์</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #171a21;
+    --border: #2a2f3a;
+    --text: #e6e8ec;
+    --muted: #9aa3b2;
+    --accent: #6ea8fe;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", "Noto Sans Thai", "Sarabun", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  header {
+    padding: 48px 20px 24px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0 0 8px; font-size: 1.7rem; }
+  header p { margin: 0; color: var(--muted); }
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+  .week {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+  .week h2 {
+    margin: 0 0 4px;
+    font-size: 1.15rem;
+  }
+  .week h2 .num { color: var(--accent); margin-right: 8px; }
+  .week .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 14px; }
+  .links { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .links a {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #1f2430;
+    border: 1px solid var(--border);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.88rem;
+  }
+  .links a:hover { border-color: var(--accent); color: var(--accent); }
+  .links a.primary { background: #1a3a5c; border-color: #2c5c8f; }
+  details summary {
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 6px;
+  }
+  details .links { margin-top: 8px; }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 20px;
+  }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Maths Fundamentals for Data Science &amp; CS</h1>
+  <p>คอร์สปรับพื้นฐาน 5 สัปดาห์ × 3 ชั่วโมง | บรรยาย + คำนวณด้วยมือ 100% | เตรียมพร้อมสำหรับ Maths for Data Science (15 สัปดาห์)</p>
+</header>
+
+<main>
+
+  <div class="week">
+    <h2><span class="num">01</span>สมการและผลเฉลย</h2>
+    <div class="meta">ผลเฉลยแปลกปลอม · สมการเชิงเส้น/กำลังสอง · สมการเศษส่วน/กรณฑ์ · อสมการ</div>
+    <div class="links">
+      <a class="primary" href="week_01_equations/README.md">README</a>
+      <a href="week_01_equations/notes/note_01.md">Lecture note</a>
+      <a href="week_01_equations/exercises/ex_01.md">แบบฝึกหัด</a>
+    </div>
+    <details>
+      <summary>สไลด์ 4 ชุด</summary>
+      <div class="links">
+        <a href="week_01_equations/slides/01_solution_concept.html">1. ผลเฉลยคืออะไร — สมการสมมูลและผลเฉลยแปลกปลอม</a>
+        <a href="week_01_equations/slides/02_linear_quadratic.html">2. สมการเชิงเส้นและสมการกำลังสอง</a>
+        <a href="week_01_equations/slides/03_rational_radical.html">3. สมการเศษส่วนและสมการกรณฑ์</a>
+        <a href="week_01_equations/slides/04_inequality_sign_table.html">4. อสมการและตารางเครื่องหมาย</a>
+      </div>
+    </details>
+  </div>
+
+  <div class="week">
+    <h2><span class="num">02</span>ระบบสมการ + เอกซ์โพเนนเชียล–ลอการิทึม</h2>
+    <div class="meta">ระบบสมการเชิงเส้น (row reduction) · overdetermined · exp/log · sigmoid/logit</div>
+    <div class="links">
+      <a class="primary" href="week_02_systems_exp_log/README.md">README</a>
+      <a href="week_02_systems_exp_log/notes/note_02.md">Lecture note</a>
+      <a href="week_02_systems_exp_log/exercises/ex_02.md">แบบฝึกหัด</a>
+    </div>
+    <details>
+      <summary>สไลด์ 4 ชุด</summary>
+      <div class="links">
+        <a href="week_02_systems_exp_log/slides/01_linear_systems.html">1. ระบบสมการเชิงเส้น — อ่านผลลัพธ์ให้เป็น</a>
+        <a href="week_02_systems_exp_log/slides/02_overdetermined.html">2. ระบบ Overdetermined</a>
+        <a href="week_02_systems_exp_log/slides/03_exp_log.html">3. เอกซ์โพเนนเชียลและลอการิทึม</a>
+        <a href="week_02_systems_exp_log/slides/04_log_in_ds_cs.html">4. log ใน DS/CS</a>
+      </div>
+    </details>
+  </div>
+
+  <div class="week">
+    <h2><span class="num">03</span>อนุพันธ์</h2>
+    <div class="meta">นิยาม difference quotient · กฎการหาอนุพันธ์ · กฎลูกโซ่ · ความเพิ่ม-ลด/ความเว้า/จุดวิกฤต</div>
+    <div class="links">
+      <a class="primary" href="week_03_derivatives/README.md">README</a>
+      <a href="week_03_derivatives/notes/note_03.md">Lecture note</a>
+      <a href="week_03_derivatives/exercises/ex_03.md">แบบฝึกหัด</a>
+    </div>
+    <details>
+      <summary>สไลด์ 3 ชุด</summary>
+      <div class="links">
+        <a href="week_03_derivatives/slides/01_derivative_definition.html">1. จากอัตราการเปลี่ยนแปลงเฉลี่ยถึงอนุพันธ์</a>
+        <a href="week_03_derivatives/slides/02_differentiation_rules.html">2. กฎการหาอนุพันธ์</a>
+        <a href="week_03_derivatives/slides/03_interpretation.html">3. การตีความ — เพิ่ม-ลด ความเว้า จุดวิกฤต</a>
+      </div>
+    </details>
+  </div>
+
+  <div class="week">
+    <h2><span class="num">04</span>อนุพันธ์ย่อยและเกรเดียนต์</h2>
+    <div class="meta">ฟังก์ชันหลายตัวแปร/contour · อนุพันธ์ย่อย · เกรเดียนต์ · กฎลูกโซ่หลายตัวแปร</div>
+    <div class="links">
+      <a class="primary" href="week_04_partial_derivatives/README.md">README</a>
+      <a href="week_04_partial_derivatives/notes/note_04.md">Lecture note</a>
+      <a href="week_04_partial_derivatives/exercises/ex_04.md">แบบฝึกหัด</a>
+    </div>
+    <details>
+      <summary>สไลด์ 4 ชุด</summary>
+      <div class="links">
+        <a href="week_04_partial_derivatives/slides/01_multivariable_contour.html">1. ฟังก์ชันหลายตัวแปรและ contour</a>
+        <a href="week_04_partial_derivatives/slides/02_partial_derivatives.html">2. อนุพันธ์ย่อย</a>
+        <a href="week_04_partial_derivatives/slides/03_gradient.html">3. เกรเดียนต์ ∇f</a>
+        <a href="week_04_partial_derivatives/slides/04_multivar_chain_rule.html">4. กฎลูกโซ่หลายตัวแปร</a>
+      </div>
+    </details>
+  </div>
+
+  <div class="week">
+    <h2><span class="num">05</span>การหาค่าเหมาะที่สุด + Capstone</h2>
+    <div class="meta">Optimization 1-var/2-var · <strong>Capstone: สร้างสูตร Linear Regression ด้วยมือ</strong> · Gradient Descent (bridge)</div>
+    <div class="links">
+      <a class="primary" href="week_05_optimization/README.md">README</a>
+      <a href="week_05_optimization/notes/note_05.md">Lecture note</a>
+      <a href="week_05_optimization/exercises/ex_05.md">แบบฝึกหัด</a>
+    </div>
+    <details>
+      <summary>สไลด์ 4 ชุด</summary>
+      <div class="links">
+        <a href="week_05_optimization/slides/01_one_variable_optimization.html">1. การหาค่าเหมาะที่สุดของฟังก์ชันหนึ่งตัวแปร</a>
+        <a href="week_05_optimization/slides/02_two_variable_optimization.html">2. การหาค่าเหมาะที่สุดของฟังก์ชันสองตัวแปร</a>
+        <a href="week_05_optimization/slides/03_capstone_linear_regression.html">3. Capstone — สร้างสูตร Linear Regression ด้วยมือ</a>
+        <a href="week_05_optimization/slides/04_gradient_descent_bridge.html">4. Gradient Descent — ประตูเชื่อมไปคอร์ส 15 สัปดาห์</a>
+      </div>
+    </details>
+  </div>
+
+  <div class="week">
+    <h2>เอกสารประกอบคอร์ส</h2>
+    <div class="links">
+      <a href="PLAN.md">PLAN.md — แผนเนื้อหา</a>
+      <a href="BUILD_RULES.md">BUILD_RULES.md — กฎการสร้างเนื้อหา</a>
+      <a href="WORKFLOW.md">WORKFLOW.md — ขั้นตอนการทำงาน</a>
+      <a href="FIGURE_AUDIT.md">FIGURE_AUDIT.md — สถานะภาพประกอบ</a>
+      <a href="status.md">status.md — สถานะความคืบหน้า</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <a href="https://github.com/popotaroman-cloud/dssi-maths-fundamentals">github.com/popotaroman-cloud/dssi-maths-fundamentals</a>
+</footer>
+
+</body>
+</html>
