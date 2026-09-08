@@ -8,3 +8,6 @@ week_01_equations.zip
 # OS/editor cruft
 .DS_Store
 Thumbs.db
+
+# README files kept local-only (index.html is the public entry point instead)
+**/README.md
