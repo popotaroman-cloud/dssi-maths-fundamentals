@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Deck: Capstone — สร้างสูตร Linear Regression ด้วยมือ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],throwOnError:false});"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a237e;
+  --accent:  #1565c0;
+  --light:   #e3f2fd;
+  --bg:      #ffffff;
+  --text:    #212121;
+  --muted:   #546e7a;
+  --code-bg: #1e272e;
+  --code-fg: #dfe6e9;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0d1b2a;
+  font-family: 'Sarabun', 'Noto Sans Thai', 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ── Presentation container ───────────────────── */
+#presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
+  padding: clamp(28px, 3.5vw, 56px) clamp(40px, 6vw, 88px) 74px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Progress bar ─────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  z-index: 200;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #42a5f5, #1565c0);
+  transition: width 0.3s ease;
+}
+
+/* ── Slide header (title + num) ───────────────── */
+.slide-header {
+  margin-bottom: clamp(14px, 2vh, 28px);
+  padding-bottom: clamp(10px, 1.4vh, 18px);
+  border-bottom: 3px solid var(--light);
+  flex-shrink: 0;
+}
+.slide-num {
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.slide-title {
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+/* ── Title Slide (index 0) ────────────────────── */
+.slide-0 {
+  background: linear-gradient(145deg, #0d1b2a 0%, #1a237e 55%, #1565c0 100%);
+  justify-content: center;
+}
+.slide-0 .slide-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.slide-0 .slide-num  { color: #90caf9; }
+.slide-0 .slide-title {
+  font-size: clamp(34px, 5vw, 64px);
+  color: #ffffff;
+}
+.slide-0 .key-message {
+  background: rgba(255,255,255,0.1);
+  border-left-color: #42a5f5;
+  color: #e3f2fd;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.slide-0 .slide-content { color: #cfd8dc; }
+.slide-0 .slide-content p { color: #cfd8dc; }
+.slide-0 .slide-content li { color: #cfd8dc; }
+.slide-0 .slide-content strong { color: #90caf9; }
+.slide-0 .content-heading { color: #90caf9; }
+
+/* ── Key Message callout ──────────────────────── */
+.key-message {
+  background: var(--light);
+  border-left: 6px solid var(--accent);
+  padding: clamp(11px, 1.4vh, 18px) clamp(18px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: clamp(14px, 1.8vh, 26px);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Content area ─────────────────────────────── */
+.slide-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(17px, 1.85vw, 26px);
+  line-height: 1.68;
+  color: var(--text);
+  min-height: 0;
+}
+.slide-content::-webkit-scrollbar { width: 5px; }
+.slide-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.slide-content p { margin-bottom: 0.55em; }
+.slide-content strong { color: var(--primary); }
+.slide-content em { color: #37474f; }
+
+/* ── Lists ────────────────────────────────────── */
+.slide-list {
+  padding-left: clamp(22px, 2.8vw, 38px);
+  margin: 0.2em 0 0.7em;
+}
+.slide-list li {
+  margin-bottom: 0.45em;
+  line-height: 1.5;
+}
+ul.slide-list li::marker { color: var(--accent); font-weight: 700; }
+ol.slide-list li::marker { color: var(--accent); font-weight: 700; }
+
+/* ── Code blocks ──────────────────────────────── */
+.code-block {
+  margin: 0.5em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  font-size: clamp(12px, 1.35vw, 18px);
+}
+.code-lang {
+  background: #37474f;
+  color: #90a4ae;
+  font-size: 0.82em;
+  padding: 4px 16px;
+  font-family: 'Fira Code', Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.8vw, 24px);
+  overflow-x: auto;
+  line-height: 1.58;
+  margin: 0;
+}
+code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+}
+.slide-content code:not(pre code) {
+  background: #e8eaf6;
+  color: #1a237e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 1.5vw, 21px);
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  padding: clamp(7px, 0.9vh, 13px) clamp(10px, 1.4vw, 18px);
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: clamp(6px, 0.8vh, 11px) clamp(10px, 1.4vw, 18px);
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8f9ff; }
+tr:hover td { background: var(--light); }
+
+/* ── Sub-headings inside content ──────────────── */
+.content-heading {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--primary);
+  margin: 0.65em 0 0.25em;
+  font-weight: 700;
+}
+h3.content-heading {
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--accent);
+}
+
+/* ── Generated figure (matplotlib base64 PNG) ────────────── */
+.slide-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3em 0;
+  flex-shrink: 0;
+}
+.slide-figure img {
+  max-width: 96%;
+  max-height: clamp(200px, 38vh, 380px);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.10);
+  object-fit: contain;
+}
+
+/* ── Figure placeholder (fallback เมื่อ generate ไม่ได้) ─── */
+.placeholder {
+  border: 2px dashed var(--accent);
+  padding: clamp(12px, 1.6vh, 22px) clamp(16px, 2vw, 26px);
+  border-radius: 10px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0.4em 0;
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+
+.slide-hr {
+  border: none;
+  border-top: 2px solid #e8eaf6;
+  margin: 0.5em 0;
+}
+
+/* ── Navigation bar ───────────────────────────── */
+#nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(13,27,42,0.9);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 40px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+#nav button {
+  background: none;
+  border: none;
+  color: #90a4ae;
+  font-size: clamp(16px, 1.8vw, 24px);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.12); }
+#nav button:disabled { color: #3d4e5c; cursor: default; }
+#counter {
+  color: #e2e8f0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+}
+#slide-label {
+  color: #78909c;
+  font-size: clamp(10px, 1vw, 13px);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Keyboard hint ────────────────────────────── */
+#kb-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* ── KaTeX math rendering ─────────────────── */
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex {
+  font-size: clamp(15px, 1.7vw, 21px) !important;
+}
+.slide-0 .katex { color: #e3f2fd; }
+
+</style>
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+<div id="presentation">
+<div class="slide slide-0" data-title="Title">
+  <div class="slide-header">
+    <div class="slide-num">Slide 1</div>
+    <div class="slide-title">Title</div>
+  </div>
+  <div class="key-message">เราจะแก้ปัญหาที่ค้างมาตั้งแต่สัปดาห์ 2 — และสร้างสูตรที่ใช้กันทั่วโลกขึ้นเองด้วยดินสอบนกระดาษ</div>
+  <div class="slide-content"><p><strong>Maths Fundamentals for DS &amp; CS — สัปดาห์ 05</strong></p>
+<h2 class="content-heading">Capstone: สร้างสูตร Linear Regression ด้วยมือ</h2>
+<ul class="slide-list"><li>ช่วงนี้: 50 นาที — จุดสูงสุดของคอร์ส</li><li>ใช้: กฎลูกโซ่ (สัปดาห์ 3) + อนุพันธ์ย่อย (สัปดาห์ 4) + การแก้ระบบเชิงเส้น (สัปดาห์ 2)</li><li>ผลลัพธ์: สูตร simple linear regression ที่สร้างขึ้นเอง</li></ul></div>
+</div>
+<div class="slide slide-1" data-title="ปัญหาที่ค้างมาจากสัปดาห์ 2">
+  <div class="slide-header">
+    <div class="slide-num">Slide 2</div>
+    <div class="slide-title">ปัญหาที่ค้างมาจากสัปดาห์ 2</div>
+  </div>
+  <div class="key-message">ข้อมูล 5 จุดให้ 5 สมการในตัวแปรแค่ 2 ตัว — ระบบ overdetermined ตรงตามนิยาม และไม่มีผลเฉลย</div>
+  <div class="slide-content"><p>$$
+\begin{cases} wx_1+b=y_1 \\ wx_2+b=y_2 \\ \;\;\vdots \\ wx_5+b=y_5 \end{cases}
+$$</p>
+<p>สัปดาห์ 2 ตอบว่า "โดยทั่วไปไม่มีผลเฉลย" แล้วค้างคำถามไว้ว่า <strong>ถ้าไม่มีผลเฉลย เราจะทำอย่างไร</strong></p>
+<p><strong>คำตอบที่เป็นหัวใจของทั้งคอร์ส:</strong> เปลี่ยนคำถามจาก "หาค่าที่ทำให้สมการเป็นจริง" เป็น <strong>"หาค่าที่ทำให้ความผิดพลาดน้อยที่สุด"</strong></p></div>
+</div>
+<div class="slide slide-2" data-title="ขั้นที่ 1: ทำไมต้องยกกำลังสอง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 3</div>
+    <div class="slide-title">ขั้นที่ 1: ทำไมต้องยกกำลังสอง</div>
+  </div>
+  <div class="key-message">การยกกำลังสองไม่ใช่เวทมนตร์ — มันคือทางเลือกเดียวที่ทั้งไม่หักกันและหาอนุพันธ์ได้ทุกที่</div>
+  <div class="slide-content"><p>ส่วนเหลือ (residual): $r_i=y_i-(wx_i+b)$</p>
+<table><thead><tr><th>ทางเลือก</th><th>ปัญหา</th></tr></thead><tbody><tr><td>บวก $r_i$ ตรง ๆ</td><td>หักกันหมด — เส้นแย่อาจได้คะแนน 0</td></tr><tr><td>บวก $\lvert r_i\rvert$</td><td>หาอนุพันธ์ที่ศูนย์ไม่ได้</td></tr><tr><td><strong>บวก $r_i^2$</strong></td><td><strong>ไม่หักกัน + หาอนุพันธ์ได้ทุกที่ + ลงโทษก้อนใหญ่หนักกว่า</strong></td></tr></tbody></table>
+<p>$$
+\text{SSE}(w,b)=\sum_{i=1}^n(y_i-wx_i-b)^2
+$$</p>
+<p><strong>$x_i,y_i$ คือข้อมูล (ค่าคงตัว) — ตัวแปรของ SSE คือ $w,b$ เท่านั้น</strong></p></div>
+</div>
+<div class="slide slide-3" data-title="ขั้นที่ 2: หาอนุพันธ์ย่อย (ต่อจากสัปดาห์ 4)">
+  <div class="slide-header">
+    <div class="slide-num">Slide 4</div>
+    <div class="slide-title">ขั้นที่ 2: หาอนุพันธ์ย่อย (ต่อจากสัปดาห์ 4)</div>
+  </div>
+  <div class="key-message">สัปดาห์ 4 หยุดไว้ที่นี่พอดี — วันนี้เอาของที่ค้างไว้มาต่อด้วยกฎลูกโซ่</div>
+  <div class="slide-content"><p>พจน์ที่ $i$ มีรูป $(\cdots)^2$ — ใช้กฎลูกโซ่:</p>
+<p>$$
+\frac{\partial}{\partial w}(y_i-wx_i-b)^2 = 2(y_i-wx_i-b)\cdot(-x_i) = -2x_i(y_i-wx_i-b)
+$$</p>
+<p>$$
+\frac{\partial \text{SSE}}{\partial w} = -2\sum x_i(y_i-wx_i-b) \qquad\qquad \frac{\partial \text{SSE}}{\partial b} = -2\sum(y_i-wx_i-b)
+$$</p></div>
+</div>
+<div class="slide slide-4" data-title="ขั้นที่ 3: ให้เท่ากับศูนย์ → ระบบเชิงเส้น">
+  <div class="slide-header">
+    <div class="slide-num">Slide 5</div>
+    <div class="slide-title">ขั้นที่ 3: ให้เท่ากับศูนย์ → ระบบเชิงเส้น</div>
+  </div>
+  <div class="key-message">จุดต่ำสุดของ SSE ต้องอยู่ที่ $\nabla\text{SSE}=\mathbf 0$ — จัดรูปแล้วได้ระบบเชิงเส้น $2\times2$ ที่เรียกว่า normal equations</div>
+  <div class="slide-content"><p>$$
+\left(\sum x_i^2\right)w+\left(\sum x_i\right)b=\sum x_iy_i \qquad\textbf{(N1)}
+$$</p>
+<p>$$
+\left(\sum x_i\right)w+nb=\sum y_i \qquad\textbf{(N2)}
+$$</p>
+<p>สัมประสิทธิ์ทุกตัวคำนวณจากข้อมูลได้ทันที — <strong>เราเดินมาถึงระบบสมการเชิงเส้นเหมือนที่ตั้งใจไว้ตั้งแต่สัปดาห์ 1</strong></p></div>
+</div>
+<div class="slide slide-5" data-title="ขั้นที่ 4: แก้ระบบด้วยวิธีสัปดาห์ 2">
+  <div class="slide-header">
+    <div class="slide-num">Slide 6</div>
+    <div class="slide-title">ขั้นที่ 4: แก้ระบบด้วยวิธีสัปดาห์ 2</div>
+  </div>
+  <div class="key-message">ไม่มีอะไรใหม่ตรงนี้เลย — ใช้วิธีแทนค่าที่สะอาดที่สุดกับระบบนี้</div>
+  <div class="slide-content"><p>หาร (N2) ด้วย $n$:</p>
+<p>$$
+\bar x\,w+b=\bar y \quad\Longrightarrow\quad b=\bar y-w\bar x \qquad\textbf{(B)}
+$$</p>
+<p><strong>(B) มีความหมายสวยงาม:</strong> เส้นที่ดีที่สุดต้องผ่านจุดศูนย์ถ่วงของข้อมูล $(\bar x,\bar y)$ เสมอ</p>
+<p>แทน (B) ใน (N1) แล้วจัดรูปด้วย $\sum x_i=n\bar x$:</p>
+<p>$$
+w\left(\sum x_i^2-n\bar x^2\right)=\sum x_iy_i-n\bar x\bar y
+$$</p></div>
+</div>
+<div class="slide slide-6" data-title="ขั้นที่ 5: สูตรที่ได้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 7</div>
+    <div class="slide-title">ขั้นที่ 5: สูตรที่ได้</div>
+  </div>
+  <div class="key-message">เราสร้างสูตร simple linear regression ที่ใช้กันทั่วโลกขึ้นเองด้วยดินสอ ภายในห้าขั้น</div>
+  <div class="slide-content"><p>$$
+\boxed{\;\hat w=\frac{\sum(x_i-\bar x)(y_i-\bar y)}{\sum(x_i-\bar x)^2} \qquad \hat b=\bar y-\hat w\bar x\;}
+$$</p>
+<p>ใช้แค่สามอย่าง: <strong>กฎลูกโซ่</strong> (สัปดาห์ 3) + <strong>อนุพันธ์ย่อย</strong> (สัปดาห์ 4) + <strong>การแก้ระบบเชิงเส้น</strong> (สัปดาห์ 2)</p>
+<p><strong>ยืนยันว่าเป็นค่าต่ำสุดจริง:</strong> $D=4n\sum(x_i-\bar x)^2&gt;0$ (ถ้า $x_i$ ไม่เท่ากันหมด) และ $\text{SSE}_{ww}&gt;0$ → <strong>ต่ำสุดเสมอ</strong></p></div>
+</div>
+<div class="slide slide-7" data-title="ขั้นที่ 6: แทนข้อมูลจริง 5 จุด">
+  <div class="slide-header">
+    <div class="slide-num">Slide 8</div>
+    <div class="slide-title">ขั้นที่ 6: แทนข้อมูลจริง 5 จุด</div>
+  </div>
+  <div class="key-message">ทำตารางส่วนเบี่ยงทีละคอลัมน์ — ผลรวมคอลัมน์ส่วนเบี่ยงต้องเป็นศูนย์เสมอ ใช้เป็นการตรวจทานฟรี</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $(1,5),(2,4),(3,9),(4,10),(5,12)$ · $\bar x=3$, $\bar y=8$</p>
+<table><thead><tr><th>$x_i-\bar x$</th><th>$-2$</th><th>$-1$</th><th>$0$</th><th>$1$</th><th>$2$</th><th>$\sum=0$</th></tr></thead><tbody><tr><td>$y_i-\bar y$</td><td>$-3$</td><td>$-4$</td><td>$1$</td><td>$2$</td><td>$4$</td><td>$\sum=0$</td></tr><tr><td>ผลคูณ</td><td>$6$</td><td>$4$</td><td>$0$</td><td>$2$</td><td>$8$</td><td>$\sum=\mathbf{20}$</td></tr><tr><td>$(x_i-\bar x)^2$</td><td>$4$</td><td>$1$</td><td>$0$</td><td>$1$</td><td>$4$</td><td>$\sum=\mathbf{10}$</td></tr></tbody></table>
+<p>$$
+\hat w=\frac{20}{10}=2 \qquad \hat b=8-2(3)=2 \qquad\qquad \hat y=2x+2
+$$</p></div>
+</div>
+<div class="slide slide-8" data-title="ตรวจคำตอบสองทาง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 9</div>
+    <div class="slide-title">ตรวจคำตอบสองทาง</div>
+  </div>
+  <div class="key-message">แก้ normal equations ตรง ๆ ด้วยวิธีสัปดาห์ 2 ต้องได้คำตอบเดียวกันเป๊ะ</div>
+  <div class="slide-content"><p>$$
+55w+15b=140 \qquad 15w+5b=40 \quad\Longrightarrow\quad w=2,\;b=2 \;\checkmark
+$$</p>
+<p><strong>ตรวจด้วยส่วนเหลือ</strong> ($\hat y_i=2x_i+2$): $r=(1,-2,1,0,0)$ → $\sum r_i=0$ ✓ (คือ N2) และ $\sum x_ir_i=0$ ✓ (คือ N1)</p>
+<p><strong>ยืนยันเป็นค่าต่ำสุด:</strong> $D=(110)(10)-30^2=200&gt;0$, $\text{SSE}_{ww}=110&gt;0$ → ต่ำสุดจริง ✓</p>
+<p><strong>ตอบ:</strong> $\hat y=2x+2$ · $\text{SSE}=6$ — ไม่มีเส้นตรงใดในโลกให้ SSE น้อยกว่า 6</p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w05_f06_regression_residuals.svg" alt="กราฟวาดมือ แกน x จาก 0 ถึง 6 แกน y จาก 0 ถึง 14 ทำจุดทึบห้าจุดที่ (1,5) (2,4) (3,9) (4,10) (5,12) ลากเส้นตรงหนึ่งเส้นผ่านจุด (0,2) และ (5,12) ติดป้ายเส้นว่า y hat = 2x+2 จากจุดข้อมูลแต่ละจุดลากเส้นประแนวตั้งสั้น ๆ ไปหาเส้นตรง ที่ x=1 ยาว 1 หน่วยขึ้น ที่ x=2 ยาว 2 หน่วยลง ที่ x=3 ยาว 1 หน่วยขึ้น ที่ x=4 และ x=5 ไม่มีเส้นประเพราะส่วนเหลือเป็นศูนย์ ติดป้ายเส้นประว่า ส่วนเหลือ r_i ทำเครื่องหมายกากบาทเล็กที่จุด (3,8) และติดป้ายว่า จุดศูนย์ถ่วง x bar, y bar ซึ่งเส้นต้องผ่าน ขาวดำ เส้นบาง ไม่ระบายสี" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-9" data-title="ขั้นที่ 7: ปิดวง overdetermined — ย่อหน้าที่สำคัญที่สุดของทั้งคอร์ส">
+  <div class="slide-header">
+    <div class="slide-num">Slide 10</div>
+    <div class="slide-title">ขั้นที่ 7: ปิดวง overdetermined — ย่อหน้าที่สำคัญที่สุดของทั้งคอร์ส</div>
+  </div>
+  <div class="key-message">เราไม่ได้แก้ระบบเดิมได้ — เราสร้างระบบใหม่ที่เล็กกว่าและแก้ได้ขึ้นมาแทน โดยจ่ายราคาเป็นการยอมรับว่าคำตอบไม่ทำให้สมการเดิมเป็นจริง</div>
+  <div class="slide-content"><p>ระบบ 5 สมการ 2 ตัวแปรเดิม <strong>ไม่มีผลเฉลย</strong> (ยืนยันได้ใน 3 บรรทัด: จาก 2 สมการแรกได้ $w=-1,b=6$ แต่ไม่สอดคล้องสมการที่ 3)</p>
+<p>$$
+\underbrace{5\text{ สมการ }2\text{ ตัวแปร}}_{\text{ไม่มีผลเฉลย (สัปดาห์ 2)}} \;\longrightarrow\; \underbrace{\min\text{SSE}(w,b)}_{\text{หาค่าเหมาะที่สุด}} \;\longrightarrow\; \underbrace{2\text{ สมการ }2\text{ ตัวแปร}}_{\text{มีผลเฉลยเดียว}}
+$$</p>
+<p><strong>นี่คือสิ่งที่ machine learning ทำทั้งหมดในระดับโครงสร้าง</strong></p></div>
+</div>
+<div class="slide slide-10" data-title="ตัวอย่าง: เมื่อ $\bar x$ ไม่เป็นจำนวนเต็ม">
+  <div class="slide-header">
+    <div class="slide-num">Slide 11</div>
+    <div class="slide-title">ตัวอย่าง: เมื่อ $\bar x$ ไม่เป็นจำนวนเต็ม</div>
+  </div>
+  <div class="key-message">ถ้าค่าเฉลี่ยไม่ลงตัว เดินเส้นทาง normal equations ตรง ๆ มักสะอาดกว่าตารางส่วนเบี่ยง</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $(1,1),(2,3),(3,4),(4,4)$ → $30w+10b=35$, $10w+4b=12$</p>
+<p>แก้ได้ $w=1$, $b=\tfrac12$ · <strong>ตรวจด้วย (B):</strong> $\bar x=\tfrac52,\bar y=3 \Rightarrow b=3-\tfrac52=\tfrac12$ ✓</p>
+<p>เส้นถดถอย $\hat y=x+\tfrac12$ · $\text{SSE}=1$</p></div>
+</div>
+<div class="slide slide-11" data-title="เมื่อสูตรพัง: $x$ เท่ากันทุกจุด">
+  <div class="slide-header">
+    <div class="slide-num">Slide 12</div>
+    <div class="slide-title">เมื่อสูตรพัง: $x$ เท่ากันทุกจุด</div>
+  </div>
+  <div class="key-message">สูตรไม่พังเพราะพีชคณิตผิด — มันพังเพราะคำถามตอบไม่ได้ นี่คือเหตุผลที่ต้องรู้ที่มาของสูตร ไม่ใช่แค่ท่องจำ</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $(2,1),(2,3),(2,4),(2,8)$ → $\sum(x_i-\bar x)^2=0$ <strong>หารด้วยศูนย์ไม่ได้</strong></p>
+<p>Normal equations กลายเป็นสมการเดียวกันสองครั้ง → $D=0$ → จุดวิกฤตเป็นเส้น $(w,b)=(t,4-2t)$ ทุกเส้นให้ $\text{SSE}=26$ เท่ากัน</p>
+<p><strong>เหตุผล:</strong> ข้อมูลไม่มีสารสนเทศเรื่องความชันเลย — ฟีเจอร์ที่ไม่แปรผันทำให้ระบบเป็นเอกฐาน</p></div>
+</div>
+<div class="slide slide-12" data-title="สรุปและสิ่งที่ต้องทำ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 13</div>
+    <div class="slide-title">สรุปและสิ่งที่ต้องทำ</div>
+  </div>
+  <div class="key-message">ประโยชน์ของการรู้ที่มาสูตรมีสามข้อ — รู้ว่าพังเมื่อไร รู้ว่าถือสมมติฐานอะไร รู้ว่าอะไรขยายต่อได้</div>
+  <div class="slide-content"><p><strong>"เทรนโมเดล" คือกระบวนการสี่ขั้น</strong> ที่เพิ่งทำมือครบ: กำหนดรูปแบบโมเดล → กำหนดฟังก์ชันความสูญเสีย → หาพารามิเตอร์ที่ทำให้สูญเสียน้อยสุด → ตรวจผล</p>
+<p><strong>มีสิบพารามิเตอร์หรือล้านพารามิเตอร์ก็ตั้ง SSE เหมือนกันหมด</strong> — สิ่งที่เปลี่ยนคือขนาดของระบบ ไม่ใช่วิธีคิด</p>
+<p><strong>จบช่วงนี้ควรทำได้:</strong></p>
+<ul class="slide-list"><li>สร้างสูตร $\hat w,\hat b$ ขึ้นเองจากศูนย์ได้ ไม่ใช่ท่องจำ</li><li>แทนข้อมูลจริงคำนวณจนได้ตัวเลข พร้อมตรวจสองทาง</li><li>อธิบายได้ว่า Capstone ปิดวง overdetermined จากสัปดาห์ 2 อย่างไร</li></ul>
+<p><strong>การบ้าน:</strong> <code>exercises/ex_05.md</code> ข้อ 17–22</p></div>
+</div>
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" title="Previous (&#8592;)">&#9664;</button>
+  <span id="counter">1 / 14</span>
+  <span id="slide-label"></span>
+  <button id="next-btn" onclick="changeSlide(1)" title="Next (&#8594;)">&#9654;</button>
+</div>
+<div id="kb-hint">&#8592; &#8594; Space</div>
+<script>
+
+var current = 0;
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var counter = document.getElementById('counter');
+var fill = document.getElementById('progress-fill');
+var label = document.getElementById('slide-label');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+
+function showSlide(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, total - 1));
+  slides[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  fill.style.width = ((current + 1) / total * 100) + '%';
+  label.textContent = slides[current].dataset.title || '';
+  prevBtn.disabled = (current === 0);
+  nextBtn.disabled = (current === total - 1);
+  // Scroll content to top on slide change
+  var sc = slides[current].querySelector('.slide-content');
+  if (sc) sc.scrollTop = 0;
+}
+
+function changeSlide(dir) { showSlide(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault(); changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault(); changeSlide(-1);
+  } else if (e.key === ' ') {
+    e.preventDefault(); changeSlide(e.shiftKey ? -1 : 1);
+  } else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End')  { showSlide(total - 1); }
+});
+
+// Touch swipe
+var touchX = 0;
+document.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+showSlide(0);
+
+</script>
+</body>
+</html>

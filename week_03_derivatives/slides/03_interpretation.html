@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Deck: การตีความ — ความเพิ่ม-ลด ความเว้า และจุดวิกฤต</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],throwOnError:false});"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a237e;
+  --accent:  #1565c0;
+  --light:   #e3f2fd;
+  --bg:      #ffffff;
+  --text:    #212121;
+  --muted:   #546e7a;
+  --code-bg: #1e272e;
+  --code-fg: #dfe6e9;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0d1b2a;
+  font-family: 'Sarabun', 'Noto Sans Thai', 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ── Presentation container ───────────────────── */
+#presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
+  padding: clamp(28px, 3.5vw, 56px) clamp(40px, 6vw, 88px) 74px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Progress bar ─────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  z-index: 200;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #42a5f5, #1565c0);
+  transition: width 0.3s ease;
+}
+
+/* ── Slide header (title + num) ───────────────── */
+.slide-header {
+  margin-bottom: clamp(14px, 2vh, 28px);
+  padding-bottom: clamp(10px, 1.4vh, 18px);
+  border-bottom: 3px solid var(--light);
+  flex-shrink: 0;
+}
+.slide-num {
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.slide-title {
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+/* ── Title Slide (index 0) ────────────────────── */
+.slide-0 {
+  background: linear-gradient(145deg, #0d1b2a 0%, #1a237e 55%, #1565c0 100%);
+  justify-content: center;
+}
+.slide-0 .slide-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.slide-0 .slide-num  { color: #90caf9; }
+.slide-0 .slide-title {
+  font-size: clamp(34px, 5vw, 64px);
+  color: #ffffff;
+}
+.slide-0 .key-message {
+  background: rgba(255,255,255,0.1);
+  border-left-color: #42a5f5;
+  color: #e3f2fd;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.slide-0 .slide-content { color: #cfd8dc; }
+.slide-0 .slide-content p { color: #cfd8dc; }
+.slide-0 .slide-content li { color: #cfd8dc; }
+.slide-0 .slide-content strong { color: #90caf9; }
+.slide-0 .content-heading { color: #90caf9; }
+
+/* ── Key Message callout ──────────────────────── */
+.key-message {
+  background: var(--light);
+  border-left: 6px solid var(--accent);
+  padding: clamp(11px, 1.4vh, 18px) clamp(18px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: clamp(14px, 1.8vh, 26px);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Content area ─────────────────────────────── */
+.slide-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(17px, 1.85vw, 26px);
+  line-height: 1.68;
+  color: var(--text);
+  min-height: 0;
+}
+.slide-content::-webkit-scrollbar { width: 5px; }
+.slide-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.slide-content p { margin-bottom: 0.55em; }
+.slide-content strong { color: var(--primary); }
+.slide-content em { color: #37474f; }
+
+/* ── Lists ────────────────────────────────────── */
+.slide-list {
+  padding-left: clamp(22px, 2.8vw, 38px);
+  margin: 0.2em 0 0.7em;
+}
+.slide-list li {
+  margin-bottom: 0.45em;
+  line-height: 1.5;
+}
+ul.slide-list li::marker { color: var(--accent); font-weight: 700; }
+ol.slide-list li::marker { color: var(--accent); font-weight: 700; }
+
+/* ── Code blocks ──────────────────────────────── */
+.code-block {
+  margin: 0.5em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  font-size: clamp(12px, 1.35vw, 18px);
+}
+.code-lang {
+  background: #37474f;
+  color: #90a4ae;
+  font-size: 0.82em;
+  padding: 4px 16px;
+  font-family: 'Fira Code', Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.8vw, 24px);
+  overflow-x: auto;
+  line-height: 1.58;
+  margin: 0;
+}
+code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+}
+.slide-content code:not(pre code) {
+  background: #e8eaf6;
+  color: #1a237e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 1.5vw, 21px);
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  padding: clamp(7px, 0.9vh, 13px) clamp(10px, 1.4vw, 18px);
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: clamp(6px, 0.8vh, 11px) clamp(10px, 1.4vw, 18px);
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8f9ff; }
+tr:hover td { background: var(--light); }
+
+/* ── Sub-headings inside content ──────────────── */
+.content-heading {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--primary);
+  margin: 0.65em 0 0.25em;
+  font-weight: 700;
+}
+h3.content-heading {
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--accent);
+}
+
+/* ── Generated figure (matplotlib base64 PNG) ────────────── */
+.slide-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3em 0;
+  flex-shrink: 0;
+}
+.slide-figure img {
+  max-width: 96%;
+  max-height: clamp(200px, 38vh, 380px);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.10);
+  object-fit: contain;
+}
+
+/* ── Figure placeholder (fallback เมื่อ generate ไม่ได้) ─── */
+.placeholder {
+  border: 2px dashed var(--accent);
+  padding: clamp(12px, 1.6vh, 22px) clamp(16px, 2vw, 26px);
+  border-radius: 10px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0.4em 0;
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+
+.slide-hr {
+  border: none;
+  border-top: 2px solid #e8eaf6;
+  margin: 0.5em 0;
+}
+
+/* ── Navigation bar ───────────────────────────── */
+#nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(13,27,42,0.9);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 40px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+#nav button {
+  background: none;
+  border: none;
+  color: #90a4ae;
+  font-size: clamp(16px, 1.8vw, 24px);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.12); }
+#nav button:disabled { color: #3d4e5c; cursor: default; }
+#counter {
+  color: #e2e8f0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+}
+#slide-label {
+  color: #78909c;
+  font-size: clamp(10px, 1vw, 13px);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Keyboard hint ────────────────────────────── */
+#kb-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* ── KaTeX math rendering ─────────────────── */
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex {
+  font-size: clamp(15px, 1.7vw, 21px) !important;
+}
+.slide-0 .katex { color: #e3f2fd; }
+
+</style>
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+<div id="presentation">
+<div class="slide slide-0" data-title="Title">
+  <div class="slide-header">
+    <div class="slide-num">Slide 1</div>
+    <div class="slide-title">Title</div>
+  </div>
+  <div class="key-message">อนุพันธ์ไม่ใช่แค่ตัวเลข — เครื่องหมายของมันบอกรูปร่างของกราฟทั้งเส้น</div>
+  <div class="slide-content"><p><strong>Maths Fundamentals for DS &amp; CS — สัปดาห์ 03</strong></p>
+<h2 class="content-heading">การตีความ: ความเพิ่ม-ลด ความเว้า และจุดวิกฤต</h2>
+<ul class="slide-list"><li>ช่วงนี้: 60 นาที</li><li>ต่อจาก: กฎการหาอนุพันธ์</li><li>นำไปสู่: การหาค่าที่ดีที่สุดในสัปดาห์ 5</li></ul></div>
+</div>
+<div class="slide slide-1" data-title="ภาพรวมช่วงนี้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 2</div>
+    <div class="slide-title">ภาพรวมช่วงนี้</div>
+  </div>
+  <div class="key-message">จบช่วงนี้คุณจะอ่านรูปร่างกราฟจากเครื่องหมายของ $f'$ และ $f''$ ได้โดยไม่ต้องเห็นกราฟจริง</div>
+  <div class="slide-content"><p><strong>จะเรียน:</strong></p>
+<ul class="slide-list"><li>ตารางเครื่องหมายของ $f'$ — กระบวนการเดียวกับสัปดาห์ 1</li><li><strong>จุดวิกฤต</strong> — สองสาเหตุที่แยกกันโดยสิ้นเชิง</li><li>ความเว้าและอนุพันธ์อันดับสอง</li></ul></div>
+</div>
+<div class="slide slide-2" data-title="ความเพิ่ม-ลด: ปิดวงตารางเครื่องหมายจากสัปดาห์ 1">
+  <div class="slide-header">
+    <div class="slide-num">Slide 3</div>
+    <div class="slide-title">ความเพิ่ม-ลด: ปิดวงตารางเครื่องหมายจากสัปดาห์ 1</div>
+  </div>
+  <div class="key-message">หาว่าฟังก์ชันเพิ่มหรือลดที่ช่วงไหน คือกระบวนการเดียวกับตารางเครื่องหมายสัปดาห์ 1 ทุกประการ — เปลี่ยนแค่นิพจน์ที่ใส่ตาราง</div>
+  <div class="slide-content"><p>$$
+f'(x)&gt;0 \;\Rightarrow\; f \text{ เพิ่มขึ้น} \qquad\qquad f'(x)&lt;0 \;\Rightarrow\; f \text{ ลดลง}
+$$</p>
+<p><strong>ขั้นตอน:</strong> หา $f'(x)$ → หาค่าวิกฤต ($f'=0$ หรือไม่นิยาม) → ทำตารางเครื่องหมาย → อ่านผล</p></div>
+</div>
+<div class="slide slide-3" data-title="ตัวอย่าง: พหุนามกำลังสาม">
+  <div class="slide-header">
+    <div class="slide-num">Slide 4</div>
+    <div class="slide-title">ตัวอย่าง: พหุนามกำลังสาม</div>
+  </div>
+  <div class="key-message">ทำตารางเครื่องหมายของ $f'$ ให้ครบทุกช่วงเสมอ แม้จะเดาคำตอบได้แล้ว</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x)=x^3-3x$ · $f'(x)=3(x-1)(x+1)$ · ค่าวิกฤต $-1,1$</p>
+<p><div class="code-block"><pre><code>ช่วง            x &lt; -1      -1 &lt; x &lt; 1      x &gt; 1
+f'(x)               +              -            +</code></pre></div></p>
+<p><strong>ตอบ:</strong> เพิ่มขึ้นบน $(-\infty,-1)\cup(1,\infty)$ · ลดลงบน $(-1,1)$</p></div>
+</div>
+<div class="slide slide-4" data-title="ตัวส่วนตัดขาดโดเมน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 5</div>
+    <div class="slide-title">ตัวส่วนตัดขาดโดเมน</div>
+  </div>
+  <div class="key-message">จุดที่ฟังก์ชันตั้งต้นไม่นิยาม ต้องตัดออกจากตารางเสมอ ไม่ว่า $f'$ จะนิยามที่นั่นหรือไม่</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x)=\dfrac{x^2}{x-3}$ (โดเมน $x\ne3$) · $f'(x)=\dfrac{x(x-6)}{(x-3)^2}$</p>
+<p><div class="code-block"><pre><code>ช่วง            x&lt;0      0&lt;x&lt;3      3&lt;x&lt;6      x&gt;6
+f'(x)              +          -          -         +</code></pre></div></p>
+<p><strong>ตอบ:</strong> เพิ่มขึ้นบน $(-\infty,0)\cup(6,\infty)$ · ลดลงบน $(0,3)\cup(3,6)$ — ลดลงต่อเนื่องทางเครื่องหมายข้ามรู $x=3$</p></div>
+</div>
+<div class="slide slide-5" data-title="$f&#x27;=0$ ไม่ได้แปลว่าเปลี่ยนทิศเสมอไป">
+  <div class="slide-header">
+    <div class="slide-num">Slide 6</div>
+    <div class="slide-title">$f'=0$ ไม่ได้แปลว่าเปลี่ยนทิศเสมอไป</div>
+  </div>
+  <div class="key-message">ค่าวิกฤตเป็นแค่ผู้สมัคร — ต้องดูว่าเครื่องหมายของ $f'$ เปลี่ยนจริงหรือไม่</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x)=x^3$ · $f'(x)=3x^2 \ge 0$ ทุกที่ เป็นศูนย์แค่ที่ $x=0$</p>
+<p><div class="code-block"><pre><code>ช่วง            x &lt; 0      x &gt; 0
+f'(x)=3x^2          +          +</code></pre></div></p>
+<p><strong>เพิ่มขึ้นตลอดทั้งเส้นจำนวน</strong> รวม $x=0$ — เส้นสัมผัสราบชั่วขณะ ไม่ใช่จุดสูงสุด/ต่ำสุด</p>
+<blockquote><strong>คำเตือนล่วงหน้าถึงสัปดาห์ 5:</strong> ค่าวิกฤตไม่รับประกันว่าเป็นจุดสุดขีด ต้องตรวจว่าเครื่องหมายเปลี่ยนจริง</blockquote></div>
+</div>
+<div class="slide slide-6" data-title="จุดวิกฤต: นิยาม">
+  <div class="slide-header">
+    <div class="slide-num">Slide 7</div>
+    <div class="slide-title">จุดวิกฤต: นิยาม</div>
+  </div>
+  <div class="key-message">จุดวิกฤตต้องอยู่ในโดเมนของ $f$ ก่อน — นี่คือวินัยเรื่องโดเมนจากสัปดาห์ 1 กลับมาอีกครั้ง</div>
+  <div class="slide-content"><p>$x=c$ เป็น <strong>จุดวิกฤต</strong> ก็ต่อเมื่อ <strong>(1)</strong> $c$ อยู่ในโดเมนของ $f$ <strong>และ</strong> <strong>(2)</strong> $f'(c)=0$ <strong>หรือ</strong> $f'(c)$ ไม่มีอยู่</p>
+<p>จุดที่ตัวส่วนของ $f'$ เป็นศูนย์ แต่ <strong>$f$ เองก็ไม่นิยามที่นั่นด้วย</strong> — ไม่ใช่จุดวิกฤต เพราะไม่ผ่านเงื่อนไข (1)</p>
+<p>สองสาเหตุที่แยกกันโดยสิ้นเชิง: เส้นสัมผัสราบ ($f'=0$) กับ อนุพันธ์ไม่มีอยู่ (มุมหัก / เส้นสัมผัสตั้งฉาก)</p></div>
+</div>
+<div class="slide slide-7" data-title="ตัวอย่าง: $f&#x27;=0$ พื้นฐาน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 8</div>
+    <div class="slide-title">ตัวอย่าง: $f'=0$ พื้นฐาน</div>
+  </div>
+  <div class="key-message">หาอนุพันธ์ ให้เท่ากับศูนย์ แก้สมการ — สามขั้นตอนตรงไปตรงมา</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x)=x^2-6x+5$</p>
+<p>$$
+f'(x)=2x-6=0 \;\Rightarrow\; x=3 \qquad\qquad f(3)=-4
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> $f'(2.9)&lt;0$ และ $f'(3.1)&gt;0$ — เครื่องหมายเปลี่ยนจริง ✓</p>
+<p><strong>ตอบ:</strong> จุดวิกฤตที่ $(3,-4)$</p></div>
+</div>
+<div class="slide slide-8" data-title="ตัวอย่าง: ปลายโดเมนที่ $f&#x27;$ ไม่มีอยู่">
+  <div class="slide-header">
+    <div class="slide-num">Slide 9</div>
+    <div class="slide-title">ตัวอย่าง: ปลายโดเมนที่ $f'$ ไม่มีอยู่</div>
+  </div>
+  <div class="key-message">จุดวิกฤตไม่จำเป็นต้องอยู่กลางกราฟ — ปลายของโดเมนก็เป็นจุดวิกฤตได้</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x)=\sqrt{x-1}$ (โดเมน $x\ge1$) · $f'(x)=\dfrac{1}{2\sqrt{x-1}}$</p>
+<p>ที่ $x=1$: $f'(1)$ ไม่มีอยู่ (ตัวส่วนเป็นศูนย์) แต่ $f(1)=0$ นิยามได้ และ $x=1$ อยู่ในโดเมน → <strong>จุดวิกฤต</strong></p>
+<p>ต่างจาก $x^{2/3}$ ที่ $x=0$ อยู่ <strong>กลาง</strong> โดเมน (เส้นสัมผัสตั้งฉากสองทิศ) — ที่นี่ $x=1$ อยู่ <strong>ปลาย</strong> โดเมน (ทิศเดียว)</p></div>
+</div>
+<div class="slide slide-9" data-title="จุดวิกฤตสามจุดจากสองสาเหตุปนกัน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 10</div>
+    <div class="slide-title">จุดวิกฤตสามจุดจากสองสาเหตุปนกัน</div>
+  </div>
+  <div class="key-message">การหาจุดวิกฤตให้ครบต้องเช็คทั้ง $f'=0$ และจุดที่ $f'$ ไม่มีอยู่ — ไม่ใช่แค่แก้สมการอย่างเดียว</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x)=|x^2-4|$</p>
+<ul class="slide-list"><li>ที่ $x=\pm2$: มุมหัก ความชันซ้าย-ขวาไม่เท่ากัน → $f'$ ไม่มีอยู่ → <strong>จุดวิกฤต</strong></li><li>ที่ $x=0$: ในช่วง $|x|&lt;2$ ใช้ $f'(x)=-2x=0$ → <strong>จุดวิกฤต</strong></li></ul>
+<p><strong>ตอบ:</strong> จุดวิกฤตที่ $x=-2,0,2$ — สองจุดจากมุมหัก หนึ่งจุดจากเส้นสัมผัสราบ</p></div>
+</div>
+<div class="slide slide-10" data-title="ความเว้าและอนุพันธ์อันดับสอง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 11</div>
+    <div class="slide-title">ความเว้าและอนุพันธ์อันดับสอง</div>
+  </div>
+  <div class="key-message">$f'$ บอกทิศทาง · $f''$ บอกรูปทรง — สองคำถามที่แตกต่างกันโดยสิ้นเชิง แม้จะใช้เครื่องหมายบวก/ลบเหมือนกัน</div>
+  <div class="slide-content"><p>$$
+f''(x)&gt;0 \;\Rightarrow\; \text{เว้าขึ้น (ถ้วยหงาย)} \qquad\qquad f''(x)&lt;0 \;\Rightarrow\; \text{เว้าลง (ถ้วยคว่ำ)}
+$$</p>
+<p>จุดที่ความเว้าเปลี่ยนเรียกว่า <strong>จุดเปลี่ยนเว้า</strong> — หาด้วยตารางเครื่องหมายของ $f''$ วิธีเดียวกับที่ทำกับ $f'$</p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w03_f06_concavity_shapes.svg" alt="สี่กรอบเรียงเป็นตาราง 2x2 แต่ละกรอบมีเส้นโค้งสั้นหนึ่งเส้นไม่มีแกน กรอบบนซ้ายกำกับ &quot;เพิ่มขึ้น เว้าขึ้น&quot; วาดเส้นโค้งขึ้นที่ชันขึ้นเรื่อยๆ กรอบบนขวากำกับ &quot;เพิ่มขึ้น เว้าลง&quot; วาดเส้นโค้งขึ้นที่แบนลงเรื่อยๆ กรอบล่างซ้ายกำกับ &quot;ลดลง เว้าขึ้น&quot; วาดเส้นโค้งลงที่แบนลงเรื่อยๆ กรอบล่างขวากำกับ &quot;ลดลง เว้าลง&quot; วาดเส้นโค้งลงที่ชันลงเรื่อยๆ ขาวดำ เส้นน้อย นักศึกษาวาดตามด้วยดินสอได้" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-11" data-title="ตัวอย่าง: หาจุดเปลี่ยนเว้า">
+  <div class="slide-header">
+    <div class="slide-num">Slide 12</div>
+    <div class="slide-title">ตัวอย่าง: หาจุดเปลี่ยนเว้า</div>
+  </div>
+  <div class="key-message">กระบวนการเดียวกับการหาความเพิ่ม-ลดทุกประการ เพียงเปลี่ยนจาก $f'$ เป็น $f''$</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x)=x^3-3x^2+2$ · $f''(x)=6x-6=0 \Rightarrow x=1$</p>
+<p><div class="code-block"><pre><code>ช่วง            x &lt; 1      x &gt; 1
+f''(x)=6x-6         -          +</code></pre></div></p>
+<p><strong>ตอบ:</strong> เว้าลงบน $(-\infty,1)$ เว้าขึ้นบน $(1,\infty)$ จุดเปลี่ยนเว้าที่ $(1,0)$</p></div>
+</div>
+<div class="slide slide-12" data-title="อ่านพฤติกรรมจากตารางเครื่องหมายโดยไม่มีสูตร">
+  <div class="slide-header">
+    <div class="slide-num">Slide 13</div>
+    <div class="slide-title">อ่านพฤติกรรมจากตารางเครื่องหมายโดยไม่มีสูตร</div>
+  </div>
+  <div class="key-message">จุดต่ำสุดมาจาก $f'$ เปลี่ยนเครื่องหมาย · จุดเปลี่ยนเว้ามาจาก $f''$ เปลี่ยนเครื่องหมาย — สองอย่างนี้เกิดคนละจุดกันได้</div>
+  <div class="slide-content"><table><thead><tr><th>ช่วง</th><th>$x&lt;0$</th><th>$0&lt;x&lt;2$</th><th>$x&gt;2$</th></tr></thead><tbody><tr><td>$f'$</td><td>$-$</td><td>$+$</td><td>$+$</td></tr><tr><td>$f''$</td><td>$+$</td><td>$+$</td><td>$-$</td></tr></tbody></table>
+<p>$x=0$: $f'$ เปลี่ยน $-\to+$ → <strong>จุดต่ำสุดเฉพาะที่</strong> · $x=2$: $f'$ ไม่เปลี่ยน (ยังบวก) แต่ $f''$ เปลี่ยน → <strong>จุดเปลี่ยนเว้า ไม่ใช่จุดสุดขีด</strong></p></div>
+</div>
+<div class="slide slide-13" data-title="$f&#x27;&#x27;=0$ ที่ไม่ใช่จุดเปลี่ยนเว้า">
+  <div class="slide-header">
+    <div class="slide-num">Slide 14</div>
+    <div class="slide-title">$f''=0$ ที่ไม่ใช่จุดเปลี่ยนเว้า</div>
+  </div>
+  <div class="key-message">บทเรียนเดียวกับ Slide 6 ใช้ซ้ำได้ที่ระดับ $f''$ — ศูนย์ของอนุพันธ์ไม่รับประกันว่าเครื่องหมายเปลี่ยน</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x)=x^4$ · $f''(x)=12x^2 \ge 0$ ทุกที่ เป็นศูนย์แค่ที่ $x=0$</p>
+<p><div class="code-block"><pre><code>ช่วง            x &lt; 0      x &gt; 0
+f''(x)=12x^2        +          +</code></pre></div></p>
+<p><strong>เว้าขึ้นตลอดทั้งเส้น</strong> — $x=0$ ไม่ใช่จุดเปลี่ยนเว้า ทั้งที่ $f''(0)=0$ พอดี</p></div>
+</div>
+<div class="slide slide-14" data-title="ใช้ทำอะไรใน DS/CS และสรุป">
+  <div class="slide-header">
+    <div class="slide-num">Slide 15</div>
+    <div class="slide-title">ใช้ทำอะไรใน DS/CS และสรุป</div>
+  </div>
+  <div class="key-message">ความเว้าตัดสินว่าปัญหาหาค่าที่ดีที่สุดจะง่ายหรือยาก — ฟังก์ชันที่เว้าขึ้นตลอด (convex) รับประกันจุดต่ำสุดเดียว</div>
+  <div class="slide-content"><p>ฟังก์ชันความสูญเสียของ linear regression (สัปดาห์ 5) เป็น convex — gradient descent หาเจอเสมอ แต่ของโครงข่ายประสาทลึกไม่เป็นเช่นนั้น มีจุดวิกฤตหลายจุดที่ไม่ใช่จุดต่ำสุดจริง</p>
+<p><strong>จบสัปดาห์นี้ควรทำได้:</strong></p>
+<ul class="slide-list"><li>ทำตารางเครื่องหมายของ $f'$ และ $f''$ ได้</li><li>หาจุดวิกฤตครบทั้งสองสาเหตุ พร้อมเช็คโดเมนก่อนเสมอ</li><li>แยกความหมายของ "เพิ่ม-ลด" กับ "เว้าขึ้น-เว้าลง" ได้</li></ul>
+<p><strong>การบ้าน:</strong> <code>exercises/ex_03.md</code> ข้อ 19–25 · <strong>ตัวอย่างจุดวิกฤตสามจุดแบบเต็ม ($&amp;#124;x^2-4&amp;#124;$) มีรายละเอียดครบใน note</strong></p></div>
+</div>
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" title="Previous (&#8592;)">&#9664;</button>
+  <span id="counter">1 / 14</span>
+  <span id="slide-label"></span>
+  <button id="next-btn" onclick="changeSlide(1)" title="Next (&#8594;)">&#9654;</button>
+</div>
+<div id="kb-hint">&#8592; &#8594; Space</div>
+<script>
+
+var current = 0;
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var counter = document.getElementById('counter');
+var fill = document.getElementById('progress-fill');
+var label = document.getElementById('slide-label');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+
+function showSlide(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, total - 1));
+  slides[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  fill.style.width = ((current + 1) / total * 100) + '%';
+  label.textContent = slides[current].dataset.title || '';
+  prevBtn.disabled = (current === 0);
+  nextBtn.disabled = (current === total - 1);
+  // Scroll content to top on slide change
+  var sc = slides[current].querySelector('.slide-content');
+  if (sc) sc.scrollTop = 0;
+}
+
+function changeSlide(dir) { showSlide(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault(); changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault(); changeSlide(-1);
+  } else if (e.key === ' ') {
+    e.preventDefault(); changeSlide(e.shiftKey ? -1 : 1);
+  } else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End')  { showSlide(total - 1); }
+});
+
+// Touch swipe
+var touchX = 0;
+document.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+showSlide(0);
+
+</script>
+</body>
+</html>

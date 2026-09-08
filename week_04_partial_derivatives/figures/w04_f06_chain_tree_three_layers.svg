@@ -1,0 +1,52 @@
+<svg viewBox="0 0 460 380" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .box  { fill:none; stroke:#000; stroke-width:1.8; }
+    .val  { fill:#000; font-size:17px; text-anchor:middle; dominant-baseline:middle; }
+    .lbl  { fill:#000; font-size:12px; }
+    .arr  { stroke:#000; stroke-width:1.6; }
+    .note { fill:#000; font-size:12px; }
+  </style>
+
+  <!-- level 0: t -->
+  <rect x="180" y="300" width="60" height="44" class="box"/>
+  <text x="210" y="322" class="val">t</text>
+
+  <!-- level 1: x, y -->
+  <rect x="80"  y="200" width="60" height="44" class="box"/>
+  <text x="110" y="222" class="val">x</text>
+
+  <rect x="280" y="200" width="60" height="44" class="box"/>
+  <text x="310" y="222" class="val">y</text>
+
+  <line x1="200" y1="300" x2="130" y2="244" class="arr"/>
+  <polygon points="130,244 140,244 136,254" fill="#000"/>
+  <text x="130" y="275" class="lbl">dx/dt</text>
+
+  <line x1="220" y1="300" x2="295" y2="244" class="arr"/>
+  <polygon points="295,244 285,246 291,254" fill="#000"/>
+  <text x="260" y="275" class="lbl">dy/dt</text>
+
+  <!-- level 2: u -->
+  <rect x="180" y="100" width="60" height="44" class="box"/>
+  <text x="210" y="122" class="val">u</text>
+
+  <line x1="115" y1="200" x2="195" y2="144" class="arr"/>
+  <polygon points="195,144 185,144 189,153" fill="#000"/>
+  <text x="130" y="175" class="lbl">∂u/∂x</text>
+
+  <line x1="305" y1="200" x2="230" y2="144" class="arr"/>
+  <polygon points="230,144 240,144 236,153" fill="#000"/>
+  <text x="255" y="175" class="lbl">∂u/∂y</text>
+
+  <!-- level 3: z -->
+  <rect x="180" y="10" width="60" height="44" class="box"/>
+  <text x="210" y="32" class="val">z</text>
+
+  <line x1="210" y1="100" x2="210" y2="54" class="arr"/>
+  <polygon points="210,54 205,64 215,64" fill="#000"/>
+  <text x="220" y="80" class="lbl">dz/du</text>
+
+  <!-- legend -->
+  <text x="20" y="340" class="note">เดินตามกิ่งเดียวกัน = คูณ</text>
+  <text x="20" y="360" class="note">รวมทุกเส้นทางที่ถึงปลายทาง = บวก</text>
+</svg>

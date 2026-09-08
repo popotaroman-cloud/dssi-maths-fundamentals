@@ -1,0 +1,37 @@
+<svg viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax    { stroke:#000; stroke-width:1.5; }
+    .curve { stroke:#000; stroke-width:2.4; fill:none; }
+    .dot   { fill:#000; }
+    .dash  { stroke:#000; stroke-width:1; stroke-dasharray:4 3; }
+    .lbl   { fill:#000; font-size:13px; }
+  </style>
+
+  <!-- x: 0..4 -> px 80..420 (85/unit); y: -22..5 -> px 300..40 (9.6/unit) -->
+  <line x1="40" y1="270" x2="450" y2="270" class="ax"/>
+  <line x1="80" y1="320" x2="80" y2="30" class="ax"/>
+  <text x="455" y="274" class="lbl">x</text>
+  <text x="60" y="30" class="lbl">y</text>
+
+  <!-- cubic through (0,5) down to (3,-22) up to (4,-15) -->
+  <path d="M 80,68 C 130,120 180,190 230,240 C 260,262 280,270 335,270
+           C 370,270 400,255 420,225" class="curve"/>
+
+  <circle cx="80"  cy="68"  r="6" class="dot"/>
+  <text x="55"  y="55" class="lbl">(0,5)</text>
+
+  <circle cx="335" cy="270" r="6" class="dot"/>
+  <text x="300" y="290" class="lbl">(3,-22)</text>
+
+  <circle cx="420" cy="225" r="6" class="dot"/>
+  <text x="390" y="210" class="lbl">(4,-15)</text>
+
+  <line x1="80"  y1="270" x2="80"  y2="285" class="dash"/>
+  <line x1="420" y1="270" x2="420" y2="285" class="dash"/>
+
+  <text x="60"  y="300" class="lbl">MAX สัมบูรณ์</text>
+  <text x="60"  y="315" class="lbl">อยู่ที่ปลายช่วง</text>
+
+  <text x="300" y="305" class="lbl">MIN สัมบูรณ์</text>
+  <text x="300" y="318" class="lbl">จุดวิกฤต</text>
+</svg>

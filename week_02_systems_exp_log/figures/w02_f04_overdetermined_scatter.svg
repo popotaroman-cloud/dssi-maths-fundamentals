@@ -1,0 +1,42 @@
+<svg viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax    { stroke:#000; stroke-width:1.5; }
+    .dot   { fill:#000; }
+    .l1    { stroke:#000; stroke-width:2; }
+    .l2    { stroke:#000; stroke-width:2; stroke-dasharray:8 5; }
+    .l3    { stroke:#000; stroke-width:2; stroke-dasharray:2 4; }
+    .resid { stroke:#666; stroke-width:1.3; stroke-dasharray:3 3; }
+    .lbl   { fill:#000; font-size:14px; }
+    .val   { fill:#000; font-size:13px; }
+  </style>
+
+  <!-- axes: x from 0..4 -> px 60..420 (step 90), y from 0..6 -> px 300..40 (step 43) -->
+  <line x1="50" y1="300" x2="440" y2="300" class="ax"/>
+  <line x1="50" y1="300" x2="50" y2="30" class="ax"/>
+  <text x="445" y="305" class="lbl">x</text>
+  <text x="30" y="30" class="lbl">y</text>
+
+  <!-- data points (1,2) (2,3) (3,5) -->
+  <circle cx="140" cy="257" r="6" class="dot"/>
+  <text x="150" y="250" class="val">(1,2)</text>
+  <circle cx="230" cy="214" r="6" class="dot"/>
+  <text x="240" y="207" class="val">(2,3)</text>
+  <circle cx="320" cy="128" r="6" class="dot"/>
+  <text x="330" y="121" class="val">(3,5)</text>
+
+  <!-- line ผ่านคู่ 1,2 : y=x+1 -->
+  <line x1="70" y1="278" x2="410" y2="63" class="l1"/>
+  <text x="415" y="60" class="val">ใช้คู่ (1,2)</text>
+
+  <!-- line ผ่านคู่ 1,3 : y=1.5x+0.5 -->
+  <line x1="70" y1="266" x2="410" y2="55" class="l2"/>
+  <text x="415" y="90" class="val">ใช้คู่ (1,3)</text>
+
+  <!-- line ผ่านคู่ 2,3 : y=2x-1 -->
+  <line x1="90" y1="290" x2="380" y2="70" class="l3"/>
+  <text x="385" y="115" class="val">ใช้คู่ (2,3)</text>
+
+  <!-- residual segments -->
+  <line x1="320" y1="128" x2="320" y2="72" class="resid"/>
+  <text x="240" y="320" class="lbl">เส้นประ = เศษเหลือของจุดที่ไม่ได้ใช้สร้างเส้นนั้น</text>
+</svg>

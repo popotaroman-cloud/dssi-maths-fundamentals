@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Deck: ผลเฉลยคืออะไร — สมการสมมูลและผลเฉลยแปลกปลอม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],throwOnError:false});"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a237e;
+  --accent:  #1565c0;
+  --light:   #e3f2fd;
+  --bg:      #ffffff;
+  --text:    #212121;
+  --muted:   #546e7a;
+  --code-bg: #1e272e;
+  --code-fg: #dfe6e9;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0d1b2a;
+  font-family: 'Sarabun', 'Noto Sans Thai', 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ── Presentation container ───────────────────── */
+#presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
+  padding: clamp(28px, 3.5vw, 56px) clamp(40px, 6vw, 88px) 74px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Progress bar ─────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  z-index: 200;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #42a5f5, #1565c0);
+  transition: width 0.3s ease;
+}
+
+/* ── Slide header (title + num) ───────────────── */
+.slide-header {
+  margin-bottom: clamp(14px, 2vh, 28px);
+  padding-bottom: clamp(10px, 1.4vh, 18px);
+  border-bottom: 3px solid var(--light);
+  flex-shrink: 0;
+}
+.slide-num {
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.slide-title {
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+/* ── Title Slide (index 0) ────────────────────── */
+.slide-0 {
+  background: linear-gradient(145deg, #0d1b2a 0%, #1a237e 55%, #1565c0 100%);
+  justify-content: center;
+}
+.slide-0 .slide-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.slide-0 .slide-num  { color: #90caf9; }
+.slide-0 .slide-title {
+  font-size: clamp(34px, 5vw, 64px);
+  color: #ffffff;
+}
+.slide-0 .key-message {
+  background: rgba(255,255,255,0.1);
+  border-left-color: #42a5f5;
+  color: #e3f2fd;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.slide-0 .slide-content { color: #cfd8dc; }
+.slide-0 .slide-content p { color: #cfd8dc; }
+.slide-0 .slide-content li { color: #cfd8dc; }
+.slide-0 .slide-content strong { color: #90caf9; }
+.slide-0 .content-heading { color: #90caf9; }
+
+/* ── Key Message callout ──────────────────────── */
+.key-message {
+  background: var(--light);
+  border-left: 6px solid var(--accent);
+  padding: clamp(11px, 1.4vh, 18px) clamp(18px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: clamp(14px, 1.8vh, 26px);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Content area ─────────────────────────────── */
+.slide-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(17px, 1.85vw, 26px);
+  line-height: 1.68;
+  color: var(--text);
+  min-height: 0;
+}
+.slide-content::-webkit-scrollbar { width: 5px; }
+.slide-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.slide-content p { margin-bottom: 0.55em; }
+.slide-content strong { color: var(--primary); }
+.slide-content em { color: #37474f; }
+
+/* ── Lists ────────────────────────────────────── */
+.slide-list {
+  padding-left: clamp(22px, 2.8vw, 38px);
+  margin: 0.2em 0 0.7em;
+}
+.slide-list li {
+  margin-bottom: 0.45em;
+  line-height: 1.5;
+}
+ul.slide-list li::marker { color: var(--accent); font-weight: 700; }
+ol.slide-list li::marker { color: var(--accent); font-weight: 700; }
+
+/* ── Code blocks ──────────────────────────────── */
+.code-block {
+  margin: 0.5em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  font-size: clamp(12px, 1.35vw, 18px);
+}
+.code-lang {
+  background: #37474f;
+  color: #90a4ae;
+  font-size: 0.82em;
+  padding: 4px 16px;
+  font-family: 'Fira Code', Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.8vw, 24px);
+  overflow-x: auto;
+  line-height: 1.58;
+  margin: 0;
+}
+code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+}
+.slide-content code:not(pre code) {
+  background: #e8eaf6;
+  color: #1a237e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 1.5vw, 21px);
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  padding: clamp(7px, 0.9vh, 13px) clamp(10px, 1.4vw, 18px);
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: clamp(6px, 0.8vh, 11px) clamp(10px, 1.4vw, 18px);
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8f9ff; }
+tr:hover td { background: var(--light); }
+
+/* ── Sub-headings inside content ──────────────── */
+.content-heading {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--primary);
+  margin: 0.65em 0 0.25em;
+  font-weight: 700;
+}
+h3.content-heading {
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--accent);
+}
+
+/* ── Generated figure (matplotlib base64 PNG) ────────────── */
+.slide-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3em 0;
+  flex-shrink: 0;
+}
+.slide-figure img {
+  max-width: 96%;
+  max-height: clamp(200px, 38vh, 380px);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.10);
+  object-fit: contain;
+}
+
+/* ── Figure placeholder (fallback เมื่อ generate ไม่ได้) ─── */
+.placeholder {
+  border: 2px dashed var(--accent);
+  padding: clamp(12px, 1.6vh, 22px) clamp(16px, 2vw, 26px);
+  border-radius: 10px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0.4em 0;
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+
+.slide-hr {
+  border: none;
+  border-top: 2px solid #e8eaf6;
+  margin: 0.5em 0;
+}
+
+/* ── Navigation bar ───────────────────────────── */
+#nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(13,27,42,0.9);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 40px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+#nav button {
+  background: none;
+  border: none;
+  color: #90a4ae;
+  font-size: clamp(16px, 1.8vw, 24px);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.12); }
+#nav button:disabled { color: #3d4e5c; cursor: default; }
+#counter {
+  color: #e2e8f0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+}
+#slide-label {
+  color: #78909c;
+  font-size: clamp(10px, 1vw, 13px);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Keyboard hint ────────────────────────────── */
+#kb-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* ── KaTeX math rendering ─────────────────── */
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex {
+  font-size: clamp(15px, 1.7vw, 21px) !important;
+}
+.slide-0 .katex { color: #e3f2fd; }
+
+</style>
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+<div id="presentation">
+<div class="slide slide-0" data-title="Title">
+  <div class="slide-header">
+    <div class="slide-num">Slide 1</div>
+    <div class="slide-title">Title</div>
+  </div>
+  <div class="key-message">การแก้สมการคือการเปลี่ยนรูปสมการไปเรื่อย ๆ และไม่ใช่ทุกการเปลี่ยนรูปที่รักษาคำตอบไว้เท่าเดิม</div>
+  <div class="slide-content"><p><strong>Maths Fundamentals for DS &amp; CS — สัปดาห์ 01</strong></p>
+<h2 class="content-heading">ผลเฉลยคืออะไร</h2>
+<ul class="slide-list"><li>ช่วงนี้: 45 นาที</li><li>ต่อจาก: พีชคณิตที่เรียนมาแล้ว</li><li>นำไปสู่: ทุกอย่างที่เหลือในคอร์สนี้ — เพราะในท้ายที่สุดคอร์สนี้จะจบลงที่การแก้สมการ $\nabla f = 0$</li></ul></div>
+</div>
+<div class="slide slide-1" data-title="ภาพรวมช่วงนี้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 2</div>
+    <div class="slide-title">ภาพรวมช่วงนี้</div>
+  </div>
+  <div class="key-message">เมื่อจบช่วงนี้ ผู้เรียนควรสามารถระบุได้ว่าคำตอบที่ได้มาแต่ละค่าใช้ได้จริงหรือเป็นผลเฉลยแปลกปลอม</div>
+  <div class="slide-content"><p><strong>จะเรียน:</strong></p>
+<ul class="slide-list"><li>เซตคำตอบ และสมการสมมูล</li><li>ขั้นตอนที่เป็น $\Longrightarrow$ · $\Longleftarrow$ · $\Longleftrightarrow$</li><li><strong>ผลเฉลยแปลกปลอม</strong> เกิดขึ้นได้ใน 3 กรณี</li><li>กรณีตรงข้าม: <strong>ผลเฉลยที่สูญหาย</strong></li></ul>
+<p><strong>สิ่งที่ต้องมีมาก่อน:</strong> แก้สมการเชิงเส้นและกำลังสองได้</p></div>
+</div>
+<div class="slide slide-2" data-title="เซตคำตอบ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 3</div>
+    <div class="slide-title">เซตคำตอบ</div>
+  </div>
+  <div class="key-message">สมการไม่ใช่ประโยคที่ "จริง" หรือ "เท็จ" ตายตัว แต่เป็นเงื่อนไข และสิ่งที่ต้องพิจารณาหาคือเซตของค่าที่ทำให้เงื่อนไขเป็นจริง</div>
+  <div class="slide-content"><p><strong>นิพจน์</strong> ไม่มีเครื่องหมายเท่ากับ: $\;x^2 - 5x$</p>
+<p><strong>สมการ</strong> มีเครื่องหมายเท่ากับ และเป็นจริงเฉพาะบางค่า: $\;x^2 = 5x$</p>
+<p><strong>เอกลักษณ์</strong> เป็นจริงทุกค่าในโดเมน: $\;(x+1)^2 = x^2 + 2x + 1$</p>
+<p><strong>เซตคำตอบ</strong> ของ $x^2 = 5x$ คือ $\{0, 5\}$ — ไม่ใช่ "$x = 5$" แต่เป็น <strong>เซต</strong></p>
+<ul class="slide-list"><li>ถ้าไม่มีค่าไหนใช้ได้ เซตคำตอบคือ $\varnothing$</li><li>การแก้สมการ = การหาเซตคำตอบ ไม่ใช่การหา "ตัวเลขหนึ่งตัว"</li></ul></div>
+</div>
+<div class="slide slide-3" data-title="สมการสมมูล">
+  <div class="slide-header">
+    <div class="slide-num">Slide 4</div>
+    <div class="slide-title">สมการสมมูล</div>
+  </div>
+  <div class="key-message">สมการสองสมการสมมูลกันเมื่อมีเซตคำตอบเดียวกันโดยสมบูรณ์ — และนั่นคือสิ่งเดียวที่ต้องรักษาไว้ตลอดกระบวนการแก้สมการ</div>
+  <div class="slide-content"><p>$$
+x^2 = 5x \quad\Longleftrightarrow\quad x^2 - 5x = 0 \quad\Longleftrightarrow\quad x(x-5) = 0
+$$</p>
+<p>ทั้งสามมีเซตคำตอบ $\{0, 5\}$ เหมือนกัน จึง <strong>สมมูล</strong> กัน</p>
+<p><strong>การดำเนินการที่ปลอดภัยเสมอ:</strong></p>
+<ul class="slide-list"><li>บวก/ลบ นิพจน์เดียวกันทั้งสองข้าง</li><li>คูณ/หาร ด้วย <strong>ค่าคงตัวที่ไม่เป็นศูนย์</strong></li><li>จัดรูปพีชคณิตในข้างเดียวกัน — <em>ดูตัวอย่างสไลด์ถัดไป</em></li></ul></div>
+</div>
+<div class="slide slide-4" data-title="การดำเนินการที่ปลอดภัย: ตัวอย่างประกอบ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 5</div>
+    <div class="slide-title">การดำเนินการที่ปลอดภัย: ตัวอย่างประกอบ</div>
+  </div>
+  <div class="key-message">สองข้อแรกคือการกระทำต่อสมการทั้งสองข้างพร้อมกัน ส่วนข้อสามคือการเขียนนิพจน์ข้างหนึ่งใหม่โดยไม่แตะอีกข้าง — จึงไม่มีความเสี่ยงต่อเซตคำตอบเลยไม่ว่ากรณีใด</div>
+  <div class="slide-content"><p><strong>1) บวก/ลบนิพจน์เดียวกันทั้งสองข้าง</strong></p>
+<p>$$
+x + 3 = 7 \quad\Longleftrightarrow\quad x = 4 \qquad \text{(ลบ } 3 \text{ ทั้งสองข้าง)}
+$$</p>
+<p><strong>2) คูณ/หารด้วยค่าคงตัวที่ไม่เป็นศูนย์</strong></p>
+<p>$$
+3x = 12 \quad\Longleftrightarrow\quad x = 4 \qquad \text{(หารด้วย } 3 \text{ ทั้งสองข้าง)}
+$$</p>
+<p><strong>3) จัดรูปพีชคณิตในข้างเดียวกัน</strong></p>
+<p>$$
+3(x-2) + 5 = x + 7 \quad\Longleftrightarrow\quad 3x - 1 = x + 7
+$$</p>
+<p>ข้างซ้ายถูกกระจายวงเล็บและรวมพจน์ใหม่ ได้นิพจน์ที่ <strong>มีค่าเท่ากับนิพจน์ตั้งต้นทุกค่าของ $x$</strong> — จึงไม่ใช่การกระทำต่อสมการ แต่เป็นการเขียนสมการเดิมด้วยหน้าตาที่ต่างออกไปเท่านั้น ข้างขวาไม่ถูกแตะต้องเลย</p>
+<blockquote>เหตุผลที่ข้อ 3 ปลอดภัยเสมอโดยไม่มีเงื่อนไข: การจัดรูปในข้างเดียวใช้เพียง<strong>เอกลักษณ์ทางพีชคณิต</strong> (เช่น $a(b+c) = ab+ac$) ซึ่งเป็นจริงสำหรับทุกค่าของตัวแปรอยู่แล้ว — ต่างจากข้อ 1–2 ที่ต้องอาศัยเงื่อนไข (นิพจน์ที่บวกต้องเหมือนกันทุกด้าน, ค่าคงตัวที่คูณต้องไม่เป็นศูนย์)</blockquote></div>
+</div>
+<div class="slide slide-5" data-title="สามทิศทางของการเปลี่ยนรูป">
+  <div class="slide-header">
+    <div class="slide-num">Slide 6</div>
+    <div class="slide-title">สามทิศทางของการเปลี่ยนรูป</div>
+  </div>
+  <div class="key-message">ปัญหาทั้งหมดในเรื่องนี้มาจากขั้นตอนที่เป็นลูกศรทางเดียว</div>
+  <div class="slide-content"><p><strong>ชื่อเรียกทางการ:</strong></p>
+<ul class="slide-list"><li>$\Longleftrightarrow$ <strong>ความสัมพันธ์แบบสมมูล (equivalence)</strong> — เซตคำตอบเท่าเดิมทุกประการ</li><li>$\Longrightarrow$ <strong>ความสัมพันธ์แบบนัย (implication)</strong> — เซตคำตอบใหม่เป็น <strong>ซูเปอร์เซต (superset)</strong> ของเดิม</li><li>$\Longleftarrow$ <strong>ความสัมพันธ์แบบนัยผกผัน (converse implication)</strong> — เซตคำตอบใหม่เป็น <strong>สับเซต (subset)</strong> ของเดิม</li></ul>
+<table><thead><tr><th>ขั้นตอนเป็น</th><th>เซตคำตอบ</th><th>ผลที่ตามมา</th><th>ต้องทำอะไร</th></tr></thead><tbody><tr><td>$\Longleftrightarrow$</td><td>เท่าเดิม</td><td>ปลอดภัย</td><td>ไม่ต้องทำอะไร</td></tr><tr><td>$\Longrightarrow$</td><td><strong>ขยายกว้างขึ้น (superset)</strong></td><td>มีผลเฉลยแปลกปลอมปรากฏร่วมด้วย</td><td><strong>ตรวจคำตอบทุกค่า</strong></td></tr><tr><td>$\Longleftarrow$</td><td><strong>แคบลง (subset)</strong></td><td>คำตอบจริงหายไป</td><td><strong>ห้ามทำขั้นตอนนั้น</strong></td></tr></tbody></table>
+<p>$$
+\underbrace{\;\text{สมการตั้งต้น}\;}_{\text{เซตคำตอบจริง}} \;\Longrightarrow\; \underbrace{\;\text{สมการที่แปลงแล้ว}\;}_{\text{เซตคำตอบที่กว้างกว่า}}
+$$</p>
+<blockquote>ถ้าลูกศรเป็นทางเดียว ค่าที่ได้เป็นเพียง <strong>ผลเฉลยที่เป็นไปได้ (candidate solution)</strong> ยังมิใช่ผลเฉลยที่แท้จริง</blockquote>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w01_f02_arrow_directions.svg" alt="แผนภาพสามแถว แต่ละแถวมีวงรีสองวงแทนเซตคำตอบซ้าย-ขวาและลูกศรเชื่อม แถวแรกลูกศรสองหัวและวงรีสองวงขนาดเท่ากัน แถวสองลูกศรชี้ขวาและวงรีขวาใหญ่กว่าโดยส่วนที่เกินระบายลายและมีป้าย &quot;ของปลอม&quot; แถวสามลูกศรชี้ซ้ายและวงรีขวาเล็กกว่าโดยส่วนที่ขาดเป็นเส้นประและมีป้าย &quot;ของจริงที่หายไป&quot;" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-6" data-title="ที่ 1: ยกกำลังสองทั้งสองข้าง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 7</div>
+    <div class="slide-title">ที่ 1: ยกกำลังสองทั้งสองข้าง</div>
+  </div>
+  <div class="key-message">การยกกำลังสองลบเครื่องหมายทิ้ง จึงเป็นลูกศรทางเดียวเสมอ</div>
+  <div class="slide-content"><p>เพราะ $a = b \Longrightarrow a^2 = b^2$ แต่ย้อนกลับไม่ได้ — $a^2 = b^2 \Longleftrightarrow a = \pm b$</p>
+<p><strong>โจทย์:</strong> แก้ $\sqrt{x+7} = x - 5$</p>
+<p>$$
+\begin{aligned}
+\sqrt{x+7} &amp;= x-5 &amp;&amp; \\
+x + 7 &amp;= x^2 - 10x + 25 &amp;&amp; \text{ยกกำลังสอง} \;(\Longrightarrow\text{ เท่านั้น}) \\
+0 &amp;= x^2 - 11x + 18 &amp;&amp; \\
+0 &amp;= (x-2)(x-9) &amp;&amp; \Rightarrow\; x = 2,\; 9
+\end{aligned}
+$$</p></div>
+</div>
+<div class="slide slide-7" data-title="ตรวจคำตอบ แล้วจะพบผลเฉลยแปลกปลอม">
+  <div class="slide-header">
+    <div class="slide-num">Slide 8</div>
+    <div class="slide-title">ตรวจคำตอบ แล้วจะพบผลเฉลยแปลกปลอม</div>
+  </div>
+  <div class="key-message">ค่า $x = 2$ มิได้เกิดขึ้นโดยปราศจากที่มา — แต่เป็นคำตอบของสมการที่ถูกสร้างขึ้นโดยปริยายจากขั้นตอนยกกำลังสอง</div>
+  <div class="slide-content"><p>$$
+\begin{aligned}
+x = 9:\quad &amp; \sqrt{9+7} = \sqrt{16} = 4 \;,\quad 9-5 = 4 &amp;&amp; \checkmark \\
+x = 2:\quad &amp; \sqrt{2+7} = \sqrt{9} = 3 \;,\quad 2-5 = -3 &amp;&amp; 3 \ne -3 \;\;✗
+\end{aligned}
+$$</p>
+<p>$x = 2$ เป็น <strong>ผลเฉลยแปลกปลอม (extraneous solution)</strong></p>
+<p>เนื่องจากเป็นคำตอบของสมการ $\;\sqrt{x+7} = -(x-5)\;$ ซึ่งถูกรวมเข้ามาโดยปริยายในขั้นตอนยกกำลังสอง</p>
+<p><strong>เซตคำตอบที่ถูกต้อง:</strong> $\{9\}$</p></div>
+</div>
+<div class="slide slide-8" data-title="ที่ 2: คูณหรือตัดทอนด้วยนิพจน์ที่มีตัวแปร">
+  <div class="slide-header">
+    <div class="slide-num">Slide 9</div>
+    <div class="slide-title">ที่ 2: คูณหรือตัดทอนด้วยนิพจน์ที่มีตัวแปร</div>
+  </div>
+  <div class="key-message">นิพจน์ที่มีตัวแปรอาจเป็นศูนย์ ดังนั้นการคูณหรือตัดมันออกไม่ใช่การดำเนินการที่ปลอดภัย</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $\dfrac{x^2 - 4}{x - 2} = 4$</p>
+<p>$$
+\begin{aligned}
+&amp;\text{โดเมน: } x \ne 2 &amp;&amp; \text{(ต้องเขียนก่อนเริ่มทำ)} \\
+\frac{(x-2)(x+2)}{x-2} &amp;= 4 &amp;&amp; \\
+x + 2 &amp;= 4 &amp;&amp; \text{ตัด } (x-2) \text{ ทิ้ง} \\
+x &amp;= 2 &amp;&amp; ✗ \;\text{แต่โดเมนห้าม } x = 2
+\end{aligned}
+$$</p>
+<p><strong>เซตคำตอบ:</strong> $\varnothing$ — สมการนี้ไม่มีผลเฉลย ทั้งที่พีชคณิตทุกบรรทัดถูก</p></div>
+</div>
+<div class="slide slide-9" data-title="ที่ 3: รวมพจน์ลอการิทึม">
+  <div class="slide-header">
+    <div class="slide-num">Slide 10</div>
+    <div class="slide-title">ที่ 3: รวมพจน์ลอการิทึม</div>
+  </div>
+  <div class="key-message">กฎ $\log a + \log b = \log(ab)$ ทำให้โดเมนกว้างขึ้น เพราะ $ab &gt; 0$ เป็นเงื่อนไขที่อ่อนกว่า $a &gt; 0$ และ $b &gt; 0$</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $\log x + \log(x - 3) = 1$ (ฐาน 10)</p>
+<p>$$
+\begin{aligned}
+&amp;\text{โดเมน: } x &gt; 0 \text{ และ } x &gt; 3 \;\Rightarrow\; x &gt; 3 &amp;&amp; \\
+\log\big(x(x-3)\big) &amp;= 1 &amp;&amp; \text{รวมพจน์} \;(\Longrightarrow\text{ เท่านั้น}) \\
+x^2 - 3x &amp;= 10 &amp;&amp; \\
+(x-5)(x+2) &amp;= 0 &amp;&amp; \Rightarrow\; x = 5,\; -2
+\end{aligned}
+$$</p>
+<p>$x = 5 &gt; 3\;\checkmark$ · $x = -2$ ไม่อยู่ในโดเมน ✗ <strong>เซตคำตอบ:</strong> $\{5\}$</p></div>
+</div>
+<div class="slide slide-10" data-title="กรณีตรงข้าม: ผลเฉลยที่สูญหาย">
+  <div class="slide-header">
+    <div class="slide-num">Slide 11</div>
+    <div class="slide-title">กรณีตรงข้าม: ผลเฉลยที่สูญหาย</div>
+  </div>
+  <div class="key-message">การหารด้วยนิพจน์ที่มีตัวแปรทำให้คำตอบสูญหายไปโดยไม่ปรากฏร่องรอย — และไม่มีกระบวนการตรวจคำตอบใดสามารถตรวจพบได้ เพราะคำตอบที่เหลืออยู่ถูกต้องทั้งหมด</div>
+  <div class="slide-content"><p><strong>วิธีที่ผิด:</strong></p>
+<p>$$
+\begin{aligned}
+x^2 &amp;= 5x &amp;&amp; \\
+x &amp;= 5 &amp;&amp; \text{หารด้วย } x \;\Rightarrow\; \text{ทำ } x = 0 \text{ หายไป}
+\end{aligned}
+$$</p>
+<p><strong>วิธีที่ถูก — ย้ายมาข้างเดียวแล้วแยกตัวประกอบ:</strong></p>
+<p>$$
+x^2 - 5x = 0 \;\Longleftrightarrow\; x(x-5) = 0 \;\Longrightarrow\; x = 0,\; 5
+$$</p>
+<blockquote><strong>การตรวจคำตอบตรวจพบผลเฉลยแปลกปลอมได้ แต่ตรวจพบผลเฉลยที่สูญหายไม่ได้</strong> วิธีเดียวที่ป้องกันได้คือไม่ทำขั้นตอนที่ทำให้ผลเฉลยสูญหาย</blockquote></div>
+</div>
+<div class="slide slide-11" data-title="ใช้ทำอะไรใน DS/CS">
+  <div class="slide-header">
+    <div class="slide-num">Slide 12</div>
+    <div class="slide-title">ใช้ทำอะไรใน DS/CS</div>
+  </div>
+  <div class="key-message">นิสัยเดียวที่ทำให้คนหนึ่งคนน่าเชื่อถือคือ ตรวจคำตอบกับโจทย์ตั้งต้น ไม่ใช่กับบรรทัดสุดท้ายของตัวเอง</div>
+  <div class="slide-content"><table><thead><tr><th>เรื่องที่เพิ่งเรียน</th><th>สถานการณ์คู่ขนานใน DS/CS</th></tr></thead><tbody><tr><td>ผลเฉลยแปลกปลอม</td><td>ฟิต $\log y$ แล้ว $\exp$ กลับ — <strong>มิใช่</strong> least-squares fit ของ $y$ ผิดพลาดในโครงสร้างเดียวกัน: แก้ปัญหาที่ผ่านการแปลงรูปแล้วสันนิษฐานว่าคำตอบสามารถแปลงกลับได้โดยไม่มีข้อจำกัด</td></tr><tr><td>โดเมนที่ต้องยกเว้น</td><td>ข้อจำกัดที่ต้องเป็นจริงตลอด — ความน่าจะเป็นต้องอยู่ใน $(0,1)$, ความแปรปรวน $\ge 0$, ตัวส่วนไม่เป็นศูนย์</td></tr><tr><td>เซตคำตอบเป็น $\varnothing$</td><td>ระบบสมการที่มีข้อมูลมากกว่าพารามิเตอร์ — ไม่มีคำตอบพอดี แต่ยังหา "คำตอบที่ดีที่สุด" ได้</td></tr><tr><td>คำตอบที่หายไป</td><td>ตัดเคสออกจากข้อมูลโดยไม่รู้ตัว แล้วโมเดลดูดีขึ้นเพราะเคสยากถูกทิ้ง</td></tr></tbody></table>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w01_f01_solution_widening.svg" alt="เส้นจำนวนสองเส้นวางซ้อนกันในแนวตั้ง เส้นบนมีป้าย &quot;สมการตั้งต้น&quot; มีจุดทึบเดียวที่ x=9 เส้นล่างมีป้าย &quot;หลังยกกำลังสอง&quot; มีจุดทึบที่ x=2 และ x=9 จุด x=2 วงกลมประและมีลูกศรชี้พร้อมป้าย &quot;แปลกปลอม&quot; ขาวดำ เส้นน้อย วาดตามด้วยดินสอได้" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-12" data-title="สรุปและสิ่งที่ต้องทำ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 13</div>
+    <div class="slide-title">สรุปและสิ่งที่ต้องทำ</div>
+  </div>
+  <div class="key-message">จดจำสามกรณีที่ก่อให้เกิดผลเฉลยแปลกปลอม และหนึ่งกรณีที่ทำให้ผลเฉลยสูญหาย แล้วตรวจคำตอบทุกครั้งที่พบสามกรณีนั้น</div>
+  <div class="slide-content"><p><strong>สามที่ที่ได้ผลเฉลยแปลกปลอม:</strong></p>
+<ul class="slide-list"><li>ยกกำลังสอง (หรือยกกำลังคู่) ทั้งสองข้าง</li><li>คูณหรือตัดทอนด้วยนิพจน์ที่มีตัวแปร</li><li>รวมพจน์ลอการิทึม</li></ul>
+<p><strong>หนึ่งที่ที่คำตอบหายไป:</strong> หารทั้งสองข้างด้วยนิพจน์ที่มีตัวแปร</p>
+<p><strong>ตั้งค้างไว้:</strong> สมการ $\log$ ที่ต้องตรวจสอบโดเมนจะได้รับการอธิบายโดยละเอียดใน <strong>สัปดาห์ 2</strong> และประเด็น "ไม่มีคำตอบพอดี" จะได้รับคำตอบใน <strong>สัปดาห์ 5</strong></p>
+<p><strong>การบ้าน:</strong> <code>exercises/ex_01.md</code> ข้อ 1–8 · ข้อที่มี 🔍 ต้องเขียนบรรทัดตรวจคำตอบให้เห็น</p></div>
+</div>
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" title="Previous (&#8592;)">&#9664;</button>
+  <span id="counter">1 / 14</span>
+  <span id="slide-label"></span>
+  <button id="next-btn" onclick="changeSlide(1)" title="Next (&#8594;)">&#9654;</button>
+</div>
+<div id="kb-hint">&#8592; &#8594; Space</div>
+<script>
+
+var current = 0;
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var counter = document.getElementById('counter');
+var fill = document.getElementById('progress-fill');
+var label = document.getElementById('slide-label');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+
+function showSlide(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, total - 1));
+  slides[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  fill.style.width = ((current + 1) / total * 100) + '%';
+  label.textContent = slides[current].dataset.title || '';
+  prevBtn.disabled = (current === 0);
+  nextBtn.disabled = (current === total - 1);
+  // Scroll content to top on slide change
+  var sc = slides[current].querySelector('.slide-content');
+  if (sc) sc.scrollTop = 0;
+}
+
+function changeSlide(dir) { showSlide(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault(); changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault(); changeSlide(-1);
+  } else if (e.key === ' ') {
+    e.preventDefault(); changeSlide(e.shiftKey ? -1 : 1);
+  } else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End')  { showSlide(total - 1); }
+});
+
+// Touch swipe
+var touchX = 0;
+document.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+showSlide(0);
+
+</script>
+</body>
+</html>

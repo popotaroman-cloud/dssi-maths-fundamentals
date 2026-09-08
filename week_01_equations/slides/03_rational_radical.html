@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Deck: สมการเศษส่วนและสมการกรณฑ์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],throwOnError:false});"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a237e;
+  --accent:  #1565c0;
+  --light:   #e3f2fd;
+  --bg:      #ffffff;
+  --text:    #212121;
+  --muted:   #546e7a;
+  --code-bg: #1e272e;
+  --code-fg: #dfe6e9;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0d1b2a;
+  font-family: 'Sarabun', 'Noto Sans Thai', 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ── Presentation container ───────────────────── */
+#presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
+  padding: clamp(28px, 3.5vw, 56px) clamp(40px, 6vw, 88px) 74px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Progress bar ─────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  z-index: 200;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #42a5f5, #1565c0);
+  transition: width 0.3s ease;
+}
+
+/* ── Slide header (title + num) ───────────────── */
+.slide-header {
+  margin-bottom: clamp(14px, 2vh, 28px);
+  padding-bottom: clamp(10px, 1.4vh, 18px);
+  border-bottom: 3px solid var(--light);
+  flex-shrink: 0;
+}
+.slide-num {
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.slide-title {
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+/* ── Title Slide (index 0) ────────────────────── */
+.slide-0 {
+  background: linear-gradient(145deg, #0d1b2a 0%, #1a237e 55%, #1565c0 100%);
+  justify-content: center;
+}
+.slide-0 .slide-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.slide-0 .slide-num  { color: #90caf9; }
+.slide-0 .slide-title {
+  font-size: clamp(34px, 5vw, 64px);
+  color: #ffffff;
+}
+.slide-0 .key-message {
+  background: rgba(255,255,255,0.1);
+  border-left-color: #42a5f5;
+  color: #e3f2fd;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.slide-0 .slide-content { color: #cfd8dc; }
+.slide-0 .slide-content p { color: #cfd8dc; }
+.slide-0 .slide-content li { color: #cfd8dc; }
+.slide-0 .slide-content strong { color: #90caf9; }
+.slide-0 .content-heading { color: #90caf9; }
+
+/* ── Key Message callout ──────────────────────── */
+.key-message {
+  background: var(--light);
+  border-left: 6px solid var(--accent);
+  padding: clamp(11px, 1.4vh, 18px) clamp(18px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: clamp(14px, 1.8vh, 26px);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Content area ─────────────────────────────── */
+.slide-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(17px, 1.85vw, 26px);
+  line-height: 1.68;
+  color: var(--text);
+  min-height: 0;
+}
+.slide-content::-webkit-scrollbar { width: 5px; }
+.slide-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.slide-content p { margin-bottom: 0.55em; }
+.slide-content strong { color: var(--primary); }
+.slide-content em { color: #37474f; }
+
+/* ── Lists ────────────────────────────────────── */
+.slide-list {
+  padding-left: clamp(22px, 2.8vw, 38px);
+  margin: 0.2em 0 0.7em;
+}
+.slide-list li {
+  margin-bottom: 0.45em;
+  line-height: 1.5;
+}
+ul.slide-list li::marker { color: var(--accent); font-weight: 700; }
+ol.slide-list li::marker { color: var(--accent); font-weight: 700; }
+
+/* ── Code blocks ──────────────────────────────── */
+.code-block {
+  margin: 0.5em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  font-size: clamp(12px, 1.35vw, 18px);
+}
+.code-lang {
+  background: #37474f;
+  color: #90a4ae;
+  font-size: 0.82em;
+  padding: 4px 16px;
+  font-family: 'Fira Code', Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.8vw, 24px);
+  overflow-x: auto;
+  line-height: 1.58;
+  margin: 0;
+}
+code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+}
+.slide-content code:not(pre code) {
+  background: #e8eaf6;
+  color: #1a237e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 1.5vw, 21px);
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  padding: clamp(7px, 0.9vh, 13px) clamp(10px, 1.4vw, 18px);
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: clamp(6px, 0.8vh, 11px) clamp(10px, 1.4vw, 18px);
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8f9ff; }
+tr:hover td { background: var(--light); }
+
+/* ── Sub-headings inside content ──────────────── */
+.content-heading {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--primary);
+  margin: 0.65em 0 0.25em;
+  font-weight: 700;
+}
+h3.content-heading {
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--accent);
+}
+
+/* ── Generated figure (matplotlib base64 PNG) ────────────── */
+.slide-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3em 0;
+  flex-shrink: 0;
+}
+.slide-figure img {
+  max-width: 96%;
+  max-height: clamp(200px, 38vh, 380px);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.10);
+  object-fit: contain;
+}
+
+/* ── Figure placeholder (fallback เมื่อ generate ไม่ได้) ─── */
+.placeholder {
+  border: 2px dashed var(--accent);
+  padding: clamp(12px, 1.6vh, 22px) clamp(16px, 2vw, 26px);
+  border-radius: 10px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0.4em 0;
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+
+.slide-hr {
+  border: none;
+  border-top: 2px solid #e8eaf6;
+  margin: 0.5em 0;
+}
+
+/* ── Navigation bar ───────────────────────────── */
+#nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(13,27,42,0.9);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 40px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+#nav button {
+  background: none;
+  border: none;
+  color: #90a4ae;
+  font-size: clamp(16px, 1.8vw, 24px);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.12); }
+#nav button:disabled { color: #3d4e5c; cursor: default; }
+#counter {
+  color: #e2e8f0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+}
+#slide-label {
+  color: #78909c;
+  font-size: clamp(10px, 1vw, 13px);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Keyboard hint ────────────────────────────── */
+#kb-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* ── KaTeX math rendering ─────────────────── */
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex {
+  font-size: clamp(15px, 1.7vw, 21px) !important;
+}
+.slide-0 .katex { color: #e3f2fd; }
+
+</style>
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+<div id="presentation">
+<div class="slide slide-0" data-title="Title">
+  <div class="slide-header">
+    <div class="slide-num">Slide 1</div>
+    <div class="slide-title">Title</div>
+  </div>
+  <div class="key-message">สองชนิดนี้มีปัญหาเดียวกัน คือมีค่าที่สมการไม่นิยาม จึงมีวิธีทำมาตรฐานเดียวกันสามขั้น</div>
+  <div class="slide-content"><p><strong>Maths Fundamentals for DS &amp; CS — สัปดาห์ 01</strong></p>
+<h2 class="content-heading">สมการเศษส่วนและสมการกรณฑ์</h2>
+<ul class="slide-list"><li>ช่วงนี้: 50 นาที</li><li>ต่อจาก: สมการเชิงเส้นและกำลังสอง</li><li>นำไปสู่: สมการลอการิทึมในสัปดาห์ 2 ซึ่งใช้ตรรกะเดียวกันโดยตรง</li></ul></div>
+</div>
+<div class="slide slide-1" data-title="ภาพรวมช่วงนี้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 2</div>
+    <div class="slide-title">ภาพรวมช่วงนี้</div>
+  </div>
+  <div class="key-message">เมื่อจบช่วงนี้ การเขียนโดเมนก่อนลงมือควรกลายเป็นแนวปฏิบัติที่ทำโดยอัตโนมัติ มิใช่ขั้นตอนที่ต้องคอยเตือนตนเอง</div>
+  <div class="slide-content"><p><strong>จะเรียน:</strong></p>
+<ul class="slide-list"><li>ขั้นตอนมาตรฐานสามขั้นที่ใช้ได้กับทั้งสองชนิด</li><li>สมการเศษส่วน — ค่าที่ทำให้ตัวส่วนเป็นศูนย์</li><li>สมการกรณฑ์ — <strong>สองเงื่อนไข</strong> ไม่ใช่เงื่อนไขเดียว</li><li>โดเมนทำนายผลเฉลยแปลกปลอมได้ก่อนแทนค่า</li></ul>
+<p><strong>สิ่งที่ต้องมีมาก่อน:</strong> ผลเฉลยแปลกปลอมจากช่วงที่ 1</p></div>
+</div>
+<div class="slide slide-2" data-title="ขั้นตอนมาตรฐานสามขั้น">
+  <div class="slide-header">
+    <div class="slide-num">Slide 3</div>
+    <div class="slide-title">ขั้นตอนมาตรฐานสามขั้น</div>
+  </div>
+  <div class="key-message">ขั้นที่สามมิใช่พิธีกรรมหรือการตรวจงาน — แต่เป็นส่วนหนึ่งของกระบวนการแก้ปัญหาโดยตรง</div>
+  <div class="slide-content"><p><div class="code-block"><pre><code>ขั้น 1   เขียนโดเมน            ค่าใดที่สมการไม่นิยาม
+ขั้น 2   แก้                    กำจัดตัวส่วนหรือกรณฑ์  (ขั้นตอนทางเดียว)
+ขั้น 3   ตรวจคำตอบทุกค่า        เทียบกับสมการตั้งต้น ไม่ใช่บรรทัดกลาง</code></pre></div></p>
+<p>ทำไมต้องมีขั้น 3 เสมอ — เพราะขั้น 2 ของทั้งสองชนิดเป็น $\Longrightarrow$ ทางเดียว</p>
+<ul class="slide-list"><li>สมการเศษส่วน: คูณด้วยนิพจน์ที่มีตัวแปร (อาจเป็นศูนย์)</li><li>สมการกรณฑ์: ยกกำลังสอง (ลบเครื่องหมายทิ้ง)</li></ul></div>
+</div>
+<div class="slide slide-3" data-title="สมการเศษส่วน: โดเมนมาก่อน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 4</div>
+    <div class="slide-title">สมการเศษส่วน: โดเมนมาก่อน</div>
+  </div>
+  <div class="key-message">ค่าที่ทำให้ตัวส่วนเป็นศูนย์ต้องถูกยกออกก่อนเริ่มทำ ไม่ใช่หลังได้คำตอบ</div>
+  <div class="slide-content"><p>ที่ค่าซึ่งตัวส่วนเป็นศูนย์ สมการ <strong>ไม่นิยาม</strong> — ไม่ใช่ว่า "เป็นเท็จ" แต่คือพูดถึงความจริงเท็จของมันไม่ได้เลย</p>
+<p>$$
+\frac{P(x)}{Q(x)} = R(x) \quad \text{ต้องมี } Q(x) \ne 0
+$$</p>
+<p>ผลที่ตามมาสองข้อ</p>
+<ul class="slide-list"><li>ค่านั้นเป็นผลเฉลยไม่ได้ แม้พีชคณิตจะพาไปถึงมัน</li><li>ถ้าคำตอบออกมาเป็น "จริงทุกค่า" คำตอบก็ยัง <strong>ไม่ใช่</strong> $\mathbb{R}$ เพราะมีรูรั่ว</li></ul></div>
+</div>
+<div class="slide slide-4" data-title="ตัวอย่าง: สมการเศษส่วนตรงไปตรงมา">
+  <div class="slide-header">
+    <div class="slide-num">Slide 5</div>
+    <div class="slide-title">ตัวอย่าง: สมการเศษส่วนตรงไปตรงมา</div>
+  </div>
+  <div class="key-message">แยกพจน์ที่มีตัวแปรไว้ข้างเดียวก่อน แล้วค่อยกลับเศษส่วน จะไม่ต้องคูณอะไรทิ้งเลย</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $\dfrac{1}{x} + \dfrac{1}{2} = \dfrac{3}{4}$</p>
+<p>$$
+\begin{aligned}
+&amp;\text{โดเมน: } x \ne 0 &amp;&amp; \\
+\frac{1}{x} &amp;= \frac{3}{4} - \frac{1}{2} = \frac{1}{4} &amp;&amp; \text{ย้ายค่าคงตัวไปขวา} \\
+x &amp;= 4 &amp;&amp; \text{กลับเศษส่วน}
+\end{aligned}
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> $\dfrac{1}{4} + \dfrac{1}{2} = \dfrac{3}{4}$ ✓ และ $4 \ne 0$ อยู่ในโดเมน ✓</p>
+<p><strong>ตอบ:</strong> $\{4\}$</p></div>
+</div>
+<div class="slide slide-5" data-title="ตัวอย่าง: มีตัวส่วนสองตัว">
+  <div class="slide-header">
+    <div class="slide-num">Slide 6</div>
+    <div class="slide-title">ตัวอย่าง: มีตัวส่วนสองตัว</div>
+  </div>
+  <div class="key-message">ตัวส่วนสองตัวหมายถึงค่าที่ต้องยกออกจากโดเมนสองค่า และต้องเขียนทั้งสองค่าไว้</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $\dfrac{3}{x-1} = \dfrac{2}{x+1}$</p>
+<p>$$
+\begin{aligned}
+&amp;\text{โดเมน: } x \ne 1 \;\text{ และ }\; x \ne -1 &amp;&amp; \\
+3(x+1) &amp;= 2(x-1) &amp;&amp; \text{คูณไขว้} \;(\Longrightarrow \text{ เท่านั้น}) \\
+3x + 3 &amp;= 2x - 2 \;\Rightarrow\; x = -5 &amp;&amp;
+\end{aligned}
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> ข้างซ้าย $\dfrac{3}{-6} = -\dfrac12$ · ข้างขวา $\dfrac{2}{-4} = -\dfrac12$ ✓ และ $-5$ อยู่ในโดเมน ✓</p>
+<p><strong>ตอบ:</strong> $\{-5\}$</p>
+<blockquote><strong>คูณไขว้ใช้ได้กับสมการเท่านั้น</strong> ในอสมการห้ามทำ — ช่วงถัดไปจะเห็นว่าทำไม</blockquote></div>
+</div>
+<div class="slide slide-6" data-title="สมการกรณฑ์: สองเงื่อนไข ไม่ใช่เงื่อนไขเดียว">
+  <div class="slide-header">
+    <div class="slide-num">Slide 7</div>
+    <div class="slide-title">สมการกรณฑ์: สองเงื่อนไข ไม่ใช่เงื่อนไขเดียว</div>
+  </div>
+  <div class="key-message">คนที่ตรวจแต่สิ่งใต้กรณฑ์จะเจอผลเฉลยแปลกปลอมทุกครั้ง เพราะลืมเงื่อนไขข้อที่สอง</div>
+  <div class="slide-content"><p>สำหรับ $\sqrt{A} = B$ ต้องมีทั้งสองข้อพร้อมกัน</p>
+<p>$$
+\begin{aligned}
+\textbf{เงื่อนไข 1:}\quad &amp; A \ge 0 &amp;&amp; \text{สิ่งใต้กรณฑ์ต้องไม่เป็นลบ} \\
+\textbf{เงื่อนไข 2:}\quad &amp; B \ge 0 &amp;&amp; \text{เพราะกรณฑ์ที่สองให้ค่าที่ไม่เป็นลบเสมอ}
+\end{aligned}
+$$</p>
+<p>เงื่อนไข 2 คือข้อที่ถูกละเลยมากที่สุด และเป็นที่มาของผลเฉลยแปลกปลอมในทุกกรณี</p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w01_f05_radical_two_conditions.svg" alt="แผนภาพเงื่อนไขสองข้อของสมการกรณฑ์ กล่องซ้ายเขียนว่าสิ่งใต้กรณฑ์ A มากกว่าหรือเท่ากับ 0 กล่องขวาเขียนว่าข้างตรงข้าม B มากกว่าหรือเท่ากับ 0 มีลูกศรจากทั้งสองกล่องชี้มารวมที่กล่องล่างเขียนว่าโดเมนที่ใช้ได้ ใต้กล่องขวามีข้อความกำกับว่าข้อนี้คือข้อที่ถูกลืมบ่อยที่สุด ขาวดำ เส้นน้อย" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-7" data-title="ตัวอย่าง: กรณฑ์ตรงไปตรงมา">
+  <div class="slide-header">
+    <div class="slide-num">Slide 8</div>
+    <div class="slide-title">ตัวอย่าง: กรณฑ์ตรงไปตรงมา</div>
+  </div>
+  <div class="key-message">เมื่อข้างตรงข้ามเป็นค่าคงตัวที่ไม่เป็นลบ เงื่อนไข 2 เป็นจริงโดยอัตโนมัติ จึงไม่มีผลเฉลยแปลกปลอมเกิดขึ้น</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $\sqrt{x+4} = 3$</p>
+<p>$$
+\begin{aligned}
+&amp;\text{โดเมน: } x + 4 \ge 0 \;\Rightarrow\; x \ge -4 \;\text{ และ }\; 3 \ge 0 \;\checkmark &amp;&amp; \\
+x + 4 &amp;= 9 &amp;&amp; \text{ยกกำลังสอง} \\
+x &amp;= 5 &amp;&amp;
+\end{aligned}
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> $\sqrt{5+4} = \sqrt{9} = 3$ ✓</p>
+<p><strong>ตอบ:</strong> $\{5\}$</p></div>
+</div>
+<div class="slide slide-8" data-title="ตัวอย่าง: ข้างตรงข้ามมีตัวแปร">
+  <div class="slide-header">
+    <div class="slide-num">Slide 9</div>
+    <div class="slide-title">ตัวอย่าง: ข้างตรงข้ามมีตัวแปร</div>
+  </div>
+  <div class="key-message">ทันทีที่ข้างตรงข้ามมีตัวแปร เงื่อนไข 2 กลายเป็นข้อจำกัดที่แท้จริงบนคำตอบ และผลเฉลยแปลกปลอมจะปรากฏขึ้น</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $\sqrt{x+4} - x = 2$</p>
+<p>$$
+\begin{aligned}
+&amp;\text{โดเมน: } x \ge -4 \;\text{ และ }\; x + 2 \ge 0 \;\Rightarrow\; x \ge -2 &amp;&amp; \\
+\sqrt{x+4} &amp;= x + 2 &amp;&amp; \text{แยกกรณฑ์ไว้ข้างเดียวก่อน} \\
+x + 4 &amp;= x^2 + 4x + 4 &amp;&amp; \text{ยกกำลังสอง} \;(\Longrightarrow \text{ เท่านั้น}) \\
+0 &amp;= x(x+3) &amp;&amp; \Rightarrow\; x = 0 \;\text{ หรือ }\; -3
+\end{aligned}
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> $x=0$ ให้ $\sqrt{4} - 0 = 2$ ✓ · $x=-3$ ให้ $\sqrt{1} + 3 = 4 \ne 2$ ✗</p>
+<p><strong>ตอบ:</strong> $\{0\}$</p></div>
+</div>
+<div class="slide slide-9" data-title="โดเมนทำนายผลเฉลยแปลกปลอมได้ก่อนแทนค่า">
+  <div class="slide-header">
+    <div class="slide-num">Slide 10</div>
+    <div class="slide-title">โดเมนทำนายผลเฉลยแปลกปลอมได้ก่อนแทนค่า</div>
+  </div>
+  <div class="key-message">บรรทัดโดเมนที่เขียนไว้ตอนต้น บ่งชี้ล่วงหน้าแล้วว่าผลเฉลยที่เป็นไปได้ค่าใดจะไม่ผ่านการตรวจสอบ</div>
+  <div class="slide-content"><p>ย้อนดูตัวอย่างที่แล้ว ซึ่งเขียนโดเมนไว้ว่า $x \ge -2$</p>
+<p>$$
+x = 0 \;\ge -2 \;\checkmark \qquad\qquad x = -3 \;&lt;\; -2 \;\;✗
+$$</p>
+<p>$x = -3$ ตกรอบตั้งแต่ยังไม่ต้องแทนค่ากลับเข้าสมการเลย</p>
+<p><strong>ข้อสังเกต</strong> — บรรทัดโดเมนเปลี่ยนสถานะจากพิธีกรรมมาเป็นเครื่องมือวิเคราะห์ ผู้ที่ข้ามขั้นตอนนั้นไปจำเป็นต้องแทนค่าทุกค่าเพื่อตรวจสอบว่าค่าใดเป็นผลเฉลยแปลกปลอม ในขณะที่ผู้ที่เขียนโดเมนไว้ล่วงหน้าย่อมทราบคำตอบได้ก่อน</p></div>
+</div>
+<div class="slide slide-10" data-title="กรณีที่พลาดบ่อย">
+  <div class="slide-header">
+    <div class="slide-num">Slide 11</div>
+    <div class="slide-title">กรณีที่พลาดบ่อย</div>
+  </div>
+  <div class="key-message">ทั้งห้าข้อนี้มีต้นตอเดียวกันคือทำขั้นที่ 1 หรือขั้นที่ 3 ไม่ครบ</div>
+  <div class="slide-content"><table><thead><tr><th>ที่พลาด</th><th>วิธีกัน</th></tr></thead><tbody><tr><td>ยกกำลังสองทั้งที่กรณฑ์ยังไม่อยู่ข้างเดียว</td><td>แยกกรณฑ์ให้อยู่ข้างเดียวก่อนเสมอ</td></tr><tr><td>ลืมเงื่อนไขว่าข้างตรงข้ามต้องไม่เป็นลบ</td><td>เขียนสองเงื่อนไขทุกครั้ง</td></tr><tr><td>ตอบ $\mathbb{R}$ ทั้งที่โดเมนมีรูรั่ว</td><td>อ่านบรรทัดโดเมนซ้ำก่อนเขียนคำตอบสุดท้าย</td></tr><tr><td>ตรวจคำตอบกับบรรทัดกลาง</td><td>ค่าแปลกปลอมสามารถผ่านการตรวจสอบที่บรรทัดกลางได้ทุกกรณี — ตรวจกับสมการตั้งต้นเท่านั้น</td></tr><tr><td>คูณไขว้ในอสมการ</td><td>คูณไขว้ใช้ได้กับสมการเท่านั้น</td></tr></tbody></table></div>
+</div>
+<div class="slide slide-11" data-title="ใช้ทำอะไรใน DS/CS">
+  <div class="slide-header">
+    <div class="slide-num">Slide 12</div>
+    <div class="slide-title">ใช้ทำอะไรใน DS/CS</div>
+  </div>
+  <div class="key-message">การเขียนโดเมนก่อนลงมือ คือการตั้งคำถามว่าค่าใดจะทำให้สูตรนี้ล้มเหลว ก่อนที่ระบบจะล้มเหลวจริง</div>
+  <div class="slide-content"><p><strong>ตัวส่วนที่เป็นศูนย์</strong> เป็นสาเหตุสำคัญอันดับต้นของ <code>NaN</code> และ <code>inf</code> ที่ปรากฏขึ้นกลาง pipeline สูตรที่ใช้งานทั่วไปล้วนมีความเสี่ยงที่ตัวส่วนจะเป็นศูนย์ได้ทั้งสิ้น</p>
+<ul class="slide-list"><li>precision เมื่อไม่มีการทำนายเป็นบวกเลยแม้แต่ค่าเดียว</li><li>การ normalize ด้วยส่วนเบี่ยงเบนมาตรฐาน เมื่อฟีเจอร์มีค่าเดียวกันตลอดทั้งคอลัมน์</li><li>อัตราการเติบโต เมื่อฐานเป็นศูนย์</li></ul>
+<p><strong>เงื่อนไขใต้กรณฑ์</strong> มีสถานการณ์คู่ขนานที่ตรงกว่านั้น — สูตรทางสถิติมีกรณฑ์ปรากฏอยู่ทั่วไป และสิ่งใต้กรณฑ์มักเป็นความแปรปรวนซึ่งไม่เป็นลบโดยธรรมชาติ <strong>จนกว่าความคลาดเคลื่อนเชิงตัวเลขจะทำให้ค่านั้นติดลบเล็กน้อยเป็น $-10^{-16}$</strong> แล้วโค้ดจะล้มเหลวทันที</p></div>
+</div>
+<div class="slide slide-12" data-title="สรุปและสิ่งที่ต้องทำ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 13</div>
+    <div class="slide-title">สรุปและสิ่งที่ต้องทำ</div>
+  </div>
+  <div class="key-message">จำสามขั้น และจำว่าสมการกรณฑ์มีสองเงื่อนไข ไม่ใช่เงื่อนไขเดียว</div>
+  <div class="slide-content"><p><strong>จบช่วงนี้ควรทำได้:</strong></p>
+<ul class="slide-list"><li>เขียนโดเมนของสมการเศษส่วนและสมการกรณฑ์ได้ครบ</li><li>แก้ทั้งสองชนิดได้พร้อมตรวจคำตอบ</li><li>ใช้บรรทัดโดเมนทำนายผลเฉลยแปลกปลอมก่อนแทนค่า</li></ul>
+<p><strong>ตั้งค้างไว้:</strong> ตรรกะเดียวกันนี้จะใช้กับ <strong>สมการลอการิทึมในสัปดาห์ 2</strong> — ที่นั่นโดเมนคือ $x &gt; 0$ และการรวมพจน์ทำให้โดเมนกว้างขึ้นแบบเดียวกับที่ยกกำลังสองทำที่นี่</p>
+<p><strong>การบ้าน:</strong> <code>exercises/ex_01.md</code> ข้อ 17–22 · <strong>ตัวอย่าง 3.3 และ 3.6 มีแต่ใน note</strong> — 3.6 เป็นกรณีที่ยกกำลังสองแล้ว <strong>ไม่มี</strong> ผลเฉลยแปลกปลอม ซึ่งอธิบายได้ว่าเหตุใดกฎนี้จึงมิใช่กฎที่ปราศจากเหตุผล</p></div>
+</div>
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" title="Previous (&#8592;)">&#9664;</button>
+  <span id="counter">1 / 14</span>
+  <span id="slide-label"></span>
+  <button id="next-btn" onclick="changeSlide(1)" title="Next (&#8594;)">&#9654;</button>
+</div>
+<div id="kb-hint">&#8592; &#8594; Space</div>
+<script>
+
+var current = 0;
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var counter = document.getElementById('counter');
+var fill = document.getElementById('progress-fill');
+var label = document.getElementById('slide-label');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+
+function showSlide(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, total - 1));
+  slides[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  fill.style.width = ((current + 1) / total * 100) + '%';
+  label.textContent = slides[current].dataset.title || '';
+  prevBtn.disabled = (current === 0);
+  nextBtn.disabled = (current === total - 1);
+  // Scroll content to top on slide change
+  var sc = slides[current].querySelector('.slide-content');
+  if (sc) sc.scrollTop = 0;
+}
+
+function changeSlide(dir) { showSlide(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault(); changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault(); changeSlide(-1);
+  } else if (e.key === ' ') {
+    e.preventDefault(); changeSlide(e.shiftKey ? -1 : 1);
+  } else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End')  { showSlide(total - 1); }
+});
+
+// Touch swipe
+var touchX = 0;
+document.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+showSlide(0);
+
+</script>
+</body>
+</html>

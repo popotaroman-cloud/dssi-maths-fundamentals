@@ -1,0 +1,36 @@
+<svg viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax   { stroke:#000; stroke-width:1.5; }
+    .circ { fill:none; stroke:#000; stroke-width:1.8; }
+    .dot  { fill:#000; }
+    .lbl  { fill:#000; font-size:13px; }
+  </style>
+
+  <!-- scale: 30px per unit, center at (210,210) -->
+  <line x1="30" y1="210" x2="390" y2="210" class="ax"/>
+  <line x1="210" y1="390" x2="210" y2="30" class="ax"/>
+  <text x="395" y="214" class="lbl">x</text>
+  <text x="195" y="25" class="lbl">y</text>
+
+  <!-- radii 1,2,3 units = 30,60,90 px -->
+  <circle cx="210" cy="210" r="30" class="circ"/>
+  <circle cx="210" cy="210" r="60" class="circ"/>
+  <circle cx="210" cy="210" r="90" class="circ"/>
+
+  <text x="242" y="205" class="lbl">c=1</text>
+  <text x="272" y="205" class="lbl">c=4</text>
+  <text x="302" y="205" class="lbl">c=9</text>
+
+  <!-- points (3,4) (0,5) (-3,-4), scale 30px/unit, radius-5 circle passes through all -->
+  <circle cx="300" cy="90" r="5" class="dot"/>
+  <text x="305" y="85" class="lbl">(3,4) f=25</text>
+
+  <circle cx="210" cy="60" r="5" class="dot"/>
+  <text x="215" y="50" class="lbl">(0,5) f=25</text>
+
+  <circle cx="120" cy="330" r="5" class="dot"/>
+  <text x="60" y="350" class="lbl">(-3,-4) f=25</text>
+
+  <!-- dashed circle radius 5 units = 150px, through the three points -->
+  <circle cx="210" cy="210" r="150" fill="none" stroke="#000" stroke-width="1" stroke-dasharray="4 4"/>
+</svg>

@@ -1,0 +1,44 @@
+<svg viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax   { stroke:#000; stroke-width:1.5; }
+    .line { stroke:#000; stroke-width:2.2; }
+    .dot  { fill:#000; }
+    .resid{ stroke:#000; stroke-width:1.3; stroke-dasharray:4 3; }
+    .lbl  { fill:#000; font-size:13px; }
+    .cross{ stroke:#000; stroke-width:1.6; }
+  </style>
+
+  <!-- x:0..6 -> px60..450 (65/unit); y:0..14 -> px300..30 (19.3/unit) -->
+  <line x1="30" y1="300" x2="460" y2="300" class="ax"/>
+  <line x1="60" y1="320" x2="60" y2="20" class="ax"/>
+  <text x="465" y="304" class="lbl">x</text>
+  <text x="40" y="20" class="lbl">y</text>
+
+  <!-- line y=2x+2, from (0,2) px(60,262) to (5,12) px(385,68) extended -->
+  <line x1="60" y1="262" x2="450" y2="30" class="line"/>
+  <text x="330" y="45" class="lbl">y hat = 2x+2</text>
+
+  <!-- data points -->
+  <circle cx="125" cy="184" r="6" class="dot"/> <!-- (1,5) -->
+  <circle cx="190" cy="203" r="6" class="dot"/> <!-- (2,4) -->
+  <circle cx="255" cy="107" r="6" class="dot"/> <!-- (3,9) -->
+  <circle cx="320" cy="88"  r="6" class="dot"/> <!-- (4,10) -->
+  <circle cx="385" cy="49"  r="6" class="dot"/> <!-- (5,12) -->
+
+  <!-- residual segments to the line -->
+  <!-- at x=1(px125), line y: 2(1)+2=4 -> px 223; point y=5 -> px184; residual up 1 -->
+  <line x1="125" y1="184" x2="125" y2="223" class="resid"/>
+  <!-- at x=2(px190), line y=6 -> px184; point y=4 -> px203; residual down 2 -->
+  <line x1="190" y1="203" x2="190" y2="184" class="resid"/>
+  <!-- at x=3(px255), line y=8 -> px146; point y=9 -> px107 -> wait recompute scale -->
+  <line x1="255" y1="107" x2="255" y2="146" class="resid"/>
+
+  <text x="130" y="170" class="lbl">r_i</text>
+
+  <!-- center of mass point (3,8) -->
+  <g transform="translate(255,165)">
+    <line x1="-7" y1="0" x2="7" y2="0" class="cross"/>
+    <line x1="0" y1="-7" x2="0" y2="7" class="cross"/>
+  </g>
+  <text x="265" y="170" class="lbl">จุดศูนย์ถ่วง (x̄,ȳ) ซึ่งเส้นต้องผ่าน</text>
+</svg>

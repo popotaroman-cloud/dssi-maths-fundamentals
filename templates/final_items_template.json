@@ -1,0 +1,39 @@
+[
+  {
+    "_comment": "แบบที่ 1 — คำตอบเป็นจำนวนเต็ม (รูปแบบที่ควรใช้มากที่สุด ตามกฎ SA-2 ถามค่าที่จุด ไม่ถามนิพจน์)",
+    "type": "short_answer",
+    "text": "<โจทย์> ... ค่าของ ... เท่ากับเท่าใด (ตอบเป็นจำนวนเต็ม)",
+    "points": 2,
+    "ignore_case": true,
+    "feedback": "<เฉลยย่อ 1-2 บรรทัด บอกขั้นตอนสำคัญ> [M1][L4][S01][Bloom:Apply]",
+    "options": [
+      { "text": "<คำตอบ>", "is_correct": true }
+    ]
+  },
+  {
+    "_comment": "แบบที่ 2 — คำตอบเป็นเศษส่วน/ติดลบ ต้องใส่รูปสมมูลครบ และต้องมีทั้ง ASCII '-' และ Unicode '−' (กฎ SA-5, SA-6)",
+    "type": "short_answer",
+    "text": "<โจทย์> ... เท่ากับเท่าใด (ตอบเป็นเศษส่วนอย่างต่ำ รูป a/b)",
+    "points": 2,
+    "ignore_case": true,
+    "feedback": "<เฉลยย่อ> [M1][L5][S03][Bloom:Apply]",
+    "options": [
+      { "text": "-7/4", "is_correct": true },
+      { "text": "−7/4", "is_correct": true },
+      { "text": "-1.75", "is_correct": true },
+      { "text": "−1.75", "is_correct": true }
+    ]
+  },
+  {
+    "_comment": "แบบที่ 3 — คำตอบเป็นคำจากเซตปิด ใช้วัดการจำแนก/การตัดสิน โดยไม่ต้องเห็นวิธีทำ (กฎ SA-7)",
+    "type": "short_answer",
+    "text": "<โจทย์> ... จุดนี้เป็นจุดชนิดใด (ตอบ MIN, MAX หรือ SADDLE)",
+    "points": 3,
+    "ignore_case": true,
+    "feedback": "<เฉลยย่อ> [M1][L7][S05][Bloom:Analyze]",
+    "options": [
+      { "text": "SADDLE", "is_correct": true },
+      { "text": "จุดอานม้า", "is_correct": true }
+    ]
+  }
+]

@@ -1,0 +1,39 @@
+<svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax   { stroke:#000; stroke-width:2; }
+    .dot  { fill:#000; }
+    .lbl  { fill:#000; font-size:15px; text-anchor:middle; }
+    .sign { fill:#000; font-size:16px; text-anchor:middle; }
+    .arr  { stroke:#000; stroke-width:1.8; }
+  </style>
+
+  <line x1="30" y1="80" x2="530" y2="80" class="ax"/>
+  <polygon points="530,80 520,74 520,86" fill="#000"/>
+  <polygon points="30,80 40,74 40,86" fill="#000"/>
+
+  <circle cx="180" cy="80" r="6" class="dot"/>
+  <text x="180" y="105" class="lbl">-1</text>
+
+  <circle cx="380" cy="80" r="6" class="dot"/>
+  <text x="380" y="105" class="lbl">3</text>
+
+  <text x="105" y="70" class="sign">+</text>
+  <text x="280" y="70" class="sign">-</text>
+  <text x="455" y="70" class="sign">+</text>
+
+  <!-- arrows below showing increasing/decreasing -->
+  <line x1="70"  y1="140" x2="150" y2="120" class="arr"/>
+  <polygon points="150,120 141,120 146,130" fill="#000"/>
+  <text x="105" y="155" class="lbl">เพิ่ม</text>
+
+  <line x1="220" y1="120" x2="340" y2="150" class="arr"/>
+  <polygon points="340,150 329,148 335,140" fill="#000"/>
+  <text x="280" y="170" class="lbl">ลด</text>
+
+  <line x1="420" y1="150" x2="500" y2="120" class="arr"/>
+  <polygon points="500,120 491,120 496,130" fill="#000"/>
+  <text x="455" y="170" class="lbl">เพิ่ม</text>
+
+  <text x="180" y="185" class="lbl" font-weight="bold">MAX</text>
+  <text x="380" y="185" class="lbl" font-weight="bold">MIN</text>
+</svg>

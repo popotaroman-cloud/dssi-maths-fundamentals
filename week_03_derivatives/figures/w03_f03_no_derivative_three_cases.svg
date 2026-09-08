@@ -1,0 +1,43 @@
+<svg viewBox="0 0 660 275" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax   { stroke:#000; stroke-width:1.3; }
+    .curve{ stroke:#000; stroke-width:2.2; fill:none; }
+    .dot  { fill:#000; }
+    .odot { fill:#fff; stroke:#000; stroke-width:2; }
+    .lbl  { fill:#000; font-size:13px; text-anchor:middle; }
+    .cap  { fill:#000; font-size:14px; text-anchor:middle; }
+  </style>
+
+  <!-- panel 1: corner -->
+  <g>
+    <line x1="30" y1="150" x2="190" y2="150" class="ax"/>
+    <line x1="110" y1="220" x2="110" y2="30" class="ax"/>
+    <path d="M 45,60 L 110,150 L 175,60" class="curve"/>
+    <circle cx="110" cy="150" r="5" class="dot"/>
+    <text x="110" y="35" class="lbl">มุมหัก</text>
+    <text x="110" y="240" class="cap">ความชันซ้าย -1 ขวา +1</text>
+  </g>
+
+  <!-- panel 2: vertical tangent (S-curve on its side) -->
+  <g transform="translate(230,0)">
+    <line x1="30" y1="150" x2="190" y2="150" class="ax"/>
+    <line x1="110" y1="220" x2="110" y2="30" class="ax"/>
+    <path d="M 70,220 C 95,190 100,170 110,150 C 120,130 125,110 150,30" class="curve"/>
+    <circle cx="110" cy="150" r="5" class="dot"/>
+    <line x1="110" y1="200" x2="110" y2="100" stroke="#000" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="110" y="35" class="lbl">เส้นสัมผัสตั้งฉาก</text>
+  </g>
+
+  <!-- panel 3: discontinuity -->
+  <g transform="translate(460,0)">
+    <line x1="30" y1="150" x2="190" y2="150" class="ax"/>
+    <line x1="110" y1="220" x2="110" y2="30" class="ax"/>
+    <line x1="45" y1="170" x2="105" y2="170" class="curve"/>
+    <circle cx="105" cy="170" r="6" class="odot"/>
+    <line x1="115" y1="100" x2="175" y2="100" class="curve"/>
+    <circle cx="115" cy="100" r="6" class="dot"/>
+    <text x="110" y="35" class="lbl">ไม่ต่อเนื่อง</text>
+  </g>
+
+  <text x="330" y="255" class="cap">สามกรณีที่ f' ไม่มีอยู่</text>
+</svg>

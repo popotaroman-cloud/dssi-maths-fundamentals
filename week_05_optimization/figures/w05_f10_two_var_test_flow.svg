@@ -1,0 +1,62 @@
+<svg viewBox="0 0 620 420" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .box  { fill:none; stroke:#000; stroke-width:1.6; }
+    .lbl  { fill:#000; font-size:13px; text-anchor:middle; }
+    .arr  { stroke:#000; stroke-width:1.5; }
+    .elbl { fill:#000; font-size:12px; }
+  </style>
+
+  <!-- box1 -->
+  <rect x="220" y="10" width="180" height="46" class="box"/>
+  <text x="310" y="38" class="lbl">หาอนุพันธ์ย่อย f_x, f_y</text>
+
+  <line x1="310" y1="56" x2="310" y2="90" class="arr"/>
+  <polygon points="310,90 304,78 316,78" fill="#000"/>
+
+  <!-- box2 -->
+  <rect x="180" y="90" width="260" height="46" class="box"/>
+  <text x="310" y="112" class="lbl">ตั้งเท่ากับศูนย์ → ระบบเชิงเส้น 2×2</text>
+  <text x="310" y="128" class="lbl">แก้ระบบ</text>
+
+  <!-- three branches -->
+  <line x1="230" y1="136" x2="90"  y2="180" class="arr"/>
+  <line x1="310" y1="136" x2="310" y2="180" class="arr"/>
+  <line x1="390" y1="136" x2="520" y2="180" class="arr"/>
+
+  <text x="130" y="165" class="elbl">ไม่มีผลเฉลย</text>
+  <text x="330" y="165" class="elbl">ผลเฉลยเดียว</text>
+  <text x="430" y="165" class="elbl">ผลเฉลยมากมาย</text>
+
+  <!-- left outcome -->
+  <rect x="20" y="180" width="150" height="46" class="box"/>
+  <text x="95" y="208" class="lbl">ไม่มีจุดวิกฤต</text>
+
+  <!-- middle: compute D -->
+  <rect x="235" y="180" width="150" height="46" class="box"/>
+  <text x="310" y="208" class="lbl">คำนวณ D</text>
+
+  <!-- right outcome -->
+  <rect x="450" y="180" width="150" height="46" class="box"/>
+  <text x="525" y="203" class="lbl">จุดวิกฤต</text>
+  <text x="525" y="218" class="lbl">เป็นเส้น</text>
+
+  <!-- D branches into four -->
+  <line x1="260" y1="226" x2="90"  y2="300" class="arr"/>
+  <line x1="295" y1="226" x2="230" y2="300" class="arr"/>
+  <line x1="325" y1="226" x2="390" y2="300" class="arr"/>
+  <line x1="360" y1="226" x2="530" y2="300" class="arr"/>
+
+  <rect x="20"  y="300" width="140" height="46" class="box"/>
+  <text x="90"  y="328" class="lbl">MIN</text>
+
+  <rect x="180" y="300" width="140" height="46" class="box"/>
+  <text x="250" y="328" class="lbl">MAX</text>
+
+  <rect x="340" y="300" width="140" height="46" class="box"/>
+  <text x="410" y="328" class="lbl">SADDLE</text>
+
+  <rect x="500" y="300" width="110" height="60" class="box"/>
+  <text x="555" y="322" class="lbl">ทดสอบไม่ได้</text>
+  <text x="555" y="338" class="lbl">ต้องจัดรูป</text>
+  <text x="555" y="352" class="lbl">พีชคณิต</text>
+</svg>

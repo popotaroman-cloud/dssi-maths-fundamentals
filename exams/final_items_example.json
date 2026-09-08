@@ -1,0 +1,109 @@
+[
+  {
+    "type": "short_answer",
+    "text": "สมการกำลังสอง ax² + bx + c = 0 (โดย a ≠ 0) มีรากจริงที่ต่างกันสองราก เมื่อค่า discriminant มีเครื่องหมายใด (ตอบ POS, NEG หรือ ZERO)",
+    "points": 1,
+    "ignore_case": true,
+    "feedback": "b² − 4ac > 0 จึงมีรากจริงสองรากที่ต่างกัน ถ้าเท่ากับศูนย์ได้รากซ้ำ ถ้าน้อยกว่าศูนย์ไม่มีรากจริง [M1][L2][S01][Bloom:Remember]",
+    "options": [
+      { "text": "POS", "is_correct": true },
+      { "text": "positive", "is_correct": true },
+      { "text": "บวก", "is_correct": true }
+    ]
+  },
+  {
+    "type": "short_answer",
+    "text": "สมการ √(x + 7) = x − 5 มีผลเฉลยที่แท้จริงกี่ค่า (ตอบเป็นจำนวนเต็ม)",
+    "points": 2,
+    "ignore_case": true,
+    "feedback": "ยกกำลังสองได้ x² − 11x + 18 = 0 → x = 2, 9 · ตรวจคำตอบ: x = 9 ใช้ได้ (√16 = 4 = 9−5) แต่ x = 2 เป็นผลเฉลยแปลกปลอม (√9 = 3 แต่ 2−5 = −3) เหลือผลเฉลยจริง 1 ค่า [M1][L5][S01][Bloom:Apply]",
+    "options": [
+      { "text": "1", "is_correct": true }
+    ]
+  },
+  {
+    "type": "short_answer",
+    "text": "ระบบสมการเชิงเส้นมี 3 สมการ 4 ตัวแปร เมื่อทำ row reduction แล้วได้แถวที่ไม่เป็นศูนย์ 2 แถว และระบบสอดคล้อง (consistent) ระบบนี้มีตัวแปรอิสระกี่ตัว (ตอบเป็นจำนวนเต็ม)",
+    "points": 1,
+    "ignore_case": true,
+    "feedback": "จำนวนตัวแปรอิสระ = จำนวนตัวแปร − จำนวนแถวที่ไม่เป็นศูนย์ = 4 − 2 = 2 → ระบบมีผลเฉลยมากมายโดยมีพารามิเตอร์ 2 ตัว [M1][L3][S02][Bloom:Understand]",
+    "options": [
+      { "text": "2", "is_correct": true }
+    ]
+  },
+  {
+    "type": "short_answer",
+    "text": "แก้สมการ 2^(x+1) = 32 ค่าของ x เท่ากับเท่าใด (ตอบเป็นจำนวนเต็ม)",
+    "points": 2,
+    "ignore_case": true,
+    "feedback": "32 = 2⁵ จึงได้ x + 1 = 5 → x = 4 [M1][L4][S02][Bloom:Apply]",
+    "options": [
+      { "text": "4", "is_correct": true }
+    ]
+  },
+  {
+    "type": "short_answer",
+    "text": "ให้ f(x) = (3x² + 1)⁴ ค่าของ f′(1) เท่ากับเท่าใด (ตอบเป็นจำนวนเต็ม)",
+    "points": 2,
+    "ignore_case": true,
+    "feedback": "กฎลูกโซ่: f′(x) = 4(3x²+1)³ · 6x · ที่ x = 1 ได้ 4(4)³(6) = 4 · 64 · 6 = 1536 [M1][L4][S03][Bloom:Apply]",
+    "options": [
+      { "text": "1536", "is_correct": true }
+    ]
+  },
+  {
+    "type": "short_answer",
+    "text": "ให้ g(x) = (2x + 1)/(x − 3) ค่าของ g′(1) เท่ากับเท่าใด (ตอบเป็นเศษส่วนอย่างต่ำ รูป a/b)",
+    "points": 2,
+    "ignore_case": true,
+    "feedback": "quotient rule: g′(x) = [2(x−3) − (2x+1)]/(x−3)² = −7/(x−3)² · ที่ x = 1 ได้ −7/4 [M1][L5][S03][Bloom:Apply]",
+    "options": [
+      { "text": "-7/4", "is_correct": true },
+      { "text": "−7/4", "is_correct": true },
+      { "text": "-1.75", "is_correct": true },
+      { "text": "−1.75", "is_correct": true }
+    ]
+  },
+  {
+    "type": "short_answer",
+    "text": "ฟังก์ชัน f(x, y) มี ∇f(2, 3) = (0, 0) ข้อมูลเท่านี้สรุปได้ว่าจุด (2, 3) เป็นจุดชนิดใด (ตอบ CRITICAL, MIN, MAX หรือ SADDLE)",
+    "points": 1,
+    "ignore_case": true,
+    "feedback": "∇f = 0 บอกได้แค่ว่าเป็นจุดวิกฤต ยังจำแนกไม่ได้ว่าเป็นต่ำสุด สูงสุด หรืออานม้า ต้องใช้ second partial test ก่อน [M1][L3][S04][Bloom:Understand]",
+    "options": [
+      { "text": "CRITICAL", "is_correct": true },
+      { "text": "จุดวิกฤต", "is_correct": true }
+    ]
+  },
+  {
+    "type": "short_answer",
+    "text": "ให้ f(x, y) = x³y² + 2xy ค่าของ ∂f/∂x ที่จุด (1, 2) เท่ากับเท่าใด (ตอบเป็นจำนวนเต็ม)",
+    "points": 2,
+    "ignore_case": true,
+    "feedback": "ตรึง y แล้วหาอนุพันธ์เทียบ x: ∂f/∂x = 3x²y² + 2y · ที่ (1,2) ได้ 3(1)(4) + 2(2) = 12 + 4 = 16 [M1][L4][S04][Bloom:Apply]",
+    "options": [
+      { "text": "16", "is_correct": true }
+    ]
+  },
+  {
+    "type": "short_answer",
+    "text": "ให้ f(x, y) = x² − y² + 4x จุดวิกฤตของ f เป็นจุดชนิดใด (ตอบ MIN, MAX หรือ SADDLE)",
+    "points": 3,
+    "ignore_case": true,
+    "feedback": "f_x = 2x + 4 = 0 → x = −2 · f_y = −2y = 0 → y = 0 · f_xx = 2, f_yy = −2, f_xy = 0 → D = (2)(−2) − 0 = −4 < 0 จึงเป็นจุดอานม้า [M1][L7][S05][Bloom:Analyze]",
+    "options": [
+      { "text": "SADDLE", "is_correct": true },
+      { "text": "จุดอานม้า", "is_correct": true }
+    ]
+  },
+  {
+    "type": "short_answer",
+    "text": "จากข้อมูล 5 จุด (1,5), (2,4), (3,9), (4,10), (5,12) ความชัน ŵ ของเส้นถดถอยเชิงเส้นที่ได้จากวิธีกำลังสองน้อยสุด เท่ากับเท่าใด (ตอบเป็นจำนวนเต็ม)",
+    "points": 3,
+    "ignore_case": true,
+    "feedback": "x̄ = 3, ȳ = 8 · Σ(x−x̄)(y−ȳ) = 6+4+0+2+8 = 20 · Σ(x−x̄)² = 4+1+0+1+4 = 10 · ŵ = 20/10 = 2 [M1][L8][S05][Bloom:Analyze]",
+    "options": [
+      { "text": "2", "is_correct": true }
+    ]
+  }
+]

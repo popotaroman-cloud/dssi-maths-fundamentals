@@ -1,0 +1,46 @@
+<svg viewBox="0 0 360 420" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .box  { fill:none; stroke:#000; stroke-width:1.8; }
+    .val  { fill:#000; font-size:18px; text-anchor:middle; dominant-baseline:middle; }
+    .lbl  { fill:#000; font-size:13px; }
+    .arr  { stroke:#000; stroke-width:1.6; }
+  </style>
+
+  <!-- level 0: 16 -->
+  <rect x="60" y="10" width="240" height="44" class="box"/>
+  <text x="180" y="34" class="val">16</text>
+
+  <line x1="180" y1="54" x2="180" y2="80" class="arr"/>
+  <polygon points="180,80 175,70 185,70" fill="#000"/>
+  <text x="195" y="72" class="lbl">แบ่งครึ่งครั้งที่ 1</text>
+
+  <!-- level 1: 8 -->
+  <rect x="90" y="80" width="180" height="44" class="box"/>
+  <text x="180" y="104" class="val">8</text>
+
+  <line x1="180" y1="124" x2="180" y2="150" class="arr"/>
+  <polygon points="180,150 175,140 185,140" fill="#000"/>
+  <text x="195" y="142" class="lbl">แบ่งครึ่งครั้งที่ 2</text>
+
+  <!-- level 2: 4 -->
+  <rect x="120" y="150" width="120" height="44" class="box"/>
+  <text x="180" y="174" class="val">4</text>
+
+  <line x1="180" y1="194" x2="180" y2="220" class="arr"/>
+  <polygon points="180,220 175,210 185,210" fill="#000"/>
+  <text x="195" y="212" class="lbl">แบ่งครึ่งครั้งที่ 3</text>
+
+  <!-- level 3: 2 -->
+  <rect x="145" y="220" width="70" height="44" class="box"/>
+  <text x="180" y="244" class="val">2</text>
+
+  <line x1="180" y1="264" x2="180" y2="290" class="arr"/>
+  <polygon points="180,290 175,280 185,280" fill="#000"/>
+  <text x="195" y="282" class="lbl">แบ่งครึ่งครั้งที่ 4</text>
+
+  <!-- level 4: 1 -->
+  <rect x="160" y="290" width="40" height="44" class="box"/>
+  <text x="180" y="314" class="val">1</text>
+
+  <text x="180" y="380" text-anchor="middle" class="lbl">แบ่ง 4 ครั้ง เพราะ 16 = 2 ยกกำลัง 4</text>
+</svg>

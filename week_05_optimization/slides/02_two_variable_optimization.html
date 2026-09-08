@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Deck: การหาค่าเหมาะที่สุดของฟังก์ชันสองตัวแปร</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],throwOnError:false});"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a237e;
+  --accent:  #1565c0;
+  --light:   #e3f2fd;
+  --bg:      #ffffff;
+  --text:    #212121;
+  --muted:   #546e7a;
+  --code-bg: #1e272e;
+  --code-fg: #dfe6e9;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0d1b2a;
+  font-family: 'Sarabun', 'Noto Sans Thai', 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ── Presentation container ───────────────────── */
+#presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
+  padding: clamp(28px, 3.5vw, 56px) clamp(40px, 6vw, 88px) 74px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Progress bar ─────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  z-index: 200;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #42a5f5, #1565c0);
+  transition: width 0.3s ease;
+}
+
+/* ── Slide header (title + num) ───────────────── */
+.slide-header {
+  margin-bottom: clamp(14px, 2vh, 28px);
+  padding-bottom: clamp(10px, 1.4vh, 18px);
+  border-bottom: 3px solid var(--light);
+  flex-shrink: 0;
+}
+.slide-num {
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.slide-title {
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+/* ── Title Slide (index 0) ────────────────────── */
+.slide-0 {
+  background: linear-gradient(145deg, #0d1b2a 0%, #1a237e 55%, #1565c0 100%);
+  justify-content: center;
+}
+.slide-0 .slide-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.slide-0 .slide-num  { color: #90caf9; }
+.slide-0 .slide-title {
+  font-size: clamp(34px, 5vw, 64px);
+  color: #ffffff;
+}
+.slide-0 .key-message {
+  background: rgba(255,255,255,0.1);
+  border-left-color: #42a5f5;
+  color: #e3f2fd;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.slide-0 .slide-content { color: #cfd8dc; }
+.slide-0 .slide-content p { color: #cfd8dc; }
+.slide-0 .slide-content li { color: #cfd8dc; }
+.slide-0 .slide-content strong { color: #90caf9; }
+.slide-0 .content-heading { color: #90caf9; }
+
+/* ── Key Message callout ──────────────────────── */
+.key-message {
+  background: var(--light);
+  border-left: 6px solid var(--accent);
+  padding: clamp(11px, 1.4vh, 18px) clamp(18px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: clamp(14px, 1.8vh, 26px);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Content area ─────────────────────────────── */
+.slide-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(17px, 1.85vw, 26px);
+  line-height: 1.68;
+  color: var(--text);
+  min-height: 0;
+}
+.slide-content::-webkit-scrollbar { width: 5px; }
+.slide-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.slide-content p { margin-bottom: 0.55em; }
+.slide-content strong { color: var(--primary); }
+.slide-content em { color: #37474f; }
+
+/* ── Lists ────────────────────────────────────── */
+.slide-list {
+  padding-left: clamp(22px, 2.8vw, 38px);
+  margin: 0.2em 0 0.7em;
+}
+.slide-list li {
+  margin-bottom: 0.45em;
+  line-height: 1.5;
+}
+ul.slide-list li::marker { color: var(--accent); font-weight: 700; }
+ol.slide-list li::marker { color: var(--accent); font-weight: 700; }
+
+/* ── Code blocks ──────────────────────────────── */
+.code-block {
+  margin: 0.5em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  font-size: clamp(12px, 1.35vw, 18px);
+}
+.code-lang {
+  background: #37474f;
+  color: #90a4ae;
+  font-size: 0.82em;
+  padding: 4px 16px;
+  font-family: 'Fira Code', Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.8vw, 24px);
+  overflow-x: auto;
+  line-height: 1.58;
+  margin: 0;
+}
+code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+}
+.slide-content code:not(pre code) {
+  background: #e8eaf6;
+  color: #1a237e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 1.5vw, 21px);
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  padding: clamp(7px, 0.9vh, 13px) clamp(10px, 1.4vw, 18px);
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: clamp(6px, 0.8vh, 11px) clamp(10px, 1.4vw, 18px);
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8f9ff; }
+tr:hover td { background: var(--light); }
+
+/* ── Sub-headings inside content ──────────────── */
+.content-heading {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--primary);
+  margin: 0.65em 0 0.25em;
+  font-weight: 700;
+}
+h3.content-heading {
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--accent);
+}
+
+/* ── Generated figure (matplotlib base64 PNG) ────────────── */
+.slide-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3em 0;
+  flex-shrink: 0;
+}
+.slide-figure img {
+  max-width: 96%;
+  max-height: clamp(200px, 38vh, 380px);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.10);
+  object-fit: contain;
+}
+
+/* ── Figure placeholder (fallback เมื่อ generate ไม่ได้) ─── */
+.placeholder {
+  border: 2px dashed var(--accent);
+  padding: clamp(12px, 1.6vh, 22px) clamp(16px, 2vw, 26px);
+  border-radius: 10px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0.4em 0;
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+
+.slide-hr {
+  border: none;
+  border-top: 2px solid #e8eaf6;
+  margin: 0.5em 0;
+}
+
+/* ── Navigation bar ───────────────────────────── */
+#nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(13,27,42,0.9);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 40px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+#nav button {
+  background: none;
+  border: none;
+  color: #90a4ae;
+  font-size: clamp(16px, 1.8vw, 24px);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.12); }
+#nav button:disabled { color: #3d4e5c; cursor: default; }
+#counter {
+  color: #e2e8f0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+}
+#slide-label {
+  color: #78909c;
+  font-size: clamp(10px, 1vw, 13px);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Keyboard hint ────────────────────────────── */
+#kb-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* ── KaTeX math rendering ─────────────────── */
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex {
+  font-size: clamp(15px, 1.7vw, 21px) !important;
+}
+.slide-0 .katex { color: #e3f2fd; }
+
+</style>
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+<div id="presentation">
+<div class="slide slide-0" data-title="Title">
+  <div class="slide-header">
+    <div class="slide-num">Slide 1</div>
+    <div class="slide-title">Title</div>
+  </div>
+  <div class="key-message">ตรงนี้คือจุดที่คอร์สทั้งคอร์สมาบรรจบกัน — $\nabla f=0$ ของฟังก์ชันกำลังสองคือระบบสมการเชิงเส้นของสัปดาห์ 2 พอดี</div>
+  <div class="slide-content"><p><strong>Maths Fundamentals for DS &amp; CS — สัปดาห์ 05</strong></p>
+<h2 class="content-heading">การหาค่าเหมาะที่สุดของฟังก์ชันสองตัวแปร</h2>
+<ul class="slide-list"><li>ช่วงนี้: 55 นาที</li><li>ต่อจาก: การหาค่าเหมาะที่สุดหนึ่งตัวแปร</li><li>นำไปสู่: Capstone — สร้างสูตร linear regression</li></ul></div>
+</div>
+<div class="slide slide-1" data-title="ภาพรวมช่วงนี้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 2</div>
+    <div class="slide-title">ภาพรวมช่วงนี้</div>
+  </div>
+  <div class="key-message">การหาค่าเหมาะที่สุดของฟังก์ชันกำลังสองสองตัวแปร ไม่ใช่หัวข้อใหม่ — มันคืออนุพันธ์ย่อยสัปดาห์ 4 บวกการแก้ระบบสัปดาห์ 2 วางต่อกัน</div>
+  <div class="slide-content"><p><strong>จะเรียน:</strong></p>
+<ul class="slide-list"><li>$\nabla f=\mathbf 0$ กลายเป็นระบบเชิงเส้น $2\times2$ เมื่อ $f$ เป็นกำลังสอง</li><li><strong>จุดอานม้า</strong> — ความเป็นไปได้ใหม่ที่หนึ่งตัวแปรไม่มี</li><li>การทดสอบ $D=f_{xx}f_{yy}-(f_{xy})^2$</li></ul></div>
+</div>
+<div class="slide slide-2" data-title="จุดที่คอร์สทั้งคอร์สมาบรรจบกัน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 3</div>
+    <div class="slide-title">จุดที่คอร์สทั้งคอร์สมาบรรจบกัน</div>
+  </div>
+  <div class="key-message">ถ้า $f$ มีแค่พจน์ $x^2,y^2,xy,x,y$ และค่าคงตัว อนุพันธ์ย่อยจะเป็นนิพจน์เชิงเส้นเสมอ</div>
+  <div class="slide-content"><p>$$
+\nabla f(a,b)=\begin{bmatrix}f_x\\f_y\end{bmatrix}=\begin{bmatrix}0\\0\end{bmatrix} \quad\Longrightarrow\quad \begin{cases}\alpha_1x+\beta_1y=\gamma_1\\ \alpha_2x+\beta_2y=\gamma_2\end{cases}
+$$</p>
+<p><strong>ระบบเชิงเส้น $2\times2$</strong> — สิ่งเดียวกับสัปดาห์ 2 ไม่มีอะไรเปลี่ยนแม้แต่นิดเดียว</p>
+<p><strong>สามกรณีของสัปดาห์ 2 แปลตรง:</strong> คำตอบเดียว / ไม่มีคำตอบ / มีมากมาย → <strong>จุดวิกฤตจุดเดียว / ไม่มีจุดวิกฤตเลย / จุดวิกฤตเป็นเส้นทั้งเส้น</strong></p></div>
+</div>
+<div class="slide slide-3" data-title="จุดอานม้า และการทดสอบ $D$">
+  <div class="slide-header">
+    <div class="slide-num">Slide 4</div>
+    <div class="slide-title">จุดอานม้า และการทดสอบ $D$</div>
+  </div>
+  <div class="key-message">จุดอานม้าคือก้นแอ่งเมื่อมองทางหนึ่ง แต่เป็นยอดเนินเมื่อมองอีกทาง — ความเป็นไปได้ใหม่ที่หนึ่งตัวแปรไม่มี</div>
+  <div class="slide-content"><p>$$
+D = f_{xx}f_{yy}-(f_{xy})^2
+$$</p>
+<table><thead><tr><th>กรณี</th><th>ข้อสรุป</th></tr></thead><tbody><tr><td>$D&gt;0$, $f_{xx}&gt;0$</td><td><strong>ค่าต่ำสุดสัมพัทธ์</strong></td></tr><tr><td>$D&gt;0$, $f_{xx}&lt;0$</td><td><strong>ค่าสูงสุดสัมพัทธ์</strong></td></tr><tr><td>$D&lt;0$</td><td><strong>จุดอานม้า</strong></td></tr><tr><td>$D=0$</td><td><strong>ทดสอบไม่ได้</strong></td></tr></tbody></table>
+<p><strong>จำ:</strong> $D&gt;0 \Rightarrow f_{xx},f_{yy}$ เครื่องหมายเดียวกันเสมอ — ดูตัวไหนก็ได้คำตอบเดียวกัน</p></div>
+</div>
+<div class="slide slide-4" data-title="ตัวอย่าง: ก้นแอ่ง ไม่มีพจน์ไขว้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 5</div>
+    <div class="slide-title">ตัวอย่าง: ก้นแอ่ง ไม่มีพจน์ไขว้</div>
+  </div>
+  <div class="key-message">เมื่อไม่มีพจน์ $xy$ แต่ละสมการมีตัวแปรตัวเดียว ระบบหลุดได้ทันที</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x,y)=x^2+y^2-4x+6y+10$</p>
+<p>$$
+f_x=2x-4=0\Rightarrow x=2 \qquad f_y=2y+6=0\Rightarrow y=-3
+$$</p>
+<p>$$
+f_{xx}=2,\;f_{yy}=2,\;f_{xy}=0 \;\Rightarrow\; D=4&gt;0,\;f_{xx}&gt;0 \;\Rightarrow\; \textbf{ต่ำสุด}
+$$</p>
+<p><strong>ตรวจคำตอบ (กำลังสองสมบูรณ์):</strong> $f=(x-2)^2+(y+3)^2-3 \ge -3$ ✓ ต่ำสุดสัมบูรณ์จริงที่ $f=-3$</p></div>
+</div>
+<div class="slide slide-5" data-title="ตัวอย่าง: มีพจน์ไขว้ ต้องแก้ระบบจริง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 6</div>
+    <div class="slide-title">ตัวอย่าง: มีพจน์ไขว้ ต้องแก้ระบบจริง</div>
+  </div>
+  <div class="key-message">พจน์ $xy$ ทำให้สองสมการเกี่ยวข้องกัน ต้องแก้ระบบด้วยวิธีสัปดาห์ 2 จริง ๆ</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x,y)=x^2+4xy+y^2-6x$</p>
+<p>$$
+f_x=2x+4y-6=0 \;\Longleftrightarrow\; x+2y=3 \qquad f_y=4x+2y=0 \;\Longleftrightarrow\; 2x+y=0
+$$</p>
+<p>แก้ระบบ: $y=-2x$ แทนใน (1): $x-4x=3 \Rightarrow x=-1,\,y=2$</p>
+<p>$$
+f_{xx}=2,\,f_{yy}=2,\,f_{xy}=4 \;\Rightarrow\; D=4-16=-12&lt;0 \;\Rightarrow\; \textbf{จุดอานม้า}
+$$</p>
+<p><strong>ตรวจด้วยการเดินสองทิศ:</strong> ทิศ $x$ (ตรึง $y=2$): $(x+1)^2+3\ge3$ (ก้นแอ่ง) · ทิศเฉียง: $3-2t^2\le3$ (ยอดเนิน) — จุดเดียวกันเป็นทั้งคู่ ✓</p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w05_f04_contour_min_saddle.svg" alt="เส้นระดับ contour วาดมือสองภาพวางเทียบกัน ภาพซ้ายเป็นจุดต่ำสุด: วงรีซ้อนกันสามวงรอบจุดทึบที่กลาง ติดป้ายค่าระดับเพิ่มขึ้นจากในออกนอก และมีลูกศรสี่ทิศชี้ออกจากจุดกลางพร้อมคำว่า ทุกทิศเพิ่ม ภาพขวาเป็นจุดอานม้า: เส้นระดับรูปไฮเพอร์โบลาสองคู่หันหลังชนกันเป็นรูปกากบาทรอบจุดทึบที่กลาง มีลูกศรสองทิศชี้ออกพร้อมคำว่า เพิ่ม และลูกศรสองทิศตั้งฉากกันพร้อมคำว่า ลด ขาวดำ เส้นบาง ไม่ระบายสี" style="max-width:100%;max-height:52vh;"></figure>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w05_f05_saddle_surface_3d.svg" alt="ผิวสามมิติของฟังก์ชันที่มีจุดอานม้าที่จุดกำเนิด มองจากมุมเฉียง แสดงผิวรูปอานม้าที่โค้งขึ้นตามแนวหนึ่งและโค้งลงตามแนวตั้งฉาก ทำจุดทึบที่จุดอานม้า ลากเส้นหนาสองเส้นบนผิว: เส้นหนึ่งผ่านจุดอานม้าโดยเป็นก้นแอ่ง อีกเส้นผ่านจุดเดียวกันโดยเป็นยอดเนิน ติดป้ายกำกับสองเส้นนั้น" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-6" data-title="ตัวอย่าง: $D=0$ และจุดวิกฤตเป็นเส้นทั้งเส้น">
+  <div class="slide-header">
+    <div class="slide-num">Slide 7</div>
+    <div class="slide-title">ตัวอย่าง: $D=0$ และจุดวิกฤตเป็นเส้นทั้งเส้น</div>
+  </div>
+  <div class="key-message">$D=0$ ไม่ได้แปลว่า "ไม่ใช่ค่าสุดขีด" มันแปลว่าเครื่องมือนี้แยกไม่ออก — ต้องถอยไปใช้พีชคณิต</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x,y)=x^2+2xy+y^2$ · $f_x=f_y=2x+2y$ (สมการเดียวกัน!)</p>
+<p>$$
+x+y=0 \;\Rightarrow\; (x,y)=(t,-t),\;t\in\mathbb R \qquad D=(2)(2)-2^2=0 \;\textbf{ทดสอบไม่ได้}
+$$</p>
+<p><strong>พีชคณิตตอบแทน:</strong> $f=(x+y)^2\ge0$ ทุกจุด และ $=0$ บนเส้น $x+y=0$ พอดี → <strong>ทุกจุดบนเส้นนั้นเป็นค่าต่ำสุดสัมบูรณ์</strong> เพียงแต่ไม่ยูนีก</p></div>
+</div>
+<div class="slide slide-7" data-title="กรณีที่พลาดบ่อย">
+  <div class="slide-header">
+    <div class="slide-num">Slide 8</div>
+    <div class="slide-title">กรณีที่พลาดบ่อย</div>
+  </div>
+  <div class="key-message">ข้อสองในตารางนี้คือความผิดพลาดเชิงมโนทัศน์ที่ร้ายแรงที่สุด — ทำเหมือนสองสมการไม่เกี่ยวข้องกัน</div>
+  <div class="slide-content"><table><thead><tr><th>ที่พลาด</th><th>วิธีกัน</th></tr></thead><tbody><tr><td>แก้ $f_x=0$ และ $f_y=0$ แยกกันทั้งที่มีพจน์ไขว้</td><td>ถ้ามี $xy$ <strong>ต้องแก้เป็นระบบ</strong> ด้วยวิธีสัปดาห์ 2</td></tr><tr><td>ลืมยกกำลังสอง $f_{xy}$ ในสูตร $D$</td><td>อ่านออกเสียง "ลบกำลังสองของ $f_{xy}$"</td></tr><tr><td>$D=0$ แล้วตอบว่า "จุดอานม้า"</td><td>$D=0$ คือ<strong>ทดสอบไม่ได้</strong> ต้องจัดรูปพีชคณิตแทน</td></tr><tr><td>ระบบขัดแย้งกันแล้วคิดว่าคำนวณผิด</td><td>"ไม่มีจุดวิกฤตเลย" เป็นคำตอบที่ถูกต้องได้</td></tr></tbody></table>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w05_f10_two_var_test_flow.svg" alt="ผังการตัดสินใจแบบกล่องและลูกศรลงล่าง กล่องแรก หาอนุพันธ์ย่อย f_x และ f_y ลูกศรลง กล่องสอง ตั้งเท่ากับศูนย์ ได้ระบบเชิงเส้น 2 คูณ 2 ลูกศรลงแตกเป็นสามทาง ป้ายทางซ้าย ไม่มีผลเฉลย จบที่กล่อง ไม่มีจุดวิกฤต ป้ายทางขวา มีผลเฉลยมากมาย จบที่กล่อง จุดวิกฤตเป็นเส้น ป้ายทางกลาง ผลเฉลยเดียว ไปกล่อง คำนวณ D ลูกศรแตกสี่ทางไปกล่อง MIN กล่อง MAX กล่อง SADDLE และกล่อง ทดสอบไม่ได้ ต้องจัดรูปพีชคณิต ขาวดำ กล่องสี่เหลี่ยมเส้นบาง ไม่มีการไล่เฉดสี" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-8" data-title="ใช้ทำอะไรใน DS/CS: จุดอานม้าในโมเดลจริง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 9</div>
+    <div class="slide-title">ใช้ทำอะไรใน DS/CS: จุดอานม้าในโมเดลจริง</div>
+  </div>
+  <div class="key-message">จุดอานม้าไม่ใช่ของประหลาดในตำรา — มันเป็นสิ่งที่พบมากที่สุดในผิวความคลาดเคลื่อนของโมเดลที่มีพารามิเตอร์เยอะ</div>
+  <div class="slide-content"><p>ยิ่งมีทิศให้เดินมาก โอกาสที่ทุกทิศจะโค้งขึ้นพร้อมกันก็ยิ่งน้อย — อัลกอริทึมที่หยุดเมื่อ "เกรเดียนต์เป็นศูนย์" อาจหยุดที่จุดอานม้าซึ่งไม่ใช่คำตอบที่ดีเลย</p>
+<p><strong>กรณี $D=0$ ก็มีคู่แฝดตรงตัว</strong> — เรียกว่า "ตัวแปรซ้ำซ้อน" เช่นใส่ฟีเจอร์สำเนากันเข้าไป ผลคือสัมประสิทธิ์สองตัวสลับกันได้อย่างอิสระโดยความคลาดเคลื่อนไม่เปลี่ยน — ตีความไม่ได้</p></div>
+</div>
+<div class="slide slide-9" data-title="เตรียมพร้อมสำหรับ Capstone">
+  <div class="slide-header">
+    <div class="slide-num">Slide 10</div>
+    <div class="slide-title">เตรียมพร้อมสำหรับ Capstone</div>
+  </div>
+  <div class="key-message">ทุกโมเดลที่ต้องเทรนมีฟังก์ชันความคลาดเคลื่อนที่กินพารามิเตอร์เป็นอินพุต — โมเดลง่ายที่สุดมีสองพารามิเตอร์พอดี</div>
+  <div class="slide-content"><p>โมเดล $\hat y=wx+b$ มีสองพารามิเตอร์คือความชันกับจุดตัดแกน — ฟังก์ชันความคลาดเคลื่อนของมันจึงเป็น $f$ ของสองตัวแปรพอดี <strong>และเราจะทำมันด้วยมือในช่วงถัดไป</strong></p>
+<p><strong>ตรรกะไม่เปลี่ยนแม้พารามิเตอร์จะมีล้านตัว:</strong> หาเกรเดียนต์ → ให้เท่ากับศูนย์ → แก้ระบบ</p></div>
+</div>
+<div class="slide slide-10" data-title="ทบทวน: กรณีเทียบยอดเนิน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 11</div>
+    <div class="slide-title">ทบทวน: กรณีเทียบยอดเนิน</div>
+  </div>
+  <div class="key-message">$D$ บอกว่า "เป็นแอ่งหรือเนินจริง" ส่วนเครื่องหมายของ $f_{xx}$ บอกว่า "แอ่งหรือเนิน"</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $h(x,y)=-x^2-y^2+2x+4y-1$</p>
+<p>$$
+h_x=-2x+2=0\Rightarrow x=1 \qquad h_y=-2y+4=0\Rightarrow y=2
+$$</p>
+<p>$$
+D=(-2)(-2)-0^2=4&gt;0,\quad h_{xx}=-2&lt;0 \;\Rightarrow\; \textbf{ค่าสูงสุดสัมพัทธ์}
+$$</p>
+<p>$$
+h(1,2)=-1-4+2+8-1=4
+$$</p></div>
+</div>
+<div class="slide slide-11" data-title="ทบทวนสามกรณีให้แม่น">
+  <div class="slide-header">
+    <div class="slide-num">Slide 12</div>
+    <div class="slide-title">ทบทวนสามกรณีให้แม่น</div>
+  </div>
+  <div class="key-message">ทุกครั้งที่แก้ $\nabla f=0$ ให้ถามตัวเองว่ากำลังอยู่กรณีไหนในสามกรณีของสัปดาห์ 2</div>
+  <div class="slide-content"><table><thead><tr><th>ระบบ $2\times2$</th><th>จุดวิกฤต</th></tr></thead><tbody><tr><td>ผลเฉลยเดียว</td><td>จุดวิกฤตจุดเดียว → ทดสอบด้วย $D$</td></tr><tr><td>ไม่มีผลเฉลย</td><td>ไม่มีจุดวิกฤตเลย</td></tr><tr><td>ผลเฉลยมากมาย</td><td>จุดวิกฤตเป็นเส้นทั้งเส้น → $D=0$ เสมอ ต้องใช้พีชคณิต</td></tr></tbody></table></div>
+</div>
+<div class="slide slide-12" data-title="ทำไมต้องเป็นฟังก์ชันกำลังสอง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 13</div>
+    <div class="slide-title">ทำไมต้องเป็นฟังก์ชันกำลังสอง</div>
+  </div>
+  <div class="key-message">ทุกตัวอย่างวันนี้เป็นฟังก์ชันกำลังสองโดยตั้งใจ — เพื่อให้เห็นว่า $\nabla f=0$ กลายเป็นระบบเชิงเส้น และเพื่อให้คำนวณด้วยมือจบได้จริง</div>
+  <div class="slide-content"><p>ถ้า $f$ ไม่ใช่กำลังสอง $\nabla f=0$ จะไม่เชิงเส้นและแก้ด้วยมือไม่ได้ทั่วไป — <strong>นี่คือเหตุผลที่ Capstone เลือกใช้ SSE ซึ่งเป็นฟังก์ชันกำลังสองในพารามิเตอร์พอดี</strong></p></div>
+</div>
+<div class="slide slide-13" data-title="สรุปและสิ่งที่ต้องทำ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 14</div>
+    <div class="slide-title">สรุปและสิ่งที่ต้องทำ</div>
+  </div>
+  <div class="key-message">$\nabla f=0$ ของฟังก์ชันกำลังสองคือระบบเชิงเส้น — การหาค่าเหมาะที่สุดสองตัวแปรจึงไม่ใช่เรื่องใหม่ มันคืออนุพันธ์ย่อยบวกการแก้ระบบ</div>
+  <div class="slide-content"><p><strong>จบช่วงนี้ควรทำได้:</strong></p>
+<ul class="slide-list"><li>แก้ $\nabla f=0$ เป็นระบบเชิงเส้นได้ ทั้งกรณีมีและไม่มีพจน์ไขว้</li><li>ใช้ $D$ จำแนกจุดต่ำสุด/สูงสุด/อานม้าได้</li><li>อธิบายจุดอานม้าและกรณี $D=0$ ได้</li></ul>
+<p><strong>ตั้งค้างไว้:</strong> พร้อมแล้วสำหรับ Capstone — สร้างสูตร linear regression ด้วยมือ</p>
+<p><strong>การบ้าน:</strong> <code>exercises/ex_05.md</code> ข้อ 9–16</p></div>
+</div>
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" title="Previous (&#8592;)">&#9664;</button>
+  <span id="counter">1 / 14</span>
+  <span id="slide-label"></span>
+  <button id="next-btn" onclick="changeSlide(1)" title="Next (&#8594;)">&#9654;</button>
+</div>
+<div id="kb-hint">&#8592; &#8594; Space</div>
+<script>
+
+var current = 0;
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var counter = document.getElementById('counter');
+var fill = document.getElementById('progress-fill');
+var label = document.getElementById('slide-label');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+
+function showSlide(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, total - 1));
+  slides[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  fill.style.width = ((current + 1) / total * 100) + '%';
+  label.textContent = slides[current].dataset.title || '';
+  prevBtn.disabled = (current === 0);
+  nextBtn.disabled = (current === total - 1);
+  // Scroll content to top on slide change
+  var sc = slides[current].querySelector('.slide-content');
+  if (sc) sc.scrollTop = 0;
+}
+
+function changeSlide(dir) { showSlide(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault(); changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault(); changeSlide(-1);
+  } else if (e.key === ' ') {
+    e.preventDefault(); changeSlide(e.shiftKey ? -1 : 1);
+  } else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End')  { showSlide(total - 1); }
+});
+
+// Touch swipe
+var touchX = 0;
+document.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+showSlide(0);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<svg viewBox="0 0 420 380" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .bowl  { fill:#999; fill-opacity:0.25; stroke:#333; stroke-width:1.5; }
+    .rim   { fill:none; stroke:#333; stroke-width:1.2; stroke-dasharray:4 3; }
+    .plane { fill:#ccc; fill-opacity:0.35; stroke:#555; stroke-width:1; }
+    .cut   { stroke:#000; stroke-width:2.2; fill:none; }
+    .circle{ fill:none; stroke:#000; stroke-width:1.6; }
+    .dash  { stroke:#000; stroke-width:1; stroke-dasharray:3 3; }
+    .lbl   { fill:#000; font-size:13px; }
+  </style>
+
+  <!-- bowl outline: two nested arcs forming paraboloid impression -->
+  <path d="M 60,260 C 100,340 300,340 340,260 C 300,180 100,180 60,260 Z" class="bowl"/>
+  <path d="M 60,260 C 100,200 300,200 340,260" class="rim"/>
+  <path d="M 200,60 C 130,100 100,180 100,260 C 100,320 150,340 200,340
+           C 250,340 300,320 300,260 C 300,180 270,100 200,60 Z" class="bowl"/>
+
+  <!-- three horizontal cutting planes (ellipses) at increasing height -->
+  <ellipse cx="200" cy="260" rx="100" ry="22" class="plane"/>
+  <ellipse cx="200" cy="190" rx="70" ry="16" class="plane"/>
+  <ellipse cx="200" cy="130" rx="35" ry="9" class="plane"/>
+
+  <text x="315" y="264" class="lbl">z=1</text>
+  <text x="278" y="194" class="lbl">z=4</text>
+  <text x="240" y="134" class="lbl">z=9</text>
+
+  <!-- projections down to xy plane at bottom with circles -->
+  <line x1="200" y1="282" x2="200" y2="340" class="dash"/>
+  <ellipse cx="200" cy="340" rx="120" ry="26" class="circle"/>
+  <ellipse cx="200" cy="340" rx="90" ry="20" class="circle"/>
+  <ellipse cx="200" cy="340" rx="55" ry="12" class="circle"/>
+
+  <text x="330" y="345" class="lbl">c=1</text>
+  <text x="295" y="325" class="lbl">c=4</text>
+  <text x="260" y="312" class="lbl">c=9</text>
+
+  <text x="130" y="30" class="lbl">ผิว z = x² + y² (ชามหงาย)</text>
+</svg>

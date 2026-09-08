@@ -1,0 +1,9 @@
+# Reference textbooks (copyrighted, some restrict redistribution — see textbook/*.md notes)
+textbook/*.pdf
+
+# Stale build artifact (unzipped folder is the source of truth)
+week_01_equations.zip
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db

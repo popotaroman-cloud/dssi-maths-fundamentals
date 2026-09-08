@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Deck: เกรเดียนต์ ∇f</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],throwOnError:false});"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a237e;
+  --accent:  #1565c0;
+  --light:   #e3f2fd;
+  --bg:      #ffffff;
+  --text:    #212121;
+  --muted:   #546e7a;
+  --code-bg: #1e272e;
+  --code-fg: #dfe6e9;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0d1b2a;
+  font-family: 'Sarabun', 'Noto Sans Thai', 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ── Presentation container ───────────────────── */
+#presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
+  padding: clamp(28px, 3.5vw, 56px) clamp(40px, 6vw, 88px) 74px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Progress bar ─────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  z-index: 200;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #42a5f5, #1565c0);
+  transition: width 0.3s ease;
+}
+
+/* ── Slide header (title + num) ───────────────── */
+.slide-header {
+  margin-bottom: clamp(14px, 2vh, 28px);
+  padding-bottom: clamp(10px, 1.4vh, 18px);
+  border-bottom: 3px solid var(--light);
+  flex-shrink: 0;
+}
+.slide-num {
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.slide-title {
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+/* ── Title Slide (index 0) ────────────────────── */
+.slide-0 {
+  background: linear-gradient(145deg, #0d1b2a 0%, #1a237e 55%, #1565c0 100%);
+  justify-content: center;
+}
+.slide-0 .slide-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.slide-0 .slide-num  { color: #90caf9; }
+.slide-0 .slide-title {
+  font-size: clamp(34px, 5vw, 64px);
+  color: #ffffff;
+}
+.slide-0 .key-message {
+  background: rgba(255,255,255,0.1);
+  border-left-color: #42a5f5;
+  color: #e3f2fd;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.slide-0 .slide-content { color: #cfd8dc; }
+.slide-0 .slide-content p { color: #cfd8dc; }
+.slide-0 .slide-content li { color: #cfd8dc; }
+.slide-0 .slide-content strong { color: #90caf9; }
+.slide-0 .content-heading { color: #90caf9; }
+
+/* ── Key Message callout ──────────────────────── */
+.key-message {
+  background: var(--light);
+  border-left: 6px solid var(--accent);
+  padding: clamp(11px, 1.4vh, 18px) clamp(18px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: clamp(14px, 1.8vh, 26px);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Content area ─────────────────────────────── */
+.slide-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(17px, 1.85vw, 26px);
+  line-height: 1.68;
+  color: var(--text);
+  min-height: 0;
+}
+.slide-content::-webkit-scrollbar { width: 5px; }
+.slide-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.slide-content p { margin-bottom: 0.55em; }
+.slide-content strong { color: var(--primary); }
+.slide-content em { color: #37474f; }
+
+/* ── Lists ────────────────────────────────────── */
+.slide-list {
+  padding-left: clamp(22px, 2.8vw, 38px);
+  margin: 0.2em 0 0.7em;
+}
+.slide-list li {
+  margin-bottom: 0.45em;
+  line-height: 1.5;
+}
+ul.slide-list li::marker { color: var(--accent); font-weight: 700; }
+ol.slide-list li::marker { color: var(--accent); font-weight: 700; }
+
+/* ── Code blocks ──────────────────────────────── */
+.code-block {
+  margin: 0.5em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  font-size: clamp(12px, 1.35vw, 18px);
+}
+.code-lang {
+  background: #37474f;
+  color: #90a4ae;
+  font-size: 0.82em;
+  padding: 4px 16px;
+  font-family: 'Fira Code', Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.8vw, 24px);
+  overflow-x: auto;
+  line-height: 1.58;
+  margin: 0;
+}
+code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+}
+.slide-content code:not(pre code) {
+  background: #e8eaf6;
+  color: #1a237e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 1.5vw, 21px);
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  padding: clamp(7px, 0.9vh, 13px) clamp(10px, 1.4vw, 18px);
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: clamp(6px, 0.8vh, 11px) clamp(10px, 1.4vw, 18px);
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8f9ff; }
+tr:hover td { background: var(--light); }
+
+/* ── Sub-headings inside content ──────────────── */
+.content-heading {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--primary);
+  margin: 0.65em 0 0.25em;
+  font-weight: 700;
+}
+h3.content-heading {
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--accent);
+}
+
+/* ── Generated figure (matplotlib base64 PNG) ────────────── */
+.slide-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3em 0;
+  flex-shrink: 0;
+}
+.slide-figure img {
+  max-width: 96%;
+  max-height: clamp(200px, 38vh, 380px);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.10);
+  object-fit: contain;
+}
+
+/* ── Figure placeholder (fallback เมื่อ generate ไม่ได้) ─── */
+.placeholder {
+  border: 2px dashed var(--accent);
+  padding: clamp(12px, 1.6vh, 22px) clamp(16px, 2vw, 26px);
+  border-radius: 10px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0.4em 0;
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+
+.slide-hr {
+  border: none;
+  border-top: 2px solid #e8eaf6;
+  margin: 0.5em 0;
+}
+
+/* ── Navigation bar ───────────────────────────── */
+#nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(13,27,42,0.9);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 40px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+#nav button {
+  background: none;
+  border: none;
+  color: #90a4ae;
+  font-size: clamp(16px, 1.8vw, 24px);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.12); }
+#nav button:disabled { color: #3d4e5c; cursor: default; }
+#counter {
+  color: #e2e8f0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+}
+#slide-label {
+  color: #78909c;
+  font-size: clamp(10px, 1vw, 13px);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Keyboard hint ────────────────────────────── */
+#kb-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* ── KaTeX math rendering ─────────────────── */
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex {
+  font-size: clamp(15px, 1.7vw, 21px) !important;
+}
+.slide-0 .katex { color: #e3f2fd; }
+
+</style>
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+<div id="presentation">
+<div class="slide slide-0" data-title="Title">
+  <div class="slide-header">
+    <div class="slide-num">Slide 1</div>
+    <div class="slide-title">Title</div>
+  </div>
+  <div class="key-message">มัดสองตัวเลข $f_x$ กับ $f_y$ เข้าด้วยกันเป็นเวกเตอร์เดียว แล้วเรขาคณิตทั้งหมดจะโผล่ออกมา</div>
+  <div class="slide-content"><p><strong>Maths Fundamentals for DS &amp; CS — สัปดาห์ 04</strong></p>
+<h2 class="content-heading">เกรเดียนต์ $\nabla f$</h2>
+<ul class="slide-list"><li>ช่วงนี้: 40 นาที</li><li>ต่อจาก: อนุพันธ์ย่อย</li><li>นำไปสู่: กฎลูกโซ่หลายตัวแปร และ gradient descent ในสัปดาห์ 5</li></ul></div>
+</div>
+<div class="slide slide-1" data-title="ภาพรวมช่วงนี้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 2</div>
+    <div class="slide-title">ภาพรวมช่วงนี้</div>
+  </div>
+  <div class="key-message">เกรเดียนต์เป็นเวกเตอร์ ไม่ใช่จำนวน — และมันมีความหมายเชิงเรขาคณิตสองข้อที่ต้องพูดได้ทั้งคู่</div>
+  <div class="slide-content"><p><strong>จะเรียน:</strong></p>
+<ul class="slide-list"><li>นิยามเกรเดียนต์และสองความหมายเชิงเรขาคณิต</li><li>เกณฑ์ตรวจการตั้งฉากด้วยตัวเลข (ผลคูณความชัน $=-1$)</li><li>$\nabla f=(0,0)$ ไม่ได้แปลว่าเจอจุดต่ำสุดเสมอไป</li></ul></div>
+</div>
+<div class="slide slide-2" data-title="นิยามและความหมายที่ 1: ทิศเพิ่มชันที่สุด">
+  <div class="slide-header">
+    <div class="slide-num">Slide 3</div>
+    <div class="slide-title">นิยามและความหมายที่ 1: ทิศเพิ่มชันที่สุด</div>
+  </div>
+  <div class="key-message">ถ้าอยากขึ้นเนินให้เร็วที่สุด เดินตาม $\nabla f$ — ถ้าอยากลงเร็วที่สุด เดินตาม $-\nabla f$</div>
+  <div class="slide-content"><p>$$
+\nabla f(a,b) = \big(f_x(a,b),\, f_y(a,b)\big) \qquad\text{— เวกเตอร์ในระนาบ ไม่ใช่จำนวน}
+$$</p>
+<blockquote>ทิศที่ $f$ <strong>เพิ่มเร็วที่สุด</strong> คือทิศของ $\nabla f$ · ทิศที่ <strong>ลดเร็วที่สุด</strong> คือทิศของ $-\nabla f$ <strong>ความยาว</strong> $\|\nabla f\|=\sqrt{f_x^2+f_y^2}$ คืออัตราการเพิ่มในทิศที่ชันที่สุดนั้น</blockquote></div>
+</div>
+<div class="slide slide-3" data-title="ความหมายที่ 2: ตั้งฉากกับ level curve">
+  <div class="slide-header">
+    <div class="slide-num">Slide 4</div>
+    <div class="slide-title">ความหมายที่ 2: ตั้งฉากกับ level curve</div>
+  </div>
+  <div class="key-message">เดินตาม level curve คือเดินโดยค่าไม่เปลี่ยนเลย ทิศที่ชันที่สุดจึงต้องตั้งฉากกับมัน</div>
+  <div class="slide-content"><p>$$
+\nabla f(a,b) \perp \text{level curve ที่ผ่าน } (a,b)
+$$</p>
+<p><strong>เกณฑ์ตรวจด้วยตัวเลข:</strong> ถ้าหาความชันเส้นสัมผัส level curve ได้ ผลคูณกับความชันของ $\nabla f$ ต้องเป็น $-1$ พอดี — ใช้ตรวจได้ทุกข้อ</p></div>
+</div>
+<div class="slide slide-4" data-title="ตัวอย่าง: เกรเดียนต์บนวงรี พร้อมตรวจการตั้งฉาก">
+  <div class="slide-header">
+    <div class="slide-num">Slide 5</div>
+    <div class="slide-title">ตัวอย่าง: เกรเดียนต์บนวงรี พร้อมตรวจการตั้งฉาก</div>
+  </div>
+  <div class="key-message">ตรวจการตั้งฉากด้วยตัวเลขเสมอ อย่าดูจากภาพว่า "ดูเหมือนตั้งฉาก"</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x,y)=x^2+3y^2$ ที่ $(2,1)$</p>
+<p>$$
+\nabla f(2,1) = (2x,6y)\big|_{(2,1)} = (4,6) \qquad \|\nabla f\|=\sqrt{16+36}=2\sqrt{13}
+$$</p>
+<p>level curve: $x^2+3y^2=7$ → ความชันเส้นสัมผัส $\dfrac{dy}{dx}=-\dfrac{x}{3y}=-\dfrac23$</p>
+<p><strong>ตรวจ:</strong> ความชัน $\nabla f=\dfrac64=\dfrac32$ และ $\dfrac32\times\left(-\dfrac23\right)=-1$ ✓</p></div>
+</div>
+<div class="slide slide-5" data-title="ตัวอย่าง: ความยาวเกรเดียนต์เท่ากันทุกจุด">
+  <div class="slide-header">
+    <div class="slide-num">Slide 6</div>
+    <div class="slide-title">ตัวอย่าง: ความยาวเกรเดียนต์เท่ากันทุกจุด</div>
+  </div>
+  <div class="key-message">ฟังก์ชันระยะทางจากจุดกำเนิดชันเท่ากันทุกที่ — เกรเดียนต์จึงยาวเท่ากันทุกจุดพอดี</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x,y)=\sqrt{x^2+y^2}$ ที่ $(3,4)$</p>
+<p>$$
+\nabla f(3,4) = \left(\frac{x}{\sqrt{x^2+y^2}},\frac{y}{\sqrt{x^2+y^2}}\right)\bigg|_{(3,4)} = \left(\frac35,\frac45\right) \qquad \|\nabla f\| = 1
+$$</p>
+<p><strong>ตรวจการตั้งฉาก:</strong> level curve คือวงกลม $x^2+y^2=25$ ความชันเส้นสัมผัส $=-\dfrac34$ · ความชัน $\nabla f=\dfrac{4/5}{3/5}=\dfrac43$ · $\dfrac43\times\left(-\dfrac34\right)=-1$ ✓</p>
+<p>เกรเดียนต์ชี้ออกจากจุดกำเนิดตามแนวรัศมี — ตั้งฉากกับวงกลมตามที่คาด</p></div>
+</div>
+<div class="slide slide-6" data-title="จุดที่ $\nabla f=(0,0)$: เรขาคณิตพัง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 7</div>
+    <div class="slide-title">จุดที่ $\nabla f=(0,0)$: เรขาคณิตพัง</div>
+  </div>
+  <div class="key-message">$\nabla f=(0,0)$ ไม่มีทิศให้ตั้งฉาก และถ้า level set ที่จุดนั้นตัดกันเอง ก็ไม่มีเส้นสัมผัสเดียวให้ตั้งฉากด้วย — ทั้งสองด้านหายไปพร้อมกันอย่างสอดคล้อง</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $f(x,y)=x^2-y^2$ ที่ $(0,0)$: $\nabla f(0,0)=(0,0)$</p>
+<p>level set ที่ $c=0$: $x^2-y^2=0 \Rightarrow y=\pm x$ — เส้นตรงสองเส้นตัดกัน (เหมือนตัวอย่าง $xy=0$)</p>
+<p><strong>ตรวจด้วยมือ:</strong> ตรึง $y=0$: $f(t,0)=t^2\ge0$ (เหมือนก้นหุบเขา) · ตรึง $x=0$: $f(0,t)=-t^2\le0$ (เหมือนยอดสัน)</p>
+<p>จุดเดียวกันเป็นทั้งก้นหุบเขาและยอดสัน — นี่คือ <strong>จุดอานม้า (saddle point)</strong></p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w04_f05_zero_gradient_crossing_levelset.svg" alt="ภาพสองช่องซ้ายขวา ช่องซ้ายวาดไฮเพอร์โบลาของ x²−y²=8 สองท่อนซ้ายขวา มีจุดทึบที่ (3,1) ลูกศรทึบจากจุดนั้นชี้ตามทิศ (6,−2) กำกับว่า ∇f และเส้นตรงประที่สัมผัสเส้นโค้งที่จุดเดียวกันโดยตั้งฉากกับลูกศร ช่องขวาวาดเส้นตรงสองเส้น y=x และ y=−x ตัดกันที่จุดกำเนิด กำกับว่า level set ระดับ 0 มีวงกลมกลวงที่จุดกำเนิดพร้อมข้อความ &quot;∇f = (0,0) ไม่มีทิศชันที่สุด และไม่มีเส้นสัมผัสเส้นเดียว&quot; ขาวดำ เส้นน้อย" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-7" data-title="&quot;$\nabla f=0$ แปลว่าเจอจุดต่ำสุด&quot; ผิด">
+  <div class="slide-header">
+    <div class="slide-num">Slide 8</div>
+    <div class="slide-title">"$\nabla f=0$ แปลว่าเจอจุดต่ำสุด" ผิด</div>
+  </div>
+  <div class="key-message">การจำแนกว่าจุดวิกฤตเป็นต่ำสุด สูงสุด หรืออานม้า คืองานของสัปดาห์ 5 — สัปดาห์นี้แค่ต้องรู้ว่ามีจุดแบบนี้อยู่</div>
+  <div class="slide-content"><p>$D=f_{xx}f_{yy}-(f_{xy})^2$ (ใช้ตัวเลขสี่ตัวจากช่วงก่อน) จะเป็นตัวจำแนกในสัปดาห์ 5</p>
+<p><strong>อ่านเกรเดียนต์บนแผนที่ loss:</strong> $\nabla L(1,1)=(-6,-2)$ ชี้ซ้ายล่าง → เพิ่ม $L$ · ทิศลด $L$ คือ $-\nabla L=(6,2)$ (ขวาบน) · ที่ $(2,0)$: $-\nabla L=(-10,-4)$ (ซ้ายล่าง) — <strong>สองจุดชี้ทิศตรงข้ามกัน แปลว่าจุดที่ดีที่สุดอยู่ระหว่างสองจุดนี้</strong></p></div>
+</div>
+<div class="slide slide-8" data-title="กรณีที่พลาดบ่อย และใช้ทำอะไรใน DS/CS">
+  <div class="slide-header">
+    <div class="slide-num">Slide 9</div>
+    <div class="slide-title">กรณีที่พลาดบ่อย และใช้ทำอะไรใน DS/CS</div>
+  </div>
+  <div class="key-message">เกรเดียนต์คือเข็มทิศของทุกอัลกอริทึมที่ปรับพารามิเตอร์ — ความยาวบอกว่ายังมีอะไรให้ปรับอยู่ไหม</div>
+  <div class="slide-content"><table><thead><tr><th>ที่พลาด</th><th>วิธีกัน</th></tr></thead><tbody><tr><td>เขียน $\nabla f(2,1)=4+6=10$</td><td>เกรเดียนต์เป็น<strong>เวกเตอร์</strong> ตอบเป็นคู่อันดับเสมอ</td></tr><tr><td>คิดว่าเกรเดียนต์ชี้ไปจุดต่ำสุด</td><td>$\nabla f$ ชี้ทิศเพิ่มชันที่สุด <strong>เฉพาะที่จุดนั้น</strong> ไม่ใช่ชี้ตรงไปจุดต่ำสุด</td></tr></tbody></table>
+<p><strong>ในทางปฏิบัติ:</strong> $\|\nabla L\|$ ใหญ่ = ยังอยู่บนที่ชัน ปรับได้อีกมาก · เล็กลงเรื่อย ๆ = ใกล้ที่ราบ · ถ้า contour เป็นหุบเขาแคบ เกรเดียนต์จะชี้<strong>ข้าม</strong>หุบเขา ทำให้เดินซิกแซก — เหตุผลที่ feature scaling ช่วย</p></div>
+</div>
+<div class="slide slide-9" data-title="สรุปและสิ่งที่ต้องทำ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 10</div>
+    <div class="slide-title">สรุปและสิ่งที่ต้องทำ</div>
+  </div>
+  <div class="key-message">เกรเดียนต์เป็นเวกเตอร์ที่มีสองความหมาย — ทิศเพิ่มชันที่สุด และตั้งฉากกับ level curve — ต้องพูดได้ทั้งสองข้อ</div>
+  <div class="slide-content"><p><strong>จบช่วงนี้ควรทำได้:</strong></p>
+<ul class="slide-list"><li>หา $\nabla f(a,b)$ และความยาวได้</li><li>ตรวจการตั้งฉากด้วยเกณฑ์ตัวเลข (ผลคูณความชัน $=-1$)</li><li>อธิบายได้ว่า $\nabla f=(0,0)$ ไม่รับประกันว่าเป็นจุดต่ำสุด</li></ul>
+<p><strong>ตั้งค้างไว้:</strong> การจำแนกจุดวิกฤต (ต่ำสุด/สูงสุด/อานม้า) รอสัปดาห์ 5</p>
+<p><strong>การบ้าน:</strong> <code>exercises/ex_04.md</code> ข้อ 17–21 · <strong>ตัวอย่างจุดอานม้าแบบเต็มมีรายละเอียดเพิ่มใน note</strong></p></div>
+</div>
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" title="Previous (&#8592;)">&#9664;</button>
+  <span id="counter">1 / 14</span>
+  <span id="slide-label"></span>
+  <button id="next-btn" onclick="changeSlide(1)" title="Next (&#8594;)">&#9654;</button>
+</div>
+<div id="kb-hint">&#8592; &#8594; Space</div>
+<script>
+
+var current = 0;
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var counter = document.getElementById('counter');
+var fill = document.getElementById('progress-fill');
+var label = document.getElementById('slide-label');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+
+function showSlide(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, total - 1));
+  slides[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  fill.style.width = ((current + 1) / total * 100) + '%';
+  label.textContent = slides[current].dataset.title || '';
+  prevBtn.disabled = (current === 0);
+  nextBtn.disabled = (current === total - 1);
+  // Scroll content to top on slide change
+  var sc = slides[current].querySelector('.slide-content');
+  if (sc) sc.scrollTop = 0;
+}
+
+function changeSlide(dir) { showSlide(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault(); changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault(); changeSlide(-1);
+  } else if (e.key === ' ') {
+    e.preventDefault(); changeSlide(e.shiftKey ? -1 : 1);
+  } else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End')  { showSlide(total - 1); }
+});
+
+// Touch swipe
+var touchX = 0;
+document.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+showSlide(0);
+
+</script>
+</body>
+</html>

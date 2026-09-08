@@ -1,0 +1,31 @@
+<svg viewBox="0 0 500 380" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .plane { fill:#888; fill-opacity:0.18; stroke:#333; stroke-width:1.3; }
+    .line  { stroke:#000; stroke-width:3; }
+    .ax    { stroke:#000; stroke-width:1.3; }
+    .lbl   { fill:#000; font-size:15px; }
+  </style>
+
+  <!-- axes -->
+  <line x1="60" y1="330" x2="440" y2="330" class="ax"/>
+  <line x1="60" y1="330" x2="150" y2="380" class="ax"/>
+  <line x1="60" y1="330" x2="60" y2="40" class="ax"/>
+  <text x="445" y="335" class="lbl">x</text>
+  <text x="145" y="378" class="lbl">y</text>
+  <text x="45" y="40" class="lbl">z</text>
+
+  <!-- plane 1 -->
+  <polygon points="90,300 350,260 380,120 130,150" class="plane"/>
+  <!-- plane 2 -->
+  <polygon points="80,220 400,180 420,80 110,110" class="plane"/>
+  <!-- plane 3 -->
+  <polygon points="120,290 420,140 400,60 110,190" class="plane"/>
+
+  <!-- line of intersection -->
+  <line x1="140" y1="260" x2="330" y2="120" class="line"/>
+  <polygon points="330,120 320,128 326,133" fill="#000"/>
+  <polygon points="140,260 150,254 146,248" fill="#000"/>
+
+  <text x="360" y="230" class="lbl">เซตผลเฉลย = เส้นตรง</text>
+  <text x="360" y="250" class="lbl">(ตัวแปรอิสระ 1 ตัว)</text>
+</svg>

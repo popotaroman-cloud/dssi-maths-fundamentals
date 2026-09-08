@@ -1,0 +1,47 @@
+<svg viewBox="0 0 480 260" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax   { stroke:#000; stroke-width:1.4; }
+    .curve{ stroke:#000; stroke-width:2.2; fill:none; }
+    .dot  { fill:#000; }
+    .grad { stroke:#000; stroke-width:2.4; }
+    .tan  { stroke:#000; stroke-width:1.6; stroke-dasharray:5 4; }
+    .lbl  { fill:#000; font-size:13px; }
+    .circ { fill:none; stroke:#000; stroke-width:1.6; }
+  </style>
+
+  <!-- LEFT: hyperbola x^2-y^2=8 -->
+  <g>
+    <line x1="20" y1="130" x2="220" y2="130" class="ax"/>
+    <line x1="120" y1="240" x2="120" y2="20" class="ax"/>
+
+    <path d="M 165,50 C 150,80 143,105 143,130 C 143,155 150,180 165,210" class="curve"/>
+    <path d="M 75,50 C 90,80 97,105 97,130 C 97,155 90,180 75,210" class="curve"/>
+
+    <!-- point (3,1) on right branch roughly px(155,110) -->
+    <circle cx="155" cy="110" r="5" class="dot"/>
+    <text x="160" y="105" class="lbl">(3,1)</text>
+
+    <!-- gradient arrow (6,-2) direction -->
+    <line x1="155" y1="110" x2="195" y2="130" class="grad"/>
+    <polygon points="195,130 186,126 188,135" fill="#000"/>
+    <text x="198" y="126" class="lbl">∇f</text>
+
+    <!-- tangent line perpendicular -->
+    <line x1="125" y1="75" x2="185" y2="145" class="tan"/>
+  </g>
+
+  <!-- RIGHT: two lines y=x, y=-x crossing at origin -->
+  <g transform="translate(250,0)">
+    <line x1="20" y1="130" x2="220" y2="130" class="ax"/>
+    <line x1="120" y1="240" x2="120" y2="20" class="ax"/>
+
+    <line x1="40" y1="220" x2="200" y2="40" class="curve"/>
+    <line x1="40" y1="40" x2="200" y2="220" class="curve"/>
+
+    <text x="180" y="55" class="lbl">level set ระดับ 0</text>
+
+    <circle cx="120" cy="130" r="10" class="circ"/>
+    <text x="60" y="175" class="lbl">∇f=(0,0) ไม่มีทิศชันที่สุด</text>
+    <text x="60" y="190" class="lbl">และไม่มีเส้นสัมผัสเส้นเดียว</text>
+  </g>
+</svg>

@@ -1,0 +1,32 @@
+<svg viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .box  { fill:#fff; stroke:#000; stroke-width:2; }
+    .lbl  { fill:#000; font-size:16px; text-anchor:middle; }
+    .arr  { stroke:#000; stroke-width:2; fill:none; }
+    .note { fill:#000; font-size:14px; text-anchor:middle; }
+  </style>
+
+  <!-- กล่องซ้าย: เงื่อนไข 1 -->
+  <rect x="30" y="30" width="220" height="70" class="box"/>
+  <text x="140" y="60" class="lbl">เงื่อนไข 1</text>
+  <text x="140" y="84" class="lbl">สิ่งใต้กรณฑ์ A ≥ 0</text>
+
+  <!-- กล่องขวา: เงื่อนไข 2 -->
+  <rect x="310" y="30" width="220" height="70" class="box"/>
+  <text x="420" y="60" class="lbl">เงื่อนไข 2</text>
+  <text x="420" y="84" class="lbl">ข้างตรงข้าม B ≥ 0</text>
+
+  <!-- คำเตือนใต้กล่องขวา -->
+  <text x="420" y="118" class="note">← ข้อที่ถูกลืมบ่อยที่สุด</text>
+
+  <!-- ลูกศรจากทั้งสองกล่องลงมารวมกัน -->
+  <line x1="140" y1="100" x2="240" y2="200" class="arr"/>
+  <polygon points="240,200 228,196 232,208" fill="#000"/>
+  <line x1="420" y1="100" x2="320" y2="200" class="arr"/>
+  <polygon points="320,200 328,208 332,196" fill="#000"/>
+
+  <!-- กล่องล่าง: โดเมนที่ใช้ได้ -->
+  <rect x="160" y="210" width="240" height="70" class="box"/>
+  <text x="280" y="240" class="lbl">โดเมนที่ใช้ได้</text>
+  <text x="280" y="264" class="lbl">(เงื่อนไข 1 และ 2 ต้องจริงพร้อมกัน)</text>
+</svg>

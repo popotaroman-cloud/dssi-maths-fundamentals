@@ -1,0 +1,49 @@
+<svg viewBox="0 0 680 320" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax   { stroke:#000; stroke-width:1.5; }
+    .curve{ stroke:#000; stroke-width:2.2; fill:none; }
+    .dot  { fill:#000; }
+    .lbl  { fill:#000; font-size:13px; }
+    .cap  { fill:#000; font-size:14px; text-anchor:middle; }
+    .tick { stroke:#000; stroke-width:1; }
+  </style>
+
+  <!-- LEFT PANEL: normal scale, data (0,3)(1,6)(2,12)(3,24) -->
+  <g>
+    <line x1="50" y1="260" x2="300" y2="260" class="ax"/>
+    <line x1="50" y1="260" x2="50" y2="30" class="ax"/>
+    <text x="305" y="264" class="lbl">x</text>
+    <text x="30" y="30" class="lbl">y</text>
+
+    <!-- y scale: 0..24 -> px 260..40, x scale: 0..3 -> px 50..260 -->
+    <path d="M 50,251 C 100,249 140,240 180,210 C 210,185 235,140 260,40" class="curve"/>
+    <circle cx="50"  cy="251" r="4" class="dot"/><text x="55"  y="248" class="lbl">3</text>
+    <circle cx="120" cy="242" r="4" class="dot"/><text x="125" y="238" class="lbl">6</text>
+    <circle cx="190" cy="205" r="4" class="dot"/><text x="195" y="200" class="lbl">12</text>
+    <circle cx="260" cy="40"  r="4" class="dot"/><text x="230" y="35" class="lbl">24</text>
+
+    <text x="175" y="295" class="cap">แกนปกติ — โค้ง อ่านยาก</text>
+  </g>
+
+  <!-- RIGHT PANEL: log2 scale, marks only at 3,6,12,24 evenly spaced -->
+  <g transform="translate(370,0)">
+    <line x1="50" y1="260" x2="300" y2="260" class="ax"/>
+    <line x1="50" y1="260" x2="50" y2="30" class="ax"/>
+    <text x="305" y="264" class="lbl">x</text>
+    <text x="20" y="30" class="lbl">log2 y</text>
+
+    <!-- evenly spaced marks: y=260,200,140,80 for values 3,6,12,24 -->
+    <line x1="45" y1="260" x2="55" y2="260" class="tick"/><text x="25" y="264" class="lbl">3</text>
+    <line x1="45" y1="200" x2="55" y2="200" class="tick"/><text x="25" y="204" class="lbl">6</text>
+    <line x1="45" y1="140" x2="55" y2="140" class="tick"/><text x="20" y="144" class="lbl">12</text>
+    <line x1="45" y1="80"  x2="55" y2="80"  class="tick"/><text x="20" y="84"  class="lbl">24</text>
+
+    <line x1="50" y1="260" x2="260" y2="80" class="curve"/>
+    <circle cx="50"  cy="260" r="4" class="dot"/>
+    <circle cx="120" cy="200" r="4" class="dot"/>
+    <circle cx="190" cy="140" r="4" class="dot"/>
+    <circle cx="260" cy="80"  r="4" class="dot"/>
+
+    <text x="175" y="295" class="cap">แกน log — เป็นเส้นตรง ความชัน 1</text>
+  </g>
+</svg>

@@ -1,0 +1,50 @@
+<svg viewBox="0 0 620 430" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <defs>
+    <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#000" stroke-width="1.5"/>
+    </pattern>
+  </defs>
+  <style>
+    .ell  { fill:#fff; stroke:#000; stroke-width:2; }
+    .arr  { stroke:#000; stroke-width:2; fill:none; }
+    .lbl  { fill:#000; font-size:16px; text-anchor:middle; }
+    .tag  { fill:#000; font-size:15px; }
+  </style>
+
+  <!-- แถว 1: ⟺ ขนาดเท่ากัน -->
+  <ellipse cx="150" cy="80" rx="55" ry="34" class="ell"/>
+  <text x="150" y="86" class="lbl">เซตคำตอบ</text>
+  <line x1="230" y1="80" x2="440" y2="80" class="arr"/>
+  <polygon points="230,80 242,73 242,87" fill="#000"/>
+  <polygon points="440,80 428,73 428,87" fill="#000"/>
+  <text x="335" y="65" class="lbl">สมมูล</text>
+  <ellipse cx="500" cy="80" rx="55" ry="34" class="ell"/>
+  <text x="500" y="86" class="lbl">เซตคำตอบ</text>
+  <text x="335" y="40" class="lbl" font-size="17">ขั้นตอน ⟺ — ขนาดเท่ากัน</text>
+
+  <!-- แถว 2: ⟹ วงรีขวาใหญ่กว่า มีของปลอม -->
+  <ellipse cx="150" cy="215" rx="45" ry="30" class="ell"/>
+  <text x="150" y="221" class="lbl">เซตคำตอบ</text>
+  <line x1="215" y1="215" x2="420" y2="215" class="arr"/>
+  <polygon points="420,215 408,208 408,222" fill="#000"/>
+  <text x="315" y="200" class="lbl" font-size="17">⟹</text>
+  <ellipse cx="500" cy="215" rx="60" ry="40" fill="url(#hatch)" stroke="#000" stroke-width="2"/>
+  <ellipse cx="500" cy="215" rx="45" ry="30" class="ell"/>
+  <text x="500" y="221" class="lbl">เซตคำตอบ</text>
+  <line x1="555" y1="215" x2="590" y2="180" stroke="#000" stroke-width="1.5"/>
+  <polygon points="590,180 578,182 585,190" fill="#000"/>
+  <text x="500" y="285" class="tag" text-anchor="middle">วงแหวนลาย = "ของปลอม"</text>
+
+  <!-- แถว 3: ⟸ วงรีขวาเล็กกว่า มีของจริงที่หายไป -->
+  <ellipse cx="150" cy="345" rx="45" ry="30" class="ell"/>
+  <text x="150" y="351" class="lbl">เซตคำตอบ</text>
+  <line x1="215" y1="345" x2="420" y2="345" class="arr"/>
+  <polygon points="215,345 227,338 227,352" fill="#000"/>
+  <text x="315" y="330" class="lbl" font-size="17">⟸</text>
+  <ellipse cx="500" cy="345" rx="45" ry="30" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <ellipse cx="500" cy="345" rx="30" ry="20" class="ell"/>
+  <text x="500" y="351" class="lbl" font-size="14">เซตคำตอบ</text>
+  <line x1="530" y1="325" x2="565" y2="300" stroke="#000" stroke-width="1.5"/>
+  <polygon points="565,300 553,303 560,311" fill="#000"/>
+  <text x="500" y="410" class="tag" text-anchor="middle">เส้นประ = "ของจริงที่หายไป"</text>
+</svg>

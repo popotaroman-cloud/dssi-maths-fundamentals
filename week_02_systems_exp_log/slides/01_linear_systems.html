@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Deck: ระบบสมการเชิงเส้น — อ่านผลลัพธ์ให้เป็น</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],throwOnError:false});"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a237e;
+  --accent:  #1565c0;
+  --light:   #e3f2fd;
+  --bg:      #ffffff;
+  --text:    #212121;
+  --muted:   #546e7a;
+  --code-bg: #1e272e;
+  --code-fg: #dfe6e9;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0d1b2a;
+  font-family: 'Sarabun', 'Noto Sans Thai', 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ── Presentation container ───────────────────── */
+#presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
+  padding: clamp(28px, 3.5vw, 56px) clamp(40px, 6vw, 88px) 74px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Progress bar ─────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  z-index: 200;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #42a5f5, #1565c0);
+  transition: width 0.3s ease;
+}
+
+/* ── Slide header (title + num) ───────────────── */
+.slide-header {
+  margin-bottom: clamp(14px, 2vh, 28px);
+  padding-bottom: clamp(10px, 1.4vh, 18px);
+  border-bottom: 3px solid var(--light);
+  flex-shrink: 0;
+}
+.slide-num {
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.slide-title {
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+/* ── Title Slide (index 0) ────────────────────── */
+.slide-0 {
+  background: linear-gradient(145deg, #0d1b2a 0%, #1a237e 55%, #1565c0 100%);
+  justify-content: center;
+}
+.slide-0 .slide-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.slide-0 .slide-num  { color: #90caf9; }
+.slide-0 .slide-title {
+  font-size: clamp(34px, 5vw, 64px);
+  color: #ffffff;
+}
+.slide-0 .key-message {
+  background: rgba(255,255,255,0.1);
+  border-left-color: #42a5f5;
+  color: #e3f2fd;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.slide-0 .slide-content { color: #cfd8dc; }
+.slide-0 .slide-content p { color: #cfd8dc; }
+.slide-0 .slide-content li { color: #cfd8dc; }
+.slide-0 .slide-content strong { color: #90caf9; }
+.slide-0 .content-heading { color: #90caf9; }
+
+/* ── Key Message callout ──────────────────────── */
+.key-message {
+  background: var(--light);
+  border-left: 6px solid var(--accent);
+  padding: clamp(11px, 1.4vh, 18px) clamp(18px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: clamp(14px, 1.8vh, 26px);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Content area ─────────────────────────────── */
+.slide-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(17px, 1.85vw, 26px);
+  line-height: 1.68;
+  color: var(--text);
+  min-height: 0;
+}
+.slide-content::-webkit-scrollbar { width: 5px; }
+.slide-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.slide-content p { margin-bottom: 0.55em; }
+.slide-content strong { color: var(--primary); }
+.slide-content em { color: #37474f; }
+
+/* ── Lists ────────────────────────────────────── */
+.slide-list {
+  padding-left: clamp(22px, 2.8vw, 38px);
+  margin: 0.2em 0 0.7em;
+}
+.slide-list li {
+  margin-bottom: 0.45em;
+  line-height: 1.5;
+}
+ul.slide-list li::marker { color: var(--accent); font-weight: 700; }
+ol.slide-list li::marker { color: var(--accent); font-weight: 700; }
+
+/* ── Code blocks ──────────────────────────────── */
+.code-block {
+  margin: 0.5em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  font-size: clamp(12px, 1.35vw, 18px);
+}
+.code-lang {
+  background: #37474f;
+  color: #90a4ae;
+  font-size: 0.82em;
+  padding: 4px 16px;
+  font-family: 'Fira Code', Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.8vw, 24px);
+  overflow-x: auto;
+  line-height: 1.58;
+  margin: 0;
+}
+code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+}
+.slide-content code:not(pre code) {
+  background: #e8eaf6;
+  color: #1a237e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 1.5vw, 21px);
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  padding: clamp(7px, 0.9vh, 13px) clamp(10px, 1.4vw, 18px);
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: clamp(6px, 0.8vh, 11px) clamp(10px, 1.4vw, 18px);
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8f9ff; }
+tr:hover td { background: var(--light); }
+
+/* ── Sub-headings inside content ──────────────── */
+.content-heading {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--primary);
+  margin: 0.65em 0 0.25em;
+  font-weight: 700;
+}
+h3.content-heading {
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--accent);
+}
+
+/* ── Generated figure (matplotlib base64 PNG) ────────────── */
+.slide-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3em 0;
+  flex-shrink: 0;
+}
+.slide-figure img {
+  max-width: 96%;
+  max-height: clamp(200px, 38vh, 380px);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.10);
+  object-fit: contain;
+}
+
+/* ── Figure placeholder (fallback เมื่อ generate ไม่ได้) ─── */
+.placeholder {
+  border: 2px dashed var(--accent);
+  padding: clamp(12px, 1.6vh, 22px) clamp(16px, 2vw, 26px);
+  border-radius: 10px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0.4em 0;
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+
+.slide-hr {
+  border: none;
+  border-top: 2px solid #e8eaf6;
+  margin: 0.5em 0;
+}
+
+/* ── Navigation bar ───────────────────────────── */
+#nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(13,27,42,0.9);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 40px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+#nav button {
+  background: none;
+  border: none;
+  color: #90a4ae;
+  font-size: clamp(16px, 1.8vw, 24px);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.12); }
+#nav button:disabled { color: #3d4e5c; cursor: default; }
+#counter {
+  color: #e2e8f0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+}
+#slide-label {
+  color: #78909c;
+  font-size: clamp(10px, 1vw, 13px);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Keyboard hint ────────────────────────────── */
+#kb-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* ── KaTeX math rendering ─────────────────── */
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex {
+  font-size: clamp(15px, 1.7vw, 21px) !important;
+}
+.slide-0 .katex { color: #e3f2fd; }
+
+</style>
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+<div id="presentation">
+<div class="slide slide-0" data-title="Title">
+  <div class="slide-header">
+    <div class="slide-num">Slide 1</div>
+    <div class="slide-title">Title</div>
+  </div>
+  <div class="key-message">กำจัดตัวแปรเป็นแล้ว แต่คนส่วนใหญ่ยังตอบไม่ถูกว่าระบบที่เพิ่งทำเสร็จมีผลเฉลยกี่ตัว</div>
+  <div class="slide-content"><p><strong>Maths Fundamentals for DS &amp; CS — สัปดาห์ 02</strong></p>
+<h2 class="content-heading">ระบบสมการเชิงเส้น: อ่านผลลัพธ์ให้เป็น</h2>
+<ul class="slide-list"><li>ช่วงนี้: 55 นาที (ทบทวนกลไก 10 นาที + อ่านผลลัพธ์ 45 นาที)</li><li>ต่อจาก: row reduction ที่เรียนมาแล้ว</li><li>นำไปสู่: ระบบ overdetermined ในช่วงถัดไป และ Capstone สัปดาห์ 5</li></ul></div>
+</div>
+<div class="slide slide-1" data-title="ภาพรวมช่วงนี้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 2</div>
+    <div class="slide-title">ภาพรวมช่วงนี้</div>
+  </div>
+  <div class="key-message">ทักษะที่ขาดไม่ใช่ทักษะเลขคณิต แต่เป็นทักษะการตีความ</div>
+  <div class="slide-content"><p><strong>จะเรียน:</strong></p>
+<ul class="slide-list"><li>ทบทวนการดำเนินการตามแถวเร็ว ๆ — ทำไมมันไม่สร้างผลเฉลยแปลกปลอมเลย</li><li>echelon form, pivot, ตัวแปรอิสระ</li><li><strong>สามกรณี</strong> อ่านได้ทันทีจากหน้าตาของ echelon form</li><li>เขียนผลเฉลยทั่วไปแบบพารามิเตอร์</li></ul>
+<p><strong>สิ่งที่ต้องมีมาก่อน:</strong> row reduction เชิงกลไก (เรียนมาแล้ว)</p></div>
+</div>
+<div class="slide slide-2" data-title="ทบทวน: การดำเนินการตามแถว">
+  <div class="slide-header">
+    <div class="slide-num">Slide 3</div>
+    <div class="slide-title">ทบทวน: การดำเนินการตามแถว</div>
+  </div>
+  <div class="key-message">ทั้งสามการดำเนินการเป็น $\Longleftrightarrow$ ล้วน ๆ — ระบบเชิงเส้นจึงไม่มีผลเฉลยแปลกปลอมเกิดขึ้นเลย</div>
+  <div class="slide-content"><p>สามการดำเนินการที่ใช้ได้ในการกำจัดตัวแปร</p>
+<ol><li>สลับสมการสองสมการ</li><li>คูณสมการหนึ่งด้วยค่าคงตัวที่ไม่เป็นศูนย์</li><li>บวกผลคูณของสมการหนึ่งเข้ากับอีกสมการหนึ่ง</li></ol>
+<p>ต่างจากสัปดาห์ 1 ตรงนี้ — ไม่มีการยกกำลังสอง ไม่มีการคูณด้วยนิพจน์ที่มีตัวแปร ไม่มีการรวมพจน์ $\log$ <strong>ทุกบรรทัดจึงเป็นความสัมพันธ์แบบสมมูล</strong></p></div>
+</div>
+<div class="slide slide-3" data-title="เมทริกซ์แต่งเติมและสัญกรณ์แถว">
+  <div class="slide-header">
+    <div class="slide-num">Slide 4</div>
+    <div class="slide-title">เมทริกซ์แต่งเติมและสัญกรณ์แถว</div>
+  </div>
+  <div class="key-message">เขียนเฉพาะตัวเลขลงตาราง แล้วมองสามการดำเนินการเป็นการกระทำบน "แถว" — นี่คือสัญกรณ์ที่จะใช้ตลอดหัวข้อนี้</div>
+  <div class="slide-content"><p>ระบบสมการทั่วไปเขียนเป็น <strong>เมทริกซ์แต่งเติม (augmented matrix)</strong> ได้ว่า</p>
+<p>$$
+\begin{aligned}
+a_{11}x + a_{12}y + a_{13}z &amp;= b_1 \\
+a_{21}x + a_{22}y + a_{23}z &amp;= b_2 \\
+a_{31}x + a_{32}y + a_{33}z &amp;= b_3
+\end{aligned}
+\quad\Longrightarrow\quad
+\left[\begin{array}{ccc|c}
+a_{11} &amp; a_{12} &amp; a_{13} &amp; b_1 \\
+a_{21} &amp; a_{22} &amp; a_{23} &amp; b_2 \\
+a_{31} &amp; a_{32} &amp; a_{33} &amp; b_3
+\end{array}\right]
+$$</p>
+<p><strong>แต่ละแถว = หนึ่งสมการ</strong> · สามคอลัมน์แรก = สัมประสิทธิ์ $x,y,z$ · คอลัมน์ขวาสุด (คั่นด้วยเส้น) = ค่าคงตัว</p>
+<p><strong>สัญกรณ์แถวมาตรฐาน</strong> ที่จะกำกับทุกขั้นตอนจากนี้แทนป้าย "E2 − 2E1"</p>
+<p>$$
+R_i \leftrightarrow R_j \qquad R_i \to c\,R_i \;(c\ne0) \qquad R_i \to R_i + c\,R_j
+$$</p>
+<p>สลับแถว · คูณแถวด้วยค่าคงตัว · แทนที่แถว $i$ ด้วยแถว $i$ บวก $c$ เท่าของแถว $j$</p></div>
+</div>
+<div class="slide slide-4" data-title="Echelon form และ pivot">
+  <div class="slide-header">
+    <div class="slide-num">Slide 5</div>
+    <div class="slide-title">Echelon form และ pivot</div>
+  </div>
+  <div class="key-message">pivot คือสัมประสิทธิ์ตัวแรกที่ไม่เป็นศูนย์ของแต่ละแถว และตำแหน่งของมันบอกทุกอย่างที่ต้องรู้</div>
+  <div class="slide-content"><p>เป้าหมายของ row operation คือทำให้<strong>เมทริกซ์สัมประสิทธิ์</strong>เป็นขั้นบันได — pivot ของแต่ละแถวเลื่อนไปทางขวาเรื่อย ๆ เมื่อไล่ลงล่าง เช่น</p>
+<p>$$
+\left[\begin{array}{ccc|c}
+\underline{1} &amp; 1 &amp; 1 &amp; 6 \\
+0 &amp; \underline{1} &amp; -2 &amp; -4 \\
+0 &amp; 0 &amp; \underline{-7} &amp; -21
+\end{array}\right]
+$$</p>
+<p><strong>สองคำที่ต้องแยกให้ออก</strong></p>
+<ul class="slide-list"><li><strong>ตัวแปรนำ (pivot variable)</strong> = ตัวแปรที่คอลัมน์ของมันมี pivot</li><li><strong>ตัวแปรอิสระ (free variable)</strong> = ตัวแปรที่คอลัมน์ของมันไม่มี pivot</li></ul>
+<p>$$
+\text{จำนวนตัวแปรอิสระ} = (\text{จำนวนตัวแปร}) - (\text{จำนวน pivot})
+$$</p>
+<blockquote><strong>ทำไมเรียกว่า "อิสระ"</strong>: เพราะสามารถแทนค่าด้วย <strong>จำนวนจริงใดก็ได้</strong> โดยระบบยังคงสอดคล้องเสมอ ส่วนตัวแปรนำจะถูกกำหนดค่าตามมาโดยอัตโนมัติ</blockquote>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w02_f03_echelon_staircase.svg" alt="แผนภาพเมทริกซ์แต่งเติม 3 แถว 4 คอลัมน์ (3 ตัวแปร บวกคอลัมน์ขวาสุดคือค่าคงตัว) วาดเป็นตารางช่อง ช่องที่เป็น pivot ระบายเทาเข้มและมีวงกลมรอบเลขนำ ช่องใต้ pivot เป็นศูนย์ทั้งหมด เส้นบันไดหนาลากไล่จากมุมซ้ายบนลงขวาผ่านตำแหน่ง pivot คอลัมน์ที่ไม่มี pivot มีลูกศรชี้ขึ้นและป้าย &quot;ตัวแปรอิสระ&quot; คอลัมน์ขวาสุดคั่นด้วยเส้นประแนวตั้ง" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-5" data-title="สามกรณี อ่านจาก echelon form ได้ทันที">
+  <div class="slide-header">
+    <div class="slide-num">Slide 6</div>
+    <div class="slide-title">สามกรณี อ่านจาก echelon form ได้ทันที</div>
+  </div>
+  <div class="key-message">เช็คแถวขัดแย้งก่อนเสมอ — ถ้ามีก็จบแล้ว ไม่ต้องไปนับ pivot</div>
+  <div class="slide-content"><table><thead><tr><th>อ่านเจออะไร</th><th>จำนวนผลเฉลย</th><th>เซตผลเฉลย</th></tr></thead><tbody><tr><td>มีแถว $0 = c$ โดย $c \ne 0$</td><td>ไม่มีผลเฉลย</td><td>$\varnothing$</td></tr><tr><td>ไม่มีแถวขัดแย้ง และ pivot $=$ ตัวแปร</td><td>ผลเฉลยเดียว</td><td>จุดเดียว</td></tr><tr><td>ไม่มีแถวขัดแย้ง และ pivot $&lt;$ ตัวแปร</td><td>มีมากมาย</td><td>มิติ $=$ จำนวนตัวแปรอิสระ</td></tr></tbody></table>
+<p><strong>ความหมายเชิงเรขาคณิต:</strong> สองตัวแปร = เส้นตรง · สามตัวแปร = ระนาบ · การแก้ระบบ = หาจุดตัดร่วม</p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w02_f01_three_cases_2d.svg" alt="ภาพสามช่องเรียงแนวนอน แต่ละช่องมีแกน x-y แบบง่าย ช่องซ้ายมีเส้นตรงสองเส้นตัดกันหนึ่งจุดและมีจุดทึบพร้อมป้าย &quot;คำตอบเดียว&quot; ช่องกลางมีเส้นตรงสองเส้นขนานกันไม่ตัดกันพร้อมป้าย &quot;ไม่มีผลเฉลย&quot; ช่องขวามีเส้นตรงสองเส้นทับกันสนิทวาดเป็นเส้นหนาเดียวพร้อมป้าย &quot;มีผลเฉลยมากมาย&quot; ขาวดำ เส้นน้อย นักศึกษาวาดตามด้วยดินสอได้" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-6" data-title="ตัวอย่าง: ผลเฉลยเดียว (1) — ตั้งเมทริกซ์และกำจัดคอลัมน์ $x$">
+  <div class="slide-header">
+    <div class="slide-num">Slide 7</div>
+    <div class="slide-title">ตัวอย่าง: ผลเฉลยเดียว (1) — ตั้งเมทริกซ์และกำจัดคอลัมน์ $x$</div>
+  </div>
+  <div class="key-message">ถ่ายสัมประสิทธิ์ทุกตัวลงเมทริกซ์แต่งเติมก่อน แล้วใช้แถวแรกกำจัดตัวแปรใต้ pivot ของมัน</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $x+y+z=6$, $\;2x-y+z=3$, $\;x+2y-z=2$</p>
+<p>$$
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 1 &amp; 6 \\
+2 &amp; -1 &amp; 1 &amp; 3 \\
+1 &amp; 2 &amp; -1 &amp; 2
+\end{array}\right]
+\;\xrightarrow[R_3 \to R_3 - R_1]{R_2 \to R_2 - 2R_1}\;
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 1 &amp; 6 \\
+0 &amp; -3 &amp; -1 &amp; -9 \\
+0 &amp; 1 &amp; -2 &amp; -4
+\end{array}\right]
+$$</p>
+<p><strong>แปลผล:</strong> คอลัมน์ $x$ ใต้ pivot แถวแรกเป็นศูนย์แล้ว แถว 2 และ 3 คือสมการ $-3y-z=-9$ และ $y-2z=-4$ — ตัวแปร $x$ หายไปจากทั้งสองแถวนี้แล้ว</p></div>
+</div>
+<div class="slide slide-7" data-title="ตัวอย่าง: ผลเฉลยเดียว (2) — จัดเรียงและกำจัดคอลัมน์ $y$">
+  <div class="slide-header">
+    <div class="slide-num">Slide 8</div>
+    <div class="slide-title">ตัวอย่าง: ผลเฉลยเดียว (2) — จัดเรียงและกำจัดคอลัมน์ $y$</div>
+  </div>
+  <div class="key-message">สลับแถวให้ pivot เป็น 1 ก่อน (ไม่บังคับแต่ช่วยให้เลขสวย) แล้วกำจัดคอลัมน์ที่เหลือ จนได้ echelon form เต็มรูป</div>
+  <div class="slide-content"><p>$$
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 1 &amp; 6 \\
+0 &amp; -3 &amp; -1 &amp; -9 \\
+0 &amp; 1 &amp; -2 &amp; -4
+\end{array}\right]
+\;\xrightarrow{R_2 \leftrightarrow R_3}\;
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 1 &amp; 6 \\
+0 &amp; 1 &amp; -2 &amp; -4 \\
+0 &amp; -3 &amp; -1 &amp; -9
+\end{array}\right]
+\;\xrightarrow{R_3 \to R_3 + 3R_2}\;
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 1 &amp; 6 \\
+0 &amp; 1 &amp; -2 &amp; -4 \\
+0 &amp; 0 &amp; -7 &amp; -21
+\end{array}\right]
+$$</p>
+<p><strong>อ่านผลลัพธ์ตรงจากเมทริกซ์:</strong> pivot สามตัว ($1,1,-7$) = จำนวนตัวแปร ไม่มีแถวขัดแย้ง → <strong>ผลเฉลยเดียว</strong> ยังไม่ต้องคำนวณอะไรต่อก็รู้คำตอบแบบนี้ได้แล้ว</p></div>
+</div>
+<div class="slide slide-8" data-title="ตัวอย่าง: ผลเฉลยเดียว (3) — แปลกลับเป็นสมการและตรวจคำตอบ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 9</div>
+    <div class="slide-title">ตัวอย่าง: ผลเฉลยเดียว (3) — แปลกลับเป็นสมการและตรวจคำตอบ</div>
+  </div>
+  <div class="key-message">เมทริกซ์ echelon form แปลกลับเป็นระบบสมการแล้วไล่ย้อนขึ้น (back-substitution) เป็นขั้นตอนสุดท้ายเสมอ</div>
+  <div class="slide-content"><p>$$
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 1 &amp; 6 \\
+0 &amp; 1 &amp; -2 &amp; -4 \\
+0 &amp; 0 &amp; -7 &amp; -21
+\end{array}\right]
+\;\Longrightarrow\;
+\begin{aligned}
+x+y+z&amp;=6 \\ y-2z&amp;=-4 \\ -7z&amp;=-21
+\end{aligned}
+\;\Longrightarrow\;
+z=3,\; y=2,\; x=1
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> แทน $(1,2,3)$ กลับเข้า<strong>สมการตั้งต้น</strong> (ไม่ใช่เมทริกซ์ที่จัดรูปแล้ว) ✓ ทุกสมการ</p>
+<p><strong>ตอบ:</strong> $\{(1,2,3)\}$</p></div>
+</div>
+<div class="slide slide-9" data-title="ตัวอย่าง: มีตัวแปรอิสระ (1) — ตั้งเมทริกซ์และกำจัดคอลัมน์ $x$">
+  <div class="slide-header">
+    <div class="slide-num">Slide 10</div>
+    <div class="slide-title">ตัวอย่าง: มีตัวแปรอิสระ (1) — ตั้งเมทริกซ์และกำจัดคอลัมน์ $x$</div>
+  </div>
+  <div class="key-message">ขั้นตอนเหมือนตัวอย่างก่อนหน้าทุกประการ — ความต่างจะโผล่ในขั้นถัดไป</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $x+2y-z=3$, $\;2x+5y+z=10$, $\;x+3y+2z=7$</p>
+<p>$$
+\left[\begin{array}{ccc|c}
+1 &amp; 2 &amp; -1 &amp; 3 \\
+2 &amp; 5 &amp; 1 &amp; 10 \\
+1 &amp; 3 &amp; 2 &amp; 7
+\end{array}\right]
+\;\xrightarrow[R_3 \to R_3 - R_1]{R_2 \to R_2 - 2R_1}\;
+\left[\begin{array}{ccc|c}
+1 &amp; 2 &amp; -1 &amp; 3 \\
+0 &amp; 1 &amp; 3 &amp; 4 \\
+0 &amp; 1 &amp; 3 &amp; 4
+\end{array}\right]
+$$</p>
+<p><strong>แปลผล:</strong> แถว 2 และแถว 3 กลายเป็น $y+3z=4$ <strong>เหมือนกันโดยสมบูรณ์</strong> — สัญญาณว่าสมการที่สามไม่ได้พาข้อมูลใหม่เข้ามาเลย</p></div>
+</div>
+<div class="slide slide-10" data-title="ตัวอย่าง: มีตัวแปรอิสระ (2) — กำจัดแถวซ้ำและอ่านตัวแปรอิสระ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 11</div>
+    <div class="slide-title">ตัวอย่าง: มีตัวแปรอิสระ (2) — กำจัดแถวซ้ำและอ่านตัวแปรอิสระ</div>
+  </div>
+  <div class="key-message">แถวที่ซ้ำกันลบกันแล้วเหลือ $0=0$ — pivot จึงมีแค่ 2 ตัวจาก 3 ตัวแปร คอลัมน์ที่เหลือคือตัวแปรอิสระ</div>
+  <div class="slide-content"><p>$$
+\left[\begin{array}{ccc|c}
+1 &amp; 2 &amp; -1 &amp; 3 \\
+0 &amp; 1 &amp; 3 &amp; 4 \\
+0 &amp; 1 &amp; 3 &amp; 4
+\end{array}\right]
+\;\xrightarrow{R_3 \to R_3 - R_2}\;
+\left[\begin{array}{ccc|c}
+1 &amp; 2 &amp; -1 &amp; 3 \\
+0 &amp; 1 &amp; 3 &amp; 4 \\
+0 &amp; 0 &amp; 0 &amp; 0
+\end{array}\right]
+$$</p>
+<p>$0=0$ <strong>ไม่ใช่</strong>แถวขัดแย้ง เพียงแต่ไม่ให้ข้อมูลใหม่ · คอลัมน์ $z$ <strong>ไม่มี pivot</strong> เลย → $z$ คือตัวแปรอิสระ</p>
+<p>$$
+\text{pivot}=2,\;\text{ตัวแปร}=3 \;\Rightarrow\; \text{ตัวแปรอิสระ}=1 \qquad \text{ตั้ง } z=t
+$$</p></div>
+</div>
+<div class="slide slide-11" data-title="ตัวอย่าง: มีตัวแปรอิสระ (3) — แปลกลับเป็นสมการและไล่ย้อนขึ้น">
+  <div class="slide-header">
+    <div class="slide-num">Slide 12</div>
+    <div class="slide-title">ตัวอย่าง: มีตัวแปรอิสระ (3) — แปลกลับเป็นสมการและไล่ย้อนขึ้น</div>
+  </div>
+  <div class="key-message">แปลเมทริกซ์กลับเป็นสองสมการ (ไม่ใช่สาม เพราะแถวสุดท้ายไม่ให้ข้อมูล) แล้วไล่ย้อนขึ้นด้วยพารามิเตอร์ $t$</div>
+  <div class="slide-content"><p>$$
+\left[\begin{array}{ccc|c}
+1 &amp; 2 &amp; -1 &amp; 3 \\
+0 &amp; 1 &amp; 3 &amp; 4 \\
+0 &amp; 0 &amp; 0 &amp; 0
+\end{array}\right]
+\;\Longrightarrow\;
+\begin{aligned}
+x+2y-z&amp;=3 \\ y+3z&amp;=4
+\end{aligned}
+$$</p>
+<p>$$
+y = 4-3t \qquad\Longrightarrow\qquad x = 7t-5
+$$</p>
+<p><strong>ตอบ:</strong> $(x,y,z)=(7t-5,\;4-3t,\;t),\; t\in\mathbb{R}$ — เส้นตรงหนึ่งเส้น</p></div>
+</div>
+<div class="slide slide-12" data-title="เขียนผลเฉลยทั่วไปให้ถูกรูป">
+  <div class="slide-header">
+    <div class="slide-num">Slide 13</div>
+    <div class="slide-title">เขียนผลเฉลยทั่วไปให้ถูกรูป</div>
+  </div>
+  <div class="key-message">หยุดตรงสมการที่บอกความสัมพันธ์ระหว่างตัวแปรยังไม่ใช่การเขียนเซตผลเฉลย</div>
+  <div class="slide-content"><p><strong>ขั้นตอนตายตัวสามขั้น</strong></p>
+<ol><li>ระบุตัวแปรอิสระ ตั้งชื่อพารามิเตอร์ให้ตัวแปรนั้น เช่น $z=t$</li><li>ไล่ย้อนขึ้นจากแถวล่างสุด เขียนตัวแปรนำแต่ละตัวในรูปของ $t$</li><li>เขียนคำตอบเป็นสิ่งอันดับ พร้อมระบุ $t \in \mathbb{R}$</li></ol>
+<p><strong>ข้อผิดพลาดที่พบมากที่สุด:</strong> หยุดที่ "$y = 4-3z$ และ $x=7z-5$" — นี่เป็นการบรรยายความสัมพันธ์ ไม่ใช่การบอกเซตผลเฉลย</p>
+<p><strong>ตรวจคำตอบ:</strong> แทนพารามิเตอร์อย่างน้อย <strong>3 ค่าที่ต่างกัน</strong> ถ้าถูกทั้งสามแทบไม่มีทางที่สูตรจะผิด</p></div>
+</div>
+<div class="slide slide-13" data-title="กรณีที่ผิดคาด: ระบบไม่สอดคล้อง (1) — ตั้งเมทริกซ์และกำจัดคอลัมน์ $x$">
+  <div class="slide-header">
+    <div class="slide-num">Slide 14</div>
+    <div class="slide-title">กรณีที่ผิดคาด: ระบบไม่สอดคล้อง (1) — ตั้งเมทริกซ์และกำจัดคอลัมน์ $x$</div>
+  </div>
+  <div class="key-message">หน้าตาสมการดูปกติทุกอย่าง สามสมการสามตัวแปร แต่ความขัดแย้งจะไม่ปรากฏจนกว่าจะกำจัดครบทุกคอลัมน์</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $x+y+2z=4$, $\;2x+3y+5z=9$, $\;3x+5y+8z=16$</p>
+<p>$$
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 2 &amp; 4 \\
+2 &amp; 3 &amp; 5 &amp; 9 \\
+3 &amp; 5 &amp; 8 &amp; 16
+\end{array}\right]
+\;\xrightarrow[R_3 \to R_3 - 3R_1]{R_2 \to R_2 - 2R_1}\;
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 2 &amp; 4 \\
+0 &amp; 1 &amp; 1 &amp; 1 \\
+0 &amp; 2 &amp; 2 &amp; 4
+\end{array}\right]
+$$</p>
+<p>ดูเหมือนแถว 3 เป็นแถว 2 คูณสอง ($0,2,2$ vs $0,1,1$) — <strong>แต่ต้องเช็คคอลัมน์ขวาสุดด้วยเสมอ</strong>: $2\times1=2$ แต่ค่าคงตัวของแถว 3 คือ $4\ne2$ แล้ว</p></div>
+</div>
+<div class="slide slide-14" data-title="กรณีที่ผิดคาด: ระบบไม่สอดคล้อง (2) — แถวขัดแย้งปรากฏ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 15</div>
+    <div class="slide-title">กรณีที่ผิดคาด: ระบบไม่สอดคล้อง (2) — แถวขัดแย้งปรากฏ</div>
+  </div>
+  <div class="key-message">เมื่อคอลัมน์ขวาสุดของเมทริกซ์แต่งเติมกลายเป็น pivot column ระบบไม่มีผลเฉลยทันที ไม่ว่าคอลัมน์อื่นจะเหลือ pivot กี่ตัว</div>
+  <div class="slide-content"><p>$$
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 2 &amp; 4 \\
+0 &amp; 1 &amp; 1 &amp; 1 \\
+0 &amp; 2 &amp; 2 &amp; 4
+\end{array}\right]
+\;\xrightarrow{R_3 \to R_3 - 2R_2}\;
+\left[\begin{array}{ccc|c}
+1 &amp; 1 &amp; 2 &amp; 4 \\
+0 &amp; 1 &amp; 1 &amp; 1 \\
+0 &amp; 0 &amp; 0 &amp; 2
+\end{array}\right]
+$$</p>
+<p>แถว 3 อ่านว่า $0x+0y+0z=2$ คือ $0=2$ — <strong>แถวขัดแย้ง</strong> สัมประสิทธิ์ทุกตัวเป็นศูนย์ แต่คอลัมน์ค่าคงตัวไม่เป็นศูนย์ นี่คือรูปแบบเดียวที่ต้องระวังเสมอ</p>
+<p><strong>ตอบ:</strong> $\varnothing$ — สมการที่สาม "ควรจะ" ซ้ำข้อมูล แต่ค่าที่ให้มาไม่ตรงกับที่ควรจะเป็น</p></div>
+</div>
+<div class="slide slide-15" data-title="กรณีที่ผิดคาด: overdetermined ก็มีตัวแปรอิสระได้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 16</div>
+    <div class="slide-title">กรณีที่ผิดคาด: overdetermined ก็มีตัวแปรอิสระได้</div>
+  </div>
+  <div class="key-message">ระบบ 4 สมการ 3 ตัวแปร แทบทุกคนเดาว่าไม่มีผลเฉลย แต่ตัวนี้มีผลเฉลยมากมาย</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $x+2y+z=8$, $2x+y+3z=11$, $3x+3y+4z=19$, $3x+5z=14$</p>
+<p>กำจัด $x$ แล้วพบว่า <strong>ทั้งสามแถวล่างเป็นสมการเดียวกันหมด</strong> ($-3y+z=-5$ คูณด้วยค่าคงตัวต่าง ๆ)</p>
+<p>$$
+\text{pivot}=2,\;\text{ตัวแปร}=3 \;\Rightarrow\; \text{ตัวแปรอิสระ}=1
+$$</p>
+<p><strong>ตอบ:</strong> $(x,y,z)=(13-5t,\;t,\;3t-5),\;t\in\mathbb{R}$</p>
+<blockquote>สมการที่ 3 และ 4 ไม่ได้พาข้อมูลใหม่เข้ามาเลย — เขียนสมการเพิ่มกี่สมการก็ไม่ช่วย ถ้าสมการนั้นไม่ใช่ข้อมูลใหม่</blockquote></div>
+</div>
+<div class="slide slide-16" data-title="กรณีที่พลาดบ่อย">
+  <div class="slide-header">
+    <div class="slide-num">Slide 17</div>
+    <div class="slide-title">กรณีที่พลาดบ่อย</div>
+  </div>
+  <div class="key-message">เกือบทุกข้อผิดพลาดมาจากการนับ pivot ผิด หรือหยุดก่อนเขียนเซตผลเฉลยให้ครบ</div>
+  <div class="slide-content"><table><thead><tr><th>ที่พลาด</th><th>วิธีกัน</th></tr></thead><tbody><tr><td>$0=0$ แล้วคิดว่าไม่มีผลเฉลย</td><td>$0=0$ คือ "ไม่ให้ข้อมูล" ตรงข้ามกับ $0=c\ne0$ ที่ "ขัดแย้ง"</td></tr><tr><td>ตอบแค่ "$x=7z-5, y=4-3z$" แล้วหยุด</td><td>ต้องตั้งพารามิเตอร์แล้วเขียนสิ่งอันดับ</td></tr><tr><td>กำจัดฝั่งซ้ายแต่ลืมฝั่งขวา</td><td>เขียนเมทริกซ์แต่งเติมเสมอ</td></tr><tr><td>นับตัวแปรอิสระจากจำนวนสมการ</td><td>นับจาก <strong>จำนวน pivot</strong> เท่านั้น</td></tr></tbody></table></div>
+</div>
+<div class="slide slide-17" data-title="ใช้ทำอะไรใน DS/CS: multicollinearity แบบสมบูรณ์">
+  <div class="slide-header">
+    <div class="slide-num">Slide 18</div>
+    <div class="slide-title">ใช้ทำอะไรใน DS/CS: multicollinearity แบบสมบูรณ์</div>
+  </div>
+  <div class="key-message">ตัวแปรอิสระคือสัญญาณว่าโมเดลไม่มีคำตอบเดียว</div>
+  <div class="slide-content"><p>สมมติมีฟีเจอร์ "ความสูงเป็นเซนติเมตร" และ "ความสูงเป็นเมตร" อยู่ในตารางเดียวกัน — สองฟีเจอร์นี้เป็นสัดส่วนกันโดยสมบูรณ์ (คูณกันด้วยค่าคงตัว 100 เสมอ) ระบบสมการปกติ (normal equations) ที่ได้ขาด pivot ไปหนึ่งตัว มีตัวแปรอิสระปรากฏขึ้น</p>
+<p><strong>ผล:</strong> มีชุดสัมประสิทธิ์เป็นอนันต์ที่ให้การทำนายเหมือนกันหมด สัมประสิทธิ์แต่ละตัวตีความไม่ได้เลย แม้การทำนายจะยังใช้ได้</p>
+<p>ปรากฏการณ์นี้ชื่อ <strong>multicollinearity แบบสมบูรณ์ (perfect multicollinearity)</strong> — กลไกเบื้องหลังคือสิ่งที่เพิ่งเรียนทั้งหมด</p></div>
+</div>
+<div class="slide slide-18" data-title="multicollinearity แบบสมบูรณ์ vs แบบทั่วไป">
+  <div class="slide-header">
+    <div class="slide-num">Slide 19</div>
+    <div class="slide-title">multicollinearity แบบสมบูรณ์ vs แบบทั่วไป</div>
+  </div>
+  <div class="key-message">multicollinearity ทุกแบบไม่ได้ทำให้เกิดตัวแปรอิสระ — มีแค่กรณี "สมบูรณ์" เท่านั้นที่ทำให้คำตอบไม่จำกัดจริง ๆ</div>
+  <div class="slide-content"><table><thead><tr><th></th><th>ฟีเจอร์สัมพันธ์กันแบบไหน</th><th>เกิดตัวแปรอิสระไหม</th><th>ผลที่ตามมา</th></tr></thead><tbody><tr><td><strong>สมบูรณ์ (perfect)</strong></td><td>เป็นสัดส่วนกันเชิงเส้น<strong>พอดี</strong> (เช่น cm = 100 × m)</td><td><strong>เกิด</strong> — ขาด pivot จริง</td><td>สัมประสิทธิ์เป็นอนันต์ที่ทำนายเหมือนกันหมด</td></tr><tr><td><strong>ทั่วไป (imperfect)</strong></td><td>สัมพันธ์กันสูงแต่ไม่พอดี (เช่น ส่วนสูงกับน้ำหนัก)</td><td><strong>ไม่เกิด</strong> — pivot ยังครบ</td><td>ระบบใกล้เอกฐาน (near-singular) สัมประสิทธิ์ไวต่อความคลาดเคลื่อนของข้อมูลมาก</td></tr></tbody></table>
+<p><strong>ข้อควรระวัง:</strong> อย่าสรุปว่า "ฟีเจอร์สัมพันธ์กันสูง = มีตัวแปรอิสระ" เสมอไป — ต้องเช็คว่าเป็นสัดส่วนกัน<strong>พอดี</strong>หรือไม่ ถ้าไม่พอดี pivot ยังอยู่ครบ เพียงแต่ระบบ "บอบบาง" ขึ้นเท่านั้น</p></div>
+</div>
+<div class="slide slide-19" data-title="ใช้ทำอะไรใน DS/CS: เส้นเรื่องของคอร์ส">
+  <div class="slide-header">
+    <div class="slide-num">Slide 20</div>
+    <div class="slide-title">ใช้ทำอะไรใน DS/CS: เส้นเรื่องของคอร์ส</div>
+  </div>
+  <div class="key-message">ระบบเชิงเส้นคือปลายทางของทุกโจทย์หาค่าที่ดีที่สุดในคอร์สนี้</div>
+  <div class="slide-content"><p>$$
+\text{ตั้งฟังก์ชันความสูญเสีย} \to \text{หาอนุพันธ์} \to \text{ให้เท่ากับศูนย์} \to \textbf{ระบบสมการเชิงเส้น} \to \text{แก้ระบบ}
+$$</p>
+<p>ในสัปดาห์ 5 จะมีการสร้างสูตร linear regression ขึ้นเอง และขั้นที่สี่คือระบบ $2\times 2$ ที่จะแก้ด้วยกลไกวันนี้โดยตรง</p>
+<p><strong>กรณี $\varnothing$ ก็มีสถานการณ์คู่ขนานในงานจริง</strong> — สมการที่ "ควร" เข้ากันแต่ข้อมูลจริงมีสัญญาณรบกวนทำให้ไม่เข้ากัน นี่คือสะพานเข้าหัวข้อถัดไป</p></div>
+</div>
+<div class="slide slide-20" data-title="สรุปและสิ่งที่ต้องทำ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 21</div>
+    <div class="slide-title">สรุปและสิ่งที่ต้องทำ</div>
+  </div>
+  <div class="key-message">เช็คแถวขัดแย้งก่อนเสมอ นับ pivot เทียบตัวแปร แล้วเขียนเซตผลเฉลยให้ครบรูป</div>
+  <div class="slide-content"><p><strong>จบช่วงนี้ควรทำได้:</strong></p>
+<ul class="slide-list"><li>อ่านสามกรณีจาก echelon form ได้ทันที</li><li>นับตัวแปรอิสระและเขียนผลเฉลยทั่วไปแบบพารามิเตอร์ได้ถูกรูป</li><li>อธิบายว่าทำไมระบบเชิงเส้นไม่มีผลเฉลยแปลกปลอม</li></ul>
+<p><strong>ตั้งค้างไว้:</strong> ถ้าสมการมากกว่าตัวแปรแล้วไม่สอดคล้องเลย จะทำอย่างไร — ช่วงถัดไป</p>
+<p><strong>การบ้าน:</strong> <code>exercises/ex_02.md</code> ข้อ 1–7 · <strong>ตัวอย่างระบบไม่สอดคล้องแบบผสม (1.4) มีแต่ใน note</strong></p></div>
+</div>
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" title="Previous (&#8592;)">&#9664;</button>
+  <span id="counter">1 / 14</span>
+  <span id="slide-label"></span>
+  <button id="next-btn" onclick="changeSlide(1)" title="Next (&#8594;)">&#9654;</button>
+</div>
+<div id="kb-hint">&#8592; &#8594; Space</div>
+<script>
+
+var current = 0;
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var counter = document.getElementById('counter');
+var fill = document.getElementById('progress-fill');
+var label = document.getElementById('slide-label');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+
+function showSlide(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, total - 1));
+  slides[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  fill.style.width = ((current + 1) / total * 100) + '%';
+  label.textContent = slides[current].dataset.title || '';
+  prevBtn.disabled = (current === 0);
+  nextBtn.disabled = (current === total - 1);
+  // Scroll content to top on slide change
+  var sc = slides[current].querySelector('.slide-content');
+  if (sc) sc.scrollTop = 0;
+}
+
+function changeSlide(dir) { showSlide(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault(); changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault(); changeSlide(-1);
+  } else if (e.key === ' ') {
+    e.preventDefault(); changeSlide(e.shiftKey ? -1 : 1);
+  } else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End')  { showSlide(total - 1); }
+});
+
+// Touch swipe
+var touchX = 0;
+document.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+showSlide(0);
+
+</script>
+</body>
+</html>

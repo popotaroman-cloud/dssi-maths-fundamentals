@@ -1,0 +1,43 @@
+<svg viewBox="0 0 440 440" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax    { stroke:#000; stroke-width:1.5; }
+    .solid { stroke:#000; stroke-width:2.2; fill:none; }
+    .dashh { stroke:#000; stroke-width:2; fill:none; stroke-dasharray:7 5; }
+    .thick { stroke:#000; stroke-width:3; }
+    .dot   { fill:#000; }
+    .lbl   { fill:#000; font-size:14px; }
+    .circ  { fill:none; stroke:#000; stroke-width:2; }
+  </style>
+
+  <!-- axes centered -->
+  <line x1="20" y1="220" x2="420" y2="220" class="ax"/>
+  <line x1="220" y1="420" x2="220" y2="20" class="ax"/>
+  <text x="425" y="224" class="lbl">x</text>
+  <text x="205" y="18" class="lbl">y</text>
+
+  <!-- c=0: axes themselves, drawn thick -->
+  <line x1="20" y1="220" x2="420" y2="220" class="thick"/>
+  <line x1="220" y1="420" x2="220" y2="20" class="thick"/>
+  <text x="30" y="240" class="lbl">c=0</text>
+
+  <!-- c=6: hyperbola xy=6 in quadrant 1 and 3, solid -->
+  <path d="M 260,220 C 270,180 300,150 340,140 C 370,133 390,125 400,120" class="solid"/>
+  <path d="M 180,220 C 170,260 140,290 100,300 C 70,307 50,315 40,320" class="solid"/>
+  <text x="330" y="112" class="lbl">c=6</text>
+
+  <!-- c=-6: hyperbola in quadrant 2 and 4, dashed -->
+  <path d="M 180,220 C 170,180 140,150 100,140 C 70,133 50,125 40,120" class="dashh"/>
+  <path d="M 260,220 C 270,260 300,290 340,300 C 370,307 390,315 400,320" class="dashh"/>
+  <text x="330" y="335" class="lbl">c=-6</text>
+
+  <!-- points (2,3) and (-2,-3) at same level -->
+  <circle cx="280" cy="147" r="5" class="dot"/>
+  <circle cx="160" cy="293" r="5" class="dot"/>
+  <text x="285" y="140" class="lbl">(2,3)</text>
+  <text x="110" y="308" class="lbl">(-2,-3) — ระดับเดียวกับ (2,3)</text>
+
+  <!-- highlight intersection at origin -->
+  <circle cx="220" cy="220" r="10" class="circ"/>
+  <text x="235" y="260" class="lbl">ที่นี่ level set ตัดกันเอง</text>
+  <text x="235" y="278" class="lbl">เส้นสัมผัสไม่มีเส้นเดียว</text>
+</svg>

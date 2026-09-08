@@ -1,0 +1,28 @@
+<svg viewBox="0 0 480 320" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax    { stroke:#000; stroke-width:1.5; }
+    .curve { stroke:#000; stroke-width:2.4; fill:none; }
+    .dot   { fill:#000; }
+    .tan   { stroke:#000; stroke-width:1.6; stroke-dasharray:6 4; }
+    .lbl   { fill:#000; font-size:13px; }
+  </style>
+
+  <line x1="40" y1="260" x2="450" y2="260" class="ax"/>
+  <line x1="80" y1="300" x2="80" y2="30" class="ax"/>
+  <text x="455" y="264" class="lbl">x</text>
+  <text x="60" y="30" class="lbl">y</text>
+
+  <!-- monotonic increasing cubic with flat point in middle: (0,1)->(1,2)->(3,10) -->
+  <path d="M 80,240 C 140,215 190,195 230,182 C 250,176 260,174 270,174
+           C 280,174 290,176 310,170 C 350,158 400,120 430,70" class="curve"/>
+
+  <circle cx="270" cy="174" r="6" class="dot"/>
+  <line x1="220" y1="174" x2="320" y2="174" class="tan"/>
+  <text x="330" y="170" class="lbl">f'=0 แต่ไม่ใช่ค่าสุดขีด</text>
+
+  <circle cx="80"  cy="240" r="6" class="dot"/>
+  <text x="55"  y="258" class="lbl">MIN สัมบูรณ์</text>
+
+  <circle cx="430" cy="70" r="6" class="dot"/>
+  <text x="380" y="55" class="lbl">MAX สัมบูรณ์</text>
+</svg>

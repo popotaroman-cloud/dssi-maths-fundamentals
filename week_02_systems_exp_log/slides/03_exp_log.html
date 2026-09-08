@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Deck: เอกซ์โพเนนเชียลและลอการิทึม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],throwOnError:false});"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a237e;
+  --accent:  #1565c0;
+  --light:   #e3f2fd;
+  --bg:      #ffffff;
+  --text:    #212121;
+  --muted:   #546e7a;
+  --code-bg: #1e272e;
+  --code-fg: #dfe6e9;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0d1b2a;
+  font-family: 'Sarabun', 'Noto Sans Thai', 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ── Presentation container ───────────────────── */
+#presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
+  padding: clamp(28px, 3.5vw, 56px) clamp(40px, 6vw, 88px) 74px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Progress bar ─────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  z-index: 200;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #42a5f5, #1565c0);
+  transition: width 0.3s ease;
+}
+
+/* ── Slide header (title + num) ───────────────── */
+.slide-header {
+  margin-bottom: clamp(14px, 2vh, 28px);
+  padding-bottom: clamp(10px, 1.4vh, 18px);
+  border-bottom: 3px solid var(--light);
+  flex-shrink: 0;
+}
+.slide-num {
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.slide-title {
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+/* ── Title Slide (index 0) ────────────────────── */
+.slide-0 {
+  background: linear-gradient(145deg, #0d1b2a 0%, #1a237e 55%, #1565c0 100%);
+  justify-content: center;
+}
+.slide-0 .slide-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.slide-0 .slide-num  { color: #90caf9; }
+.slide-0 .slide-title {
+  font-size: clamp(34px, 5vw, 64px);
+  color: #ffffff;
+}
+.slide-0 .key-message {
+  background: rgba(255,255,255,0.1);
+  border-left-color: #42a5f5;
+  color: #e3f2fd;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.slide-0 .slide-content { color: #cfd8dc; }
+.slide-0 .slide-content p { color: #cfd8dc; }
+.slide-0 .slide-content li { color: #cfd8dc; }
+.slide-0 .slide-content strong { color: #90caf9; }
+.slide-0 .content-heading { color: #90caf9; }
+
+/* ── Key Message callout ──────────────────────── */
+.key-message {
+  background: var(--light);
+  border-left: 6px solid var(--accent);
+  padding: clamp(11px, 1.4vh, 18px) clamp(18px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: clamp(14px, 1.8vh, 26px);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Content area ─────────────────────────────── */
+.slide-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(17px, 1.85vw, 26px);
+  line-height: 1.68;
+  color: var(--text);
+  min-height: 0;
+}
+.slide-content::-webkit-scrollbar { width: 5px; }
+.slide-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.slide-content p { margin-bottom: 0.55em; }
+.slide-content strong { color: var(--primary); }
+.slide-content em { color: #37474f; }
+
+/* ── Lists ────────────────────────────────────── */
+.slide-list {
+  padding-left: clamp(22px, 2.8vw, 38px);
+  margin: 0.2em 0 0.7em;
+}
+.slide-list li {
+  margin-bottom: 0.45em;
+  line-height: 1.5;
+}
+ul.slide-list li::marker { color: var(--accent); font-weight: 700; }
+ol.slide-list li::marker { color: var(--accent); font-weight: 700; }
+
+/* ── Code blocks ──────────────────────────────── */
+.code-block {
+  margin: 0.5em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  font-size: clamp(12px, 1.35vw, 18px);
+}
+.code-lang {
+  background: #37474f;
+  color: #90a4ae;
+  font-size: 0.82em;
+  padding: 4px 16px;
+  font-family: 'Fira Code', Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.8vw, 24px);
+  overflow-x: auto;
+  line-height: 1.58;
+  margin: 0;
+}
+code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+}
+.slide-content code:not(pre code) {
+  background: #e8eaf6;
+  color: #1a237e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 1.5vw, 21px);
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  padding: clamp(7px, 0.9vh, 13px) clamp(10px, 1.4vw, 18px);
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: clamp(6px, 0.8vh, 11px) clamp(10px, 1.4vw, 18px);
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8f9ff; }
+tr:hover td { background: var(--light); }
+
+/* ── Sub-headings inside content ──────────────── */
+.content-heading {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--primary);
+  margin: 0.65em 0 0.25em;
+  font-weight: 700;
+}
+h3.content-heading {
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--accent);
+}
+
+/* ── Generated figure (matplotlib base64 PNG) ────────────── */
+.slide-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3em 0;
+  flex-shrink: 0;
+}
+.slide-figure img {
+  max-width: 96%;
+  max-height: clamp(200px, 38vh, 380px);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.10);
+  object-fit: contain;
+}
+
+/* ── Figure placeholder (fallback เมื่อ generate ไม่ได้) ─── */
+.placeholder {
+  border: 2px dashed var(--accent);
+  padding: clamp(12px, 1.6vh, 22px) clamp(16px, 2vw, 26px);
+  border-radius: 10px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0.4em 0;
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+
+.slide-hr {
+  border: none;
+  border-top: 2px solid #e8eaf6;
+  margin: 0.5em 0;
+}
+
+/* ── Navigation bar ───────────────────────────── */
+#nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(13,27,42,0.9);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 40px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+#nav button {
+  background: none;
+  border: none;
+  color: #90a4ae;
+  font-size: clamp(16px, 1.8vw, 24px);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.12); }
+#nav button:disabled { color: #3d4e5c; cursor: default; }
+#counter {
+  color: #e2e8f0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+}
+#slide-label {
+  color: #78909c;
+  font-size: clamp(10px, 1vw, 13px);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Keyboard hint ────────────────────────────── */
+#kb-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* ── KaTeX math rendering ─────────────────── */
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex {
+  font-size: clamp(15px, 1.7vw, 21px) !important;
+}
+.slide-0 .katex { color: #e3f2fd; }
+
+</style>
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+<div id="presentation">
+<div class="slide slide-0" data-title="Title">
+  <div class="slide-header">
+    <div class="slide-num">Slide 1</div>
+    <div class="slide-title">Title</div>
+  </div>
+  <div class="key-message">ลอการิทึมคือฟังก์ชันผกผันของเลขชี้กำลัง — ประโยคเดียวนี้คือทั้งหมดของเรื่องนี้ ที่เหลือเป็นผลตามมา</div>
+  <div class="slide-content"><p><strong>Maths Fundamentals for DS &amp; CS — สัปดาห์ 02</strong></p>
+<h2 class="content-heading">เอกซ์โพเนนเชียลและลอการิทึม</h2>
+<ul class="slide-list"><li>ช่วงนี้: 70 นาที</li><li>ต่อจาก: ระบบสมการเชิงเส้น</li><li>นำไปสู่: การปิดวงผลเฉลยแปลกปลอมจากสัปดาห์ 1 และอนุพันธ์ของ $\ln x$ ในสัปดาห์ 3</li></ul></div>
+</div>
+<div class="slide slide-1" data-title="ภาพรวมช่วงนี้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 2</div>
+    <div class="slide-title">ภาพรวมช่วงนี้</div>
+  </div>
+  <div class="key-message">จบช่วงนี้ เจอ $\log$ ที่ไหนจะแปลกลับเป็นเลขชี้กำลังในหัวได้ทันที และเขียนโดเมนก่อนลงมือทุกครั้ง</div>
+  <div class="slide-content"><p><strong>จะเรียน:</strong></p>
+<ul class="slide-list"><li>นิยามลอการิทึม และทำไมต้องมีข้อจำกัด $a&gt;0, a\ne1, b&gt;0$</li><li>กฎเลขชี้กำลังและกฎลอการิทึม</li><li>การเปลี่ยนฐาน</li><li><strong>ขั้นตอนทำงานสี่ขั้นสำหรับสมการ $\log$</strong> — ปิดวงจากสัปดาห์ 1</li></ul>
+<p><strong>สิ่งที่ต้องมีมาก่อน:</strong> ผลเฉลยแปลกปลอมและโดเมนที่ต้องยกเว้น (สัปดาห์ 1)</p></div>
+</div>
+<div class="slide slide-2" data-title="นิยาม: ลอการิทึมคือฟังก์ชันผกผัน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 3</div>
+    <div class="slide-title">นิยาม: ลอการิทึมคือฟังก์ชันผกผัน</div>
+  </div>
+  <div class="key-message">$\log_a b$ คือเลขชี้กำลังที่ต้องยกให้ $a$ เพื่อให้ได้ $b$ — แปลกลับเป็นเลขชี้กำลังทุกครั้งที่เจอ</div>
+  <div class="slide-content"><p>$$
+\log_a b = c \quad\Longleftrightarrow\quad a^c = b \qquad (a&gt;0,\; a\ne1,\; b&gt;0)
+$$</p>
+<p><strong>ทำไมต้องมีข้อจำกัด</strong></p>
+<ul class="slide-list"><li>$a&lt;0$: $a^x$ กระโดดไปมาระหว่างบวกลบ ไม่นิยามเมื่อ $x$ เป็นเศษส่วนหลายกรณี</li><li>$a=1$: $1^c=1$ ทุกค่า ฟังก์ชันไม่หนึ่งต่อหนึ่ง จึงไม่มีตัวผกผัน</li><li><strong>$b&gt;0$ สำคัญที่สุดสำหรับคอร์สนี้</strong>: $a^c&gt;0$ เสมอ ไม่ว่า $c$ จะเป็นอะไร → <strong>$\log$ ของศูนย์หรือจำนวนลบไม่มีค่า</strong></li></ul></div>
+</div>
+<div class="slide slide-3" data-title="กฎเลขชี้กำลัง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 4</div>
+    <div class="slide-title">กฎเลขชี้กำลัง</div>
+  </div>
+  <div class="key-message">สามกลุ่มกฎนี้คือของเดิมที่เคยเรียน — สิ่งที่ต้องแม่นคือเลือกใช้กฎไหนไม่สับสนกัน</div>
+  <div class="slide-content"><p>$$
+\begin{aligned}
+a^m \cdot a^n &amp;= a^{m+n} &amp; \frac{a^m}{a^n} &amp;= a^{m-n} &amp; (a^m)^n &amp;= a^{mn} \\[4pt]
+a^0 &amp;= 1 &amp; a^{-n} &amp;= \frac{1}{a^n} &amp; a^{1/n} &amp;= \sqrt[n]{a} \\[4pt]
+(ab)^n &amp;= a^n b^n &amp; \left(\frac{a}{b}\right)^{\!n} &amp;= \frac{a^n}{b^n} &amp; a^{m/n} &amp;= \left(\sqrt[n]{a}\right)^{m}
+\end{aligned}
+$$</p>
+<p><strong>สับสนบ่อย:</strong> $a^m a^n = a^{m+n}$ (คูณกัน → บวกเลขชี้กำลัง) ต่างจาก $(a^m)^n = a^{mn}$ (ยกกำลังซ้อน → คูณเลขชี้กำลัง) คนละกฎกันเลย</p></div>
+</div>
+<div class="slide slide-4" data-title="กฎลอการิทึม">
+  <div class="slide-header">
+    <div class="slide-num">Slide 5</div>
+    <div class="slide-title">กฎลอการิทึม</div>
+  </div>
+  <div class="key-message">สองบรรทัดล่างคือหัวใจของการแก้สมการ — $\log$ กับ $\exp$ ยกเลิกกันได้</div>
+  <div class="slide-content"><p>$$
+\begin{aligned}
+\log_a(xy) &amp;= \log_a x + \log_a y &amp; \log_a\!\left(\frac{x}{y}\right) &amp;= \log_a x - \log_a y \\[4pt]
+\log_a(x^r) &amp;= r \log_a x &amp; \log_a 1 &amp;= 0 \\[4pt]
+\log_a a &amp;= 1 &amp; \log_a(a^x) &amp;= x \\[4pt]
+a^{\log_a x} &amp;= x &amp; \log_a\!\left(\frac{1}{x}\right) &amp;= -\log_a x
+\end{aligned}
+$$</p>
+<p>ตัวแปรติดบนเลขชี้กำลัง → ใส่ $\log$ ทั้งสองข้างเพื่อดึงลงมา · ตัวแปรติดใน $\log$ → ใส่เลขชี้กำลังทั้งสองข้างเพื่อปลดออก</p></div>
+</div>
+<div class="slide slide-5" data-title="เปลี่ยนฐาน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 6</div>
+    <div class="slide-title">เปลี่ยนฐาน</div>
+  </div>
+  <div class="key-message">การเปลี่ยนฐานไม่เปลี่ยนค่าอะไร แค่เปลี่ยนหน่วยวัดของเลขชี้กำลัง</div>
+  <div class="slide-content"><p>$$
+\log_a b = \frac{\log_c b}{\log_c a}
+$$</p>
+<p>ที่มา: ตั้ง $k=\log_a b \Rightarrow a^k=b$ ใส่ $\log_c$ ทั้งสองข้าง $\Rightarrow k\log_c a = \log_c b$ หารด้วย $\log_c a$</p>
+<p>กรณีที่ใช้บ่อยที่สุด:</p>
+<p>$$
+\log_a b = \frac{\ln b}{\ln a} \qquad\text{และ}\qquad \log_a b = \frac{1}{\log_b a}
+$$</p>
+<p><strong>สามสัญกรณ์:</strong> $\log x$ (คณิตศาสตร์โรงเรียน) = ฐาน 10 · $\ln x$ = ฐาน $e$ · $\lg x$ หรือ $\log x$ (บริบท CS) มักหมายถึงฐาน 2 — สัญกรณ์ $\lg$ เป็นธรรมเนียมของ Donald Knuth ใน <em>The Art of Computer Programming</em></p></div>
+</div>
+<div class="slide slide-6" data-title="สามแบบของสมการ และวิธีจัดการ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 7</div>
+    <div class="slide-title">สามแบบของสมการ และวิธีจัดการ</div>
+  </div>
+  <div class="key-message">แถวสุดท้ายคือแถวที่ต้องระวัง — และมันคือการปิดวงจากสัปดาห์ 1</div>
+  <div class="slide-content"><table><thead><tr><th>รูปสมการ</th><th>ทำอะไร</th><th>เช็คโดเมนไหม</th></tr></thead><tbody><tr><td>$a^{f(x)} = a^{g(x)}$</td><td>ทำฐานให้เท่ากันแล้วเทียบเลขชี้กำลัง</td><td>ไม่ต้อง</td></tr><tr><td>$a^{f(x)} = b$</td><td>ใส่ $\log_a$ ทั้งสองข้าง</td><td>ไม่ต้อง (แต่ $b&gt;0$)</td></tr><tr><td>$\log_a f(x) = \log_a g(x)$ หรือ $=c$</td><td>เขียนโดเมนก่อน แล้วปลด $\log$</td><td><strong>ต้อง</strong></td></tr></tbody></table>
+<p>$\log a + \log b = \log(ab)$: ฝั่งซ้ายต้องการ $a&gt;0$ <strong>และ</strong> $b&gt;0$ แต่ฝั่งขวาต้องการแค่ $ab&gt;0$ — เป็นจริงได้แม้ <strong>ทั้งคู่ติดลบ</strong> การรวมพจน์จึงเป็น $\Longrightarrow$ ทางเดียว เซตคำตอบบวมขึ้น</p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w02_f05_exp_log_mirror.svg" alt="ระนาบ x-y แกนสมมาตรคือเส้นประ y=x วาดกราฟ y=2^x ผ่านจุด (0,1) (1,2) (2,4) โค้งขึ้นชันโดยมีเส้นกำกับ y=0 เป็นเส้นกำกับแนวนอน และกราฟ y=log ฐาน 2 ของ x ผ่านจุด (1,0) (2,1) (4,2) โค้งขึ้นแบนโดยมีเส้นกำกับ x=0 เป็นเส้นกำกับแนวตั้ง สองกราฟสะท้อนกันรอบเส้น y=x มีลูกศรคู่โยงจุด (1,2) กับ (2,1) ขาวดำ เส้นน้อย" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-7" data-title="ขั้นตอนทำงานสี่ขั้นสำหรับสมการ $\log$">
+  <div class="slide-header">
+    <div class="slide-num">Slide 8</div>
+    <div class="slide-title">ขั้นตอนทำงานสี่ขั้นสำหรับสมการ $\log$</div>
+  </div>
+  <div class="key-message">ห้ามข้ามขั้นใดขั้นหนึ่ง — โดยเฉพาะขั้นที่ 1 และขั้นที่ 4</div>
+  <div class="slide-content"><ol><li><strong>เขียนโดเมนก่อนลงมือทำอะไรเลย</strong> ทุกนิพจน์ใน $\log$ ต้องมากกว่าศูนย์</li><li>รวมพจน์ $\log$ ให้เหลือตัวเดียวแต่ละข้าง แล้วปลด $\log$</li><li>แก้สมการพีชคณิตที่ได้ตามปกติ</li><li><strong>คัดรากทุกตัวด้วยโดเมนจากขั้นที่ 1</strong> รากที่ไม่อยู่ในโดเมนทำเครื่องหมาย ✗ และรากที่รอดให้แทนกลับเข้า<strong>สมการตั้งต้น</strong>เพื่อยืนยัน</li></ol></div>
+</div>
+<div class="slide slide-8" data-title="ตัวอย่าง: ทำฐานให้เท่ากัน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 9</div>
+    <div class="slide-title">ตัวอย่าง: ทำฐานให้เท่ากัน</div>
+  </div>
+  <div class="key-message">เมื่อฟังก์ชัน $u \mapsto a^u$ เพิ่มขึ้นตลอด ฐานเท่ากันแล้วเทียบเลขชี้กำลังได้เลย ไม่มีของปลอมเกิดที่นี่</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $5 \cdot 2^{\,x+1} = 80$</p>
+<p>$$
+\begin{aligned}
+2^{\,x+1} &amp;= 16 &amp;&amp; \text{หารด้วย } 5 \\
+2^{\,x+1} &amp;= 2^{4} &amp;&amp; \\
+x + 1 &amp;= 4 &amp;&amp; 2^{u} \text{ หนึ่งต่อหนึ่ง — ไม่มีของปลอม} \\
+x &amp;= 3 &amp;&amp;
+\end{aligned}
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> $5 \cdot 2^4 = 80$ ✓ · <strong>ตอบ:</strong> $\{3\}$</p></div>
+</div>
+<div class="slide slide-9" data-title="ตัวอย่าง: เปลี่ยนฐานและเลขชี้กำลังเศษส่วน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 10</div>
+    <div class="slide-title">ตัวอย่าง: เปลี่ยนฐานและเลขชี้กำลังเศษส่วน</div>
+  </div>
+  <div class="key-message">ฐานสองข้างไม่เหมือนกัน ต้องลากทั้งสองข้างกลับไปหาฐานร่วมก่อน</div>
+  <div class="slide-content"><p><strong>โจทย์ ก:</strong> แก้ $4^{\,x} = 8$</p>
+<p>$$
+(2^{2})^{x} = 2^{3} \;\Rightarrow\; 2x = 3 \;\Rightarrow\; x = \tfrac{3}{2}
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> $4^{3/2} = (\sqrt4)^3 = 2^3 = 8$ ✓</p>
+<p><strong>โจทย์ ข:</strong> หา $\log_8 32$ โดยไม่ใช้เครื่องคิดเลข</p>
+<p>$$
+\log_8 32 = \frac{\log_2 2^5}{\log_2 2^3} = \frac{5}{3}
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> $8^{5/3} = (2^3)^{5/3} = 2^5 = 32$ ✓ · <strong>ตอบ:</strong> ก) $\left\{\tfrac32\right\}$ · ข) $\tfrac53$</p></div>
+</div>
+<div class="slide slide-10" data-title="ตัวอย่าง: $e^x$ ซ่อนสมการกำลังสอง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 11</div>
+    <div class="slide-title">ตัวอย่าง: $e^x$ ซ่อนสมการกำลังสอง</div>
+  </div>
+  <div class="key-message">การแทนตัวแปรทุกครั้งพาโดเมนของมันมาด้วยเสมอ — ที่นี่คือ $u &gt; 0$</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> แก้ $e^{2x} - e^{x} - 6 = 0$</p>
+<p>สังเกต $e^{2x} = (e^x)^2$ ตั้ง $u = e^x$ <strong>โดยมีเงื่อนไข $u&gt;0$ ติดมา</strong></p>
+<p>$$
+\begin{aligned}
+u^2 - u - 6 &amp;= 0 \;\Rightarrow\; (u-3)(u+2)=0 \;\Rightarrow\; u=3 \;\text{ หรือ}\; u=-2 \\
+u=3 &amp;&gt; 0 \;\checkmark \;\Rightarrow\; x = \ln 3 \\
+u=-2 &amp;\not&gt; 0 \;\;✗ \;\text{ไม่มี } x \text{ จริงที่ } e^x=-2
+\end{aligned}
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> $e^{2\ln3}-e^{\ln3}-6 = 9-3-6=0$ ✓ · <strong>ตอบ:</strong> $\{\ln 3\}$ — คำตอบรูปปิด ไม่ต้องเปิดตาราง</p></div>
+</div>
+<div class="slide slide-11" data-title="เมื่อรวมพจน์แล้วของปลอมผ่านการตรวจได้สนิท">
+  <div class="slide-header">
+    <div class="slide-num">Slide 12</div>
+    <div class="slide-title">เมื่อรวมพจน์แล้วของปลอมผ่านการตรวจได้สนิท</div>
+  </div>
+  <div class="key-message">บทเรียนสำคัญที่สุดของช่วงนี้ — บางครั้งของปลอมผ่านการตรวจกับบรรทัดที่จัดรูปแล้วได้อย่างสวยงาม</div>
+  <div class="slide-content"><p>ในสมการ $\log_2(x+3)+\log_2(x-3)=4$ (โดเมน $x&gt;3$) หลังรวมพจน์และแก้ได้ $x=5$ หรือ $x=-5$</p>
+<p>$x=-5$ ไม่อยู่ในโดเมน — แต่ลองแทนใน<strong>สมการที่รวมพจน์แล้ว</strong>:</p>
+<p>$$
+\log_2\big((-5+3)(-5-3)\big) = \log_2\big((-2)(-8)\big) = \log_2 16 = 4 \quad\checkmark
+$$</p>
+<p><strong>มันถูก!</strong> แต่ $\log_2(-2)$ ไม่มีค่าเลยในสมการตั้งต้น — <strong>ต้องตรวจกับสมการตั้งต้นเท่านั้น</strong></p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w02_f06_log_domain_number_line.svg" alt="เส้นจำนวนแนวนอนหนึ่งเส้นมีสเกล -6 ถึง 6 ช่วง x มากกว่า 3 ระบายลายทึบพร้อมวงกลมโปร่งที่ 3 และป้าย &quot;โดเมนที่ใช้ได้&quot; จุด x=5 เป็นจุดทึบมีป้าย &quot;ผลเฉลยจริง&quot; จุด x=-5 เป็นวงกลมประมีป้าย &quot;แปลกปลอม — โดเมนห้าม&quot; และมีลูกศรชี้จาก x=-5 ออกนอกบริเวณระบายลาย ขาวดำ เส้นน้อย" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-12" data-title="กรณีที่พลาดบ่อย">
+  <div class="slide-header">
+    <div class="slide-num">Slide 13</div>
+    <div class="slide-title">กรณีที่พลาดบ่อย</div>
+  </div>
+  <div class="key-message">เกือบทุกข้อผิดพลาดมาจากการสลับกฎผลบวกกับกฎผลคูณ หรือลืมเช็คโดเมน</div>
+  <div class="slide-content"><table><thead><tr><th>ที่พลาด</th><th>วิธีกัน</th></tr></thead><tbody><tr><td>$\log(x+y)=\log x+\log y$</td><td><strong>ผลบวกข้างในไม่มีกฎใดแตกได้</strong></td></tr><tr><td>$\dfrac{\log x}{\log y}=\log\dfrac{x}{y}$</td><td>เศษส่วนของ $\log$ คือสูตรเปลี่ยนฐาน ไม่ใช่กฎผลหาร</td></tr><tr><td>แก้เสร็จไม่เช็คโดเมน</td><td>เขียนโดเมนเป็น<strong>บรรทัดแรก</strong> ไม่ใช่บรรทัดสุดท้าย</td></tr><tr><td>ตรวจคำตอบกับสมการที่รวมพจน์แล้ว</td><td>ต้องตรวจกับ<strong>สมการตั้งต้น</strong>เท่านั้น</td></tr><tr><td>ทิ้งรากติดลบทุกตัวอัตโนมัติ</td><td>ที่ห้ามลบคือ<strong>นิพจน์ข้างใน</strong> $\log$ ไม่ใช่ค่า $x$</td></tr><tr><td>แทน $u=e^x$ ลืมเงื่อนไข $u&gt;0$</td><td>เขียน $u&gt;0$ ทันทีที่แทน</td></tr></tbody></table></div>
+</div>
+<div class="slide slide-13" data-title="ใช้ทำอะไรใน DS/CS: ผลคูณกลายเป็นผลบวก">
+  <div class="slide-header">
+    <div class="slide-num">Slide 14</div>
+    <div class="slide-title">ใช้ทำอะไรใน DS/CS: ผลคูณกลายเป็นผลบวก</div>
+  </div>
+  <div class="key-message">ทุกโมเดลความน่าจะเป็นทำงานบน $\log$ เพราะเหตุผลเชิงตัวเลขที่จับต้องได้</div>
+  <div class="slide-content"><p>ความน่าจะเป็นของข้อมูล $n$ ตัวที่เป็นอิสระ = ผลคูณของ $n$ พจน์ — บนเครื่องจริงจะกลายเป็น $0$ เพราะแต่ละพจน์เล็กกว่า 1</p>
+<p>$$
+\log(p_1 \cdot p_2 \cdots p_n) = \log p_1 + \log p_2 + \cdots + \log p_n
+$$</p>
+<p>ใส่ $\log$ แล้วผลคูณกลายเป็นผลบวก — ตัวเลขอยู่ในช่วงที่คำนวณได้ และการหาอนุพันธ์ของผลบวกง่ายกว่าผลคูณมหาศาล (สัปดาห์ 3)</p></div>
+</div>
+<div class="slide slide-14" data-title="เทคนิคต่อยอด: log-sum-exp trick (1) — ปัญหา">
+  <div class="slide-header">
+    <div class="slide-num">Slide 15</div>
+    <div class="slide-title">เทคนิคต่อยอด: log-sum-exp trick (1) — ปัญหา</div>
+  </div>
+  <div class="key-message">การคำนวณ $\log$ ของผลบวกของค่าเลขชี้กำลังจำนวนมากตรง ๆ ล้มเหลวได้ทั้งสองทาง — overflow และ underflow</div>
+  <div class="slide-content"><p>ในโค้ด ML จริง (เช่น softmax, cross-entropy loss) ต้องคำนวณรูปแบบนี้บ่อยมาก</p>
+<p>$$
+\text{LSE}(x_1, \ldots, x_n) = \log\left(\sum_{i=1}^{n} e^{x_i}\right)
+$$</p>
+<p><strong>ปัญหาเวลาคำนวณตรง ๆ:</strong></p>
+<ul class="slide-list"><li>ถ้า $x_i$ ค่าใดค่าหนึ่งใหญ่มาก (เช่น $1000$) → $e^{1000}$ <strong>overflow</strong> ทันที (คอมพิวเตอร์เก็บค่าไม่ไหว)</li><li>ถ้า $x_i$ ทุกตัวติดลบมาก (เช่น $-1000$) → $e^{-1000}$ <strong>underflow</strong> เป็น $0$ ทั้งหมด แล้ว $\log(0)$ ไม่มีค่า</li></ul>
+<p>ทั้งสองกรณีนี้เกิดขึ้นจริงตลอดเวลาในโมเดลจริง ไม่ใช่กรณีพิเศษที่หายาก</p></div>
+</div>
+<div class="slide slide-15" data-title="เทคนิคต่อยอด: log-sum-exp trick (2) — ทางแก้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 16</div>
+    <div class="slide-title">เทคนิคต่อยอด: log-sum-exp trick (2) — ทางแก้</div>
+  </div>
+  <div class="key-message">ดึงค่ามากที่สุดออกมาก่อนใส่เลขชี้กำลัง แล้วบวกกลับหลังใส่ $\log$ — ใช้กฎ $a^{m+n}=a^m a^n$ และ $\log(ab)=\log a+\log b$ ที่เพิ่งเรียนตรง ๆ</div>
+  <div class="slide-content"><p>ให้ $m = \max(x_1, \ldots, x_n)$ แล้วจัดรูปใหม่</p>
+<p>$$
+\begin{aligned}
+\log\sum_i e^{x_i} &amp;= \log\sum_i e^{m}\,e^{x_i-m} &amp;&amp; \text{ดึง } e^m \text{ ออกจากผลบวก} \\
+&amp;= \log\!\left(e^{m}\sum_i e^{x_i-m}\right) &amp;&amp; \\
+&amp;= m + \log\sum_i e^{x_i-m} &amp;&amp; \text{ใช้ } \log(ab)=\log a + \log b
+\end{aligned}
+$$</p>
+<p><strong>ทำไมทางนี้ปลอดภัย:</strong> ทุกพจน์ $x_i - m \le 0$ ดังนั้น $e^{x_i-m} \in (0, 1]$ เสมอ — <strong>ไม่มีทาง overflow</strong> และพจน์ที่ $i$ ตรงกับค่าสูงสุดจะได้ $e^{0}=1$ พอดี ทำให้ผลบวกด้านในไม่มีทาง underflow เป็นศูนย์ทั้งหมด</p>
+<p><strong>ที่ใช้จริง:</strong> softmax และ cross-entropy loss ในทุกไลบรารี deep learning ใช้เทคนิคนี้เป็นค่าเริ่มต้นเสมอ ไม่ใช่ทางเลือก</p></div>
+</div>
+<div class="slide slide-16" data-title="ใช้ทำอะไรใน DS/CS: อัตราการเติบโตกลายเป็นความชัน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 17</div>
+    <div class="slide-title">ใช้ทำอะไรใน DS/CS: อัตราการเติบโตกลายเป็นความชัน</div>
+  </div>
+  <div class="key-message">การใส่ $\log$ เปลี่ยนปัญหาที่โค้งจนอ่านไม่ออก ให้กลายเป็นปัญหาเส้นตรงที่ตาเปล่าอ่านได้</div>
+  <div class="slide-content"><p>ถ้า $y = C \cdot a^x$ (การเติบโตแบบทวีคูณ) ใส่ $\log$ ทั้งสองข้าง</p>
+<p>$$
+\log_a y = \log_a C + x
+$$</p>
+<p>ซึ่งเป็น<strong>เส้นตรง</strong>ในตัวแปร $x$ — หัวข้อถัดไปจะขยายเรื่องนี้ด้วยตัวเลขจริง</p>
+<p><strong>ในโค้ด:</strong> ทุกครั้งที่เห็น <code>log(p + 1e-9)</code> ในโค้ด ML นั่นคือคนเขียนบังคับให้อาร์กิวเมนต์ของ $\log$ อยู่ในโดเมน — คนที่เข้าใจโดเมนเขียนเพราะรู้ว่าทำไม คนที่ไม่เข้าใจลอกมาแล้วภาวนา</p></div>
+</div>
+<div class="slide slide-17" data-title="ปิดวงจากสัปดาห์ 1">
+  <div class="slide-header">
+    <div class="slide-num">Slide 18</div>
+    <div class="slide-title">ปิดวงจากสัปดาห์ 1</div>
+  </div>
+  <div class="key-message">สัปดาห์ที่แล้วเราสัญญาไว้ว่ากฎ $\log$ ที่ทำเซตคำตอบบวมจะกลับมาเต็มรูป — วันนี้คือวันนั้น</div>
+  <div class="slide-content"><table><thead><tr><th>สัปดาห์ 1</th><th>สัปดาห์ 2</th></tr></thead><tbody><tr><td>ยกกำลังสองทำเซตคำตอบบวม</td><td>รวมพจน์ $\log$ ทำเซตคำตอบบวม — โครงสร้างเดียวกัน</td></tr><tr><td>$\dfrac{x^2-4}{x-2}=4$ ให้ $x=2$ ที่โดเมนห้าม</td><td>$\log_2(x-3)-\log_2(x+1)=1$ ให้ $x=-5$ ที่โดเมนห้าม — <strong>โครงสร้างความผิดพลาดเดียวกัน ต่างกันแค่ฟังก์ชันที่ห่อไว้</strong></td></tr></tbody></table>
+<p><strong>บทเรียนเดียวที่ใช้ได้ทั้งสองสัปดาห์:</strong> เขียนโดเมนก่อน ตรวจคำตอบกับสมการตั้งต้นเสมอ</p></div>
+</div>
+<div class="slide slide-18" data-title="สรุปและสิ่งที่ต้องทำ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 19</div>
+    <div class="slide-title">สรุปและสิ่งที่ต้องทำ</div>
+  </div>
+  <div class="key-message">แปลง $\log$ เป็นเลขชี้กำลังในหัวได้ทันที และเขียนโดเมนก่อนลงมือทุกครั้งที่เจอ $\log$</div>
+  <div class="slide-content"><p><strong>จบช่วงนี้ควรทำได้:</strong></p>
+<ul class="slide-list"><li>ใช้กฎเลขชี้กำลังและกฎลอการิทึมได้แม่น เปลี่ยนฐานได้</li><li>แก้สมการที่มี $e^x$ ด้วยการแทนตัวแปรพร้อมเงื่อนไข</li><li>แก้สมการ $\log$ ครบทั้งสี่ขั้น พร้อมคัดรากด้วยโดเมน</li></ul>
+<p><strong>ตั้งค้างไว้:</strong> ทำไมสมการ $\log$ บางสมการไม่มีผลเฉลยเลยทั้งที่พีชคณิตถูกทุกบรรทัด — ดูตัวอย่าง 3.6 ใน note</p>
+<p><strong>การบ้าน:</strong> <code>exercises/ex_02.md</code> ข้อ 12–20 · <strong>ตัวอย่าง 3.4 และ 3.6 มีแต่ใน note</strong></p></div>
+</div>
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" title="Previous (&#8592;)">&#9664;</button>
+  <span id="counter">1 / 14</span>
+  <span id="slide-label"></span>
+  <button id="next-btn" onclick="changeSlide(1)" title="Next (&#8594;)">&#9654;</button>
+</div>
+<div id="kb-hint">&#8592; &#8594; Space</div>
+<script>
+
+var current = 0;
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var counter = document.getElementById('counter');
+var fill = document.getElementById('progress-fill');
+var label = document.getElementById('slide-label');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+
+function showSlide(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, total - 1));
+  slides[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  fill.style.width = ((current + 1) / total * 100) + '%';
+  label.textContent = slides[current].dataset.title || '';
+  prevBtn.disabled = (current === 0);
+  nextBtn.disabled = (current === total - 1);
+  // Scroll content to top on slide change
+  var sc = slides[current].querySelector('.slide-content');
+  if (sc) sc.scrollTop = 0;
+}
+
+function changeSlide(dir) { showSlide(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault(); changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault(); changeSlide(-1);
+  } else if (e.key === ' ') {
+    e.preventDefault(); changeSlide(e.shiftKey ? -1 : 1);
+  } else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End')  { showSlide(total - 1); }
+});
+
+// Touch swipe
+var touchX = 0;
+document.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+showSlide(0);
+
+</script>
+</body>
+</html>

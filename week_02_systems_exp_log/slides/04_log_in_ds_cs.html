@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide Deck: log ใน DS/CS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],ignoredTags:['script','noscript','style','textarea','pre','code'],throwOnError:false});"></script>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #1a237e;
+  --accent:  #1565c0;
+  --light:   #e3f2fd;
+  --bg:      #ffffff;
+  --text:    #212121;
+  --muted:   #546e7a;
+  --code-bg: #1e272e;
+  --code-fg: #dfe6e9;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: #0d1b2a;
+  font-family: 'Sarabun', 'Noto Sans Thai', 'Segoe UI', Arial, sans-serif;
+  color: var(--text);
+}
+
+/* ── Presentation container ───────────────────── */
+#presentation {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  flex-direction: column;
+  padding: clamp(28px, 3.5vw, 56px) clamp(40px, 6vw, 88px) 74px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.slide.active {
+  display: flex;
+  opacity: 1;
+}
+
+/* ── Progress bar ─────────────────────────────── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 5px;
+  background: rgba(255,255,255,0.12);
+  z-index: 200;
+}
+#progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #42a5f5, #1565c0);
+  transition: width 0.3s ease;
+}
+
+/* ── Slide header (title + num) ───────────────── */
+.slide-header {
+  margin-bottom: clamp(14px, 2vh, 28px);
+  padding-bottom: clamp(10px, 1.4vh, 18px);
+  border-bottom: 3px solid var(--light);
+  flex-shrink: 0;
+}
+.slide-num {
+  font-size: clamp(12px, 1.1vw, 15px);
+  color: var(--accent);
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.slide-title {
+  font-size: clamp(30px, 3.8vw, 52px);
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.15;
+}
+
+/* ── Title Slide (index 0) ────────────────────── */
+.slide-0 {
+  background: linear-gradient(145deg, #0d1b2a 0%, #1a237e 55%, #1565c0 100%);
+  justify-content: center;
+}
+.slide-0 .slide-header {
+  border-bottom-color: rgba(255,255,255,0.2);
+  margin-bottom: clamp(20px, 3vh, 40px);
+}
+.slide-0 .slide-num  { color: #90caf9; }
+.slide-0 .slide-title {
+  font-size: clamp(34px, 5vw, 64px);
+  color: #ffffff;
+}
+.slide-0 .key-message {
+  background: rgba(255,255,255,0.1);
+  border-left-color: #42a5f5;
+  color: #e3f2fd;
+  font-size: clamp(18px, 2vw, 28px);
+}
+.slide-0 .slide-content { color: #cfd8dc; }
+.slide-0 .slide-content p { color: #cfd8dc; }
+.slide-0 .slide-content li { color: #cfd8dc; }
+.slide-0 .slide-content strong { color: #90caf9; }
+.slide-0 .content-heading { color: #90caf9; }
+
+/* ── Key Message callout ──────────────────────── */
+.key-message {
+  background: var(--light);
+  border-left: 6px solid var(--accent);
+  padding: clamp(11px, 1.4vh, 18px) clamp(18px, 2.2vw, 30px);
+  font-size: clamp(18px, 1.9vw, 26px);
+  font-weight: 600;
+  line-height: 1.45;
+  border-radius: 0 10px 10px 0;
+  margin-bottom: clamp(14px, 1.8vh, 26px);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── Content area ─────────────────────────────── */
+.slide-content {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(17px, 1.85vw, 26px);
+  line-height: 1.68;
+  color: var(--text);
+  min-height: 0;
+}
+.slide-content::-webkit-scrollbar { width: 5px; }
+.slide-content::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+.slide-content p { margin-bottom: 0.55em; }
+.slide-content strong { color: var(--primary); }
+.slide-content em { color: #37474f; }
+
+/* ── Lists ────────────────────────────────────── */
+.slide-list {
+  padding-left: clamp(22px, 2.8vw, 38px);
+  margin: 0.2em 0 0.7em;
+}
+.slide-list li {
+  margin-bottom: 0.45em;
+  line-height: 1.5;
+}
+ul.slide-list li::marker { color: var(--accent); font-weight: 700; }
+ol.slide-list li::marker { color: var(--accent); font-weight: 700; }
+
+/* ── Code blocks ──────────────────────────────── */
+.code-block {
+  margin: 0.5em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  font-size: clamp(12px, 1.35vw, 18px);
+}
+.code-lang {
+  background: #37474f;
+  color: #90a4ae;
+  font-size: 0.82em;
+  padding: 4px 16px;
+  font-family: 'Fira Code', Consolas, monospace;
+  letter-spacing: 0.5px;
+}
+pre {
+  background: var(--code-bg);
+  color: var(--code-fg);
+  padding: clamp(12px, 1.4vh, 20px) clamp(14px, 1.8vw, 24px);
+  overflow-x: auto;
+  line-height: 1.58;
+  margin: 0;
+}
+code {
+  font-family: 'Fira Code', Consolas, 'Courier New', monospace;
+}
+.slide-content code:not(pre code) {
+  background: #e8eaf6;
+  color: #1a237e;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.86em;
+}
+
+/* ── Tables ───────────────────────────────────── */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.5em 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(14px, 1.5vw, 21px);
+}
+th {
+  background: var(--primary);
+  color: #fff;
+  padding: clamp(7px, 0.9vh, 13px) clamp(10px, 1.4vw, 18px);
+  text-align: left;
+  font-weight: 600;
+}
+td {
+  padding: clamp(6px, 0.8vh, 11px) clamp(10px, 1.4vw, 18px);
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f8f9ff; }
+tr:hover td { background: var(--light); }
+
+/* ── Sub-headings inside content ──────────────── */
+.content-heading {
+  font-size: clamp(18px, 2vw, 28px);
+  color: var(--primary);
+  margin: 0.65em 0 0.25em;
+  font-weight: 700;
+}
+h3.content-heading {
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--accent);
+}
+
+/* ── Generated figure (matplotlib base64 PNG) ────────────── */
+.slide-figure {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3em 0;
+  flex-shrink: 0;
+}
+.slide-figure img {
+  max-width: 96%;
+  max-height: clamp(200px, 38vh, 380px);
+  border-radius: 10px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.10);
+  object-fit: contain;
+}
+
+/* ── Figure placeholder (fallback เมื่อ generate ไม่ได้) ─── */
+.placeholder {
+  border: 2px dashed var(--accent);
+  padding: clamp(12px, 1.6vh, 22px) clamp(16px, 2vw, 26px);
+  border-radius: 10px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 0.4em 0;
+  font-size: clamp(14px, 1.5vw, 20px);
+}
+
+.slide-hr {
+  border: none;
+  border-top: 2px solid #e8eaf6;
+  margin: 0.5em 0;
+}
+
+/* ── Navigation bar ───────────────────────────── */
+#nav {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(13,27,42,0.9);
+  backdrop-filter: blur(10px);
+  padding: 7px 20px;
+  border-radius: 40px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+}
+#nav button {
+  background: none;
+  border: none;
+  color: #90a4ae;
+  font-size: clamp(16px, 1.8vw, 24px);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+#nav button:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.12); }
+#nav button:disabled { color: #3d4e5c; cursor: default; }
+#counter {
+  color: #e2e8f0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+}
+#slide-label {
+  color: #78909c;
+  font-size: clamp(10px, 1vw, 13px);
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── Keyboard hint ────────────────────────────── */
+#kb-hint {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.2);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* ── KaTeX math rendering ─────────────────── */
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.katex {
+  font-size: clamp(15px, 1.7vw, 21px) !important;
+}
+.slide-0 .katex { color: #e3f2fd; }
+
+</style>
+</head>
+<body>
+<div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+
+<div id="presentation">
+<div class="slide slide-0" data-title="Title">
+  <div class="slide-header">
+    <div class="slide-num">Slide 1</div>
+    <div class="slide-title">Title</div>
+  </div>
+  <div class="key-message">ไม่มีเทคนิคใหม่เลยในช่วงนี้ — มีแต่การเอาสิ่งที่เพิ่งเรียนไปตอบคำถามที่คุณจะเจอจริงในงาน</div>
+  <div class="slide-content"><p><strong>Maths Fundamentals for DS &amp; CS — สัปดาห์ 02</strong></p>
+<h2 class="content-heading">log ใน DS/CS</h2>
+<ul class="slide-list"><li>ช่วงนี้: 30 นาที</li><li>ต่อจาก: กฎเลขชี้กำลังและลอการิทึม</li><li>นำไปสู่: ปิดสัปดาห์ 2 — สัปดาห์ 3 เริ่มอนุพันธ์</li></ul></div>
+</div>
+<div class="slide slide-1" data-title="ภาพรวมช่วงนี้">
+  <div class="slide-header">
+    <div class="slide-num">Slide 2</div>
+    <div class="slide-title">ภาพรวมช่วงนี้</div>
+  </div>
+  <div class="key-message">สามคำถามที่คุณจะเจอจริงในหนึ่งวันทำงาน ทั้งหมดตอบได้ด้วยสิ่งที่เพิ่งเรียน</div>
+  <div class="slide-content"><p><strong>สามคำถาม:</strong></p>
+<ul class="slide-list"><li>ทำไม binary search เป็น $O(\log n)$</li><li>ทำไมต้องพลอตข้อมูลบนแกน log</li><li>กลับด้าน sigmoid เป็น log-odds ได้อย่างไร (<strong>ตัวอย่างหนึ่งข้อ ไม่ใช่หัวข้อ</strong>)</li></ul></div>
+</div>
+<div class="slide slide-2" data-title="แบ่งครึ่งกี่ครั้ง คือชื่อเล่นของลอการิทึม">
+  <div class="slide-header">
+    <div class="slide-num">Slide 3</div>
+    <div class="slide-title">แบ่งครึ่งกี่ครั้ง คือชื่อเล่นของลอการิทึม</div>
+  </div>
+  <div class="key-message">สองประโยคนี้เป็นประโยคเดียวกันที่มองจากสองด้าน</div>
+  <div class="slide-content"><p>$$
+2^{k} = N \quad\Longleftrightarrow\quad k = \log_2 N
+$$</p>
+<p>ฝั่งซ้าย: "แบ่งครึ่ง $k$ ครั้งจากขนาด $N$ จะเหลือ 1" · ฝั่งขวา: "จำนวนครั้งที่แบ่งได้คือ $\log_2$ ของขนาด"</p>
+<p><strong>ทำไม big-O ไม่ต้องบอกฐาน:</strong></p>
+<p>$$
+\log_a N = \frac{\log_2 N}{\log_2 a}
+$$</p>
+<p>ตัวส่วนเป็นค่าคงตัวไม่ขึ้นกับ $N$ — $\log_a N$ กับ $\log_2 N$ ต่างกันแค่ตัวคูณคงตัว ซึ่ง big-O ไม่สนใจ</p></div>
+</div>
+<div class="slide slide-3" data-title="ตัวอย่าง: นับจำนวนครั้งที่แบ่งครึ่ง">
+  <div class="slide-header">
+    <div class="slide-num">Slide 4</div>
+    <div class="slide-title">ตัวอย่าง: นับจำนวนครั้งที่แบ่งครึ่ง</div>
+  </div>
+  <div class="key-message">ข้อมูลคูณพันเท่า งานคูณแค่สองเท่า — ลอการิทึมโตช้าจนแทบเรียกได้ว่าไม่โต</div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> $N=1024$ ก) แบ่งกี่ครั้งจนเหลือ 1 ข) ถ้า $N=1{,}048{,}576$ แบ่งกี่ครั้ง ค) ข้อมูลโตกี่เท่า งานโตกี่เท่า</p>
+<p>$$
+\begin{aligned}
+\text{ก)}\quad 2^k=1024=2^{10} &amp;\Rightarrow k=10 \\
+\text{ข)}\quad 1{,}048{,}576=2^{20} &amp;\Rightarrow k=20 \\
+\text{ค)}\quad \text{ข้อมูลโต } 2^{10}=1024 \text{ เท่า} &amp;\qquad \text{งานโต } \tfrac{20}{10}=2 \text{ เท่า}
+\end{aligned}
+$$</p>
+<p><strong>ตรวจคำตอบ:</strong> ไล่แบ่งจริง $1024\to512\to\cdots\to1$ นับได้ 10 ลูกศร ✓</p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w02_f07_halving_tree.svg" alt="แผนภาพต้นไม้แบ่งครึ่งเรียงลงล่าง 5 ชั้น ชั้นบนสุดเป็นกล่องกว้างเขียน 16 ชั้นถัดไปกล่องกว้างครึ่งเดียวเขียน 8 แล้ว 4 แล้ว 2 แล้ว 1 แต่ละชั้นมีลูกศรลงจากกล่องบนสู่กล่องล่างและป้ายด้านขวาบอกจำนวนครั้งที่แบ่ง 1 2 3 4 ด้านล่างสุดมีข้อความ &quot;แบ่ง 4 ครั้ง เพราะ 16 = 2 ยกกำลัง 4&quot;" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-4" data-title="ทำไมต้องพลอตแกน log">
+  <div class="slide-header">
+    <div class="slide-num">Slide 5</div>
+    <div class="slide-title">ทำไมต้องพลอตแกน log</div>
+  </div>
+  <div class="key-message">สายตาเราตรวจเส้นตรงเก่งกว่าตรวจเส้นโค้ง — แกน log เปลี่ยนทวีคูณให้เป็นเส้นตรง</div>
+  <div class="slide-content"><p>ข้อมูล $y=3\cdot2^x$ ใส่ $\log_2$: $\;\log_2 y = \log_2 3 + x$</p>
+<p><strong>ตรวจคำตอบ:</strong> ผลต่าง $\log_2 y$ ระหว่างจุดติดกันต้องเท่ากับ 1 ทุกคู่</p>
+<p>$$
+\log_2 6-\log_2 3 = \log_2 12-\log_2 6 = \log_2 24-\log_2 12 = 1 \quad\checkmark
+$$</p>
+<p>ผลต่างเท่ากันทุกช่วง → จุดสี่จุดเรียงเป็นเส้นตรงบนแกน $\log_2$ ทั้งที่บนแกนปกติมันเป็นเส้นโค้งพุ่งขึ้น</p>
+<figure style="margin:10px 0;text-align:center;"><img src="../figures/w02_f08_log_axis.svg" alt="ภาพสองช่องเรียงแนวนอนใช้ข้อมูลชุดเดียวกันคือ (0,3) (1,6) (2,12) (3,24) ช่องซ้ายแกนตั้งเป็นสเกลปกติ 0 ถึง 24 จุดสี่จุดโค้งงอขึ้นชันมากตอนท้ายพร้อมป้าย &quot;แกนปกติ — โค้ง อ่านยาก&quot; ช่องขวาแกนตั้งเป็นสเกล log ฐาน 2 ที่ทำเครื่องหมายเฉพาะตำแหน่ง 3 6 12 24 ให้ห่างเท่ากัน จุดสี่จุดเรียงเป็นเส้นตรงพร้อมเส้นตรงบางลากผ่านและป้าย &quot;แกน log — เป็นเส้นตรง ความชัน 1&quot; ขาวดำ เส้นน้อย" style="max-width:100%;max-height:52vh;"></figure></div>
+</div>
+<div class="slide slide-5" data-title="sigmoid และ logit: การกลับด้าน">
+  <div class="slide-header">
+    <div class="slide-num">Slide 6</div>
+    <div class="slide-title">sigmoid และ logit: การกลับด้าน</div>
+  </div>
+  <div class="key-message">การได้สูตร logit จากสูตร sigmoid เป็นแบบฝึกหัดพีชคณิตล้วน ๆ ที่ใช้กฎ log ทั้งหมดที่เพิ่งเรียน — <strong>ตัวอย่างหนึ่งข้อ ไม่ใช่หัวข้อ</strong></div>
+  <div class="slide-content"><p><strong>โจทย์:</strong> จาก $p = \dfrac{1}{1+e^{-z}}$ จงแก้หา $z$ ในรูปของ $p$</p>
+<p>$$
+\begin{aligned}
+p(1+e^{-z}) &amp;= 1 \;\Rightarrow\; e^{-z} = \frac{1-p}{p} &amp;&amp; \text{(ต้องมี } p\ne0\text{)} \\
+-z &amp;= \ln\!\left(\frac{1-p}{p}\right) \;\Rightarrow\; z = \ln\!\left(\frac{p}{1-p}\right)
+\end{aligned}
+$$</p>
+<p><strong>โดเมน:</strong> ต้องมี $\dfrac{1-p}{p}&gt;0 \Leftrightarrow p\in(0,1)$</p>
+<p><strong>ตรวจคำตอบ:</strong> ถ้า $z=\ln4$ แทนสูตร: $p=\dfrac{1}{1+1/4}=\dfrac45$ · ย้อนกลับด้วยสูตร logit ได้ $\ln4$ คืนมา ✓</p></div>
+</div>
+<div class="slide slide-6" data-title="อ่านความหมาย: log-odds">
+  <div class="slide-header">
+    <div class="slide-num">Slide 7</div>
+    <div class="slide-title">อ่านความหมาย: log-odds</div>
+  </div>
+  <div class="key-message">$z=0$ คือจุดสมดุลพอดี — $p&gt;\tfrac12$ เมื่อ $z$ เป็นบวก, $p&lt;\tfrac12$ เมื่อ $z$ เป็นลบ</div>
+  <div class="slide-content"><p>$$
+\frac{p}{1-p} \;=\; \text{อัตราต่อรอง (odds)} \qquad z = \ln(\text{odds})
+$$</p>
+<p>ถ้า $p=\tfrac45$ อัตราต่อรองคือ $4$ ต่อ $1$ และ $z=\ln4$</p>
+<p><strong>ทั้งฝั่งงานจริง:</strong> ทฤษฎี logistic regression เต็มรูปเป็นเนื้อหาคอร์ส 15 สัปดาห์ — วันนี้คุณแค่ได้เห็นว่าคะแนนดิบ $z$ ที่โมเดลคำนวณจริง กับความน่าจะเป็น $p$ ที่รายงานออกมา แปลงกลับไปกลับมาด้วยมือได้อย่างไร</p></div>
+</div>
+<div class="slide slide-7" data-title="สรุปสัปดาห์ 2 และสิ่งที่ต้องทำ">
+  <div class="slide-header">
+    <div class="slide-num">Slide 8</div>
+    <div class="slide-title">สรุปสัปดาห์ 2 และสิ่งที่ต้องทำ</div>
+  </div>
+  <div class="key-message">อ่าน echelon form ให้ออก เขียนโดเมนก่อนลงมือทุกครั้งที่เจอ $\log$ และจำไว้ว่างาน DS ทุกงานคือระบบที่ไม่มีผลเฉลยพอดี</div>
+  <div class="slide-content"><p><strong>สามข้อของสัปดาห์นี้:</strong></p>
+<ol><li>อ่าน echelon form ให้ออกก่อนตอบ — เช็คแถวขัดแย้งก่อน แล้วนับ pivot</li><li>สมการ $\log$ เขียนโดเมนเป็นบรรทัดแรก ตรวจคำตอบกับสมการตั้งต้นเสมอ</li><li>งาน DS ทุกงานคือระบบ overdetermined — ที่มาของคำว่า "ความสูญเสีย"</li></ol>
+<p><strong>ตั้งค้างไว้:</strong> ระบบ overdetermined ที่ไม่มีผลเฉลยพอดี จะได้คำตอบเต็มรูปใน <strong>สัปดาห์ 5</strong></p>
+<p><strong>การบ้าน:</strong> <code>exercises/ex_02.md</code> ข้อ 21–25 · <strong>ตัวอย่าง 4.4 ($z$ ที่ทำให้ $p=1$ ไม่มีอยู่จริง) มีแต่ใน note</strong></p></div>
+</div>
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" title="Previous (&#8592;)">&#9664;</button>
+  <span id="counter">1 / 14</span>
+  <span id="slide-label"></span>
+  <button id="next-btn" onclick="changeSlide(1)" title="Next (&#8594;)">&#9654;</button>
+</div>
+<div id="kb-hint">&#8592; &#8594; Space</div>
+<script>
+
+var current = 0;
+var slides = document.querySelectorAll('.slide');
+var total = slides.length;
+var counter = document.getElementById('counter');
+var fill = document.getElementById('progress-fill');
+var label = document.getElementById('slide-label');
+var prevBtn = document.getElementById('prev-btn');
+var nextBtn = document.getElementById('next-btn');
+
+function showSlide(n) {
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, total - 1));
+  slides[current].classList.add('active');
+  counter.textContent = (current + 1) + ' / ' + total;
+  fill.style.width = ((current + 1) / total * 100) + '%';
+  label.textContent = slides[current].dataset.title || '';
+  prevBtn.disabled = (current === 0);
+  nextBtn.disabled = (current === total - 1);
+  // Scroll content to top on slide change
+  var sc = slides[current].querySelector('.slide-content');
+  if (sc) sc.scrollTop = 0;
+}
+
+function changeSlide(dir) { showSlide(current + dir); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault(); changeSlide(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault(); changeSlide(-1);
+  } else if (e.key === ' ') {
+    e.preventDefault(); changeSlide(e.shiftKey ? -1 : 1);
+  } else if (e.key === 'Home') { showSlide(0); }
+  else if (e.key === 'End')  { showSlide(total - 1); }
+});
+
+// Touch swipe
+var touchX = 0;
+document.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', function(e) {
+  var dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 50) changeSlide(dx < 0 ? 1 : -1);
+});
+
+showSlide(0);
+
+</script>
+</body>
+</html>

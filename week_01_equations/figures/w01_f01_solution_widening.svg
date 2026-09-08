@@ -1,0 +1,42 @@
+<svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" font-family="'TH Sarabun New','Noto Sans Thai',sans-serif">
+  <style>
+    .ax   { stroke:#000; stroke-width:2; }
+    .dot  { fill:#000; }
+    .lbl  { fill:#000; font-size:18px; }
+    .val  { fill:#000; font-size:16px; text-anchor:middle; }
+    .flag { fill:#000; font-size:16px; }
+  </style>
+
+  <!-- แถวบน: สมการตั้งต้น -->
+  <text x="60" y="45" class="lbl">สมการตั้งต้น</text>
+  <line x1="60" y1="80" x2="560" y2="80" class="ax"/>
+  <!-- ลูกศรปลายเส้น -->
+  <polygon points="560,80 550,74 550,86" fill="#000"/>
+  <!-- จุด x = 9 -->
+  <circle cx="485" cy="80" r="6" class="dot"/>
+  <text x="485" y="104" class="val">9</text>
+
+  <!-- ลูกศรบอกขั้นตอน -->
+  <text x="290" y="140" text-anchor="middle" font-size="20">ยกกำลังสอง</text>
+  <line x1="300" y1="150" x2="300" y2="170" class="ax"/>
+  <polygon points="300,172 294,162 306,162" fill="#000"/>
+
+  <!-- แถวล่าง: หลังยกกำลังสอง -->
+  <text x="60" y="205" class="lbl">หลังยกกำลังสอง</text>
+  <line x1="60" y1="200" x2="560" y2="200" class="ax"/>
+  <polygon points="560,200 550,194 550,206" fill="#000"/>
+
+  <!-- จุด x = 2 (แปลกปลอม) -->
+  <circle cx="170" cy="200" r="6" class="dot"/>
+  <circle cx="170" cy="200" r="18" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="170" y="224" class="val">2</text>
+
+  <!-- จุด x = 9 -->
+  <circle cx="485" cy="200" r="6" class="dot"/>
+  <text x="485" y="224" class="val">9</text>
+
+  <!-- ลูกศรชี้และป้ายแปลกปลอม -->
+  <line x1="150" y1="245" x2="168" y2="216" stroke="#000" stroke-width="1.5"/>
+  <polygon points="168,216 158,220 165,226" fill="#000"/>
+  <text x="60" y="250" class="flag">✗ แปลกปลอม</text>
+</svg>
