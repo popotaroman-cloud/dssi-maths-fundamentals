@@ -1,5 +1,6 @@
-# Reference textbooks (copyrighted, some restrict redistribution — see textbook/*.md notes)
-textbook/*.pdf
+# Reference textbooks and notes derived from them (copyrighted, some restrict redistribution)
+textbook/
+**/textbook/
 
 # Stale build artifact (unzipped folder is the source of truth)
 week_01_equations.zip
